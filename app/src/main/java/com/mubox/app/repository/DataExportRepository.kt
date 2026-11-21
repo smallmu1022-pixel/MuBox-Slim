@@ -1,0 +1,558 @@
+package com.mubox.app.repository
+
+import com.mubox.app.R
+import android.content.Context
+import android.net.Uri
+import android.util.Log
+import com.google.gson.Gson
+import com.google.gson.GsonBuilder
+import com.google.gson.JsonSyntaxException
+// import com.mubox.app.BuildConfig // Build config is usually in root package or needs verification
+import com.mubox.app.model.*
+import kotlinx.coroutines.CancellationException
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.withContext
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.cancel
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.SupervisorJob
+import java.io.File
+
+class DataExportRepository(private val context: Context) {
+
+    companion object {
+        private const val TAG = "DataExportRepository"
+        private const val CURRENT_VERSION = 1
+        private const val MAX_IMPORT_JSON_BYTES = 15 * 1024 * 1024
+        private const val MAX_IMPORT_PROFILE_COUNT = 64
+
+        @Volatile
+        private var instance: DataExportRepository? = null
+
+        fun getInstance(context: Context): DataExportRepository {
+            return instance ?: synchronized(this) {
+                instance ?: DataExportRepository(context.applicationContext).also { instance = it }
+            }
+        }
+
+        internal fun validateProfileExportCompleteness(
+            totalProfiles: Int,
+            exportedProfiles: Int
+        ): Result<Unit> {
+            if (totalProfiles == exportedProfiles) {
+                return Result.success(Unit)
+            }
+            val missingCount = (totalProfiles - exportedProfiles).coerceAtLeast(0)
+            val label = if (missingCount == 1) "profile" else "profiles"
+            return Result.failure(
+                IllegalStateException(
+                    "Export failed: $missingCount $label config missing or unreadable"
+                )
+            )
+        }
+    }
+
+    private val repositoryScope = CoroutineScope(SupervisorJob() + Dispatchers.IO)
+
+    private val gson: Gson = GsonBuilder()
+        .setPrettyPrinting()
+        .create()
+
+    private val settingsRepository = SettingsRepository.getInstance(context)
+    private val configRepository = ConfigRepository.getInstance(context)
+    private val ruleSetRepository = RuleSetRepository.getInstance(context)
+
+    private val configDir: File
+        get() = File(context.filesDir, "configs").also { it.mkdirs() }
+
+    suspend fun exportAllData(): Result<String> = withContext(Dispatchers.IO) {
+        try {
+
+            val settings = settingsRepository.settings.first()
+
+            val profiles = configRepository.profiles.value
+            val activeProfileId = configRepository.activeProfileId.value
+            val activeNodeId = configRepository.activeNodeId.value
+
+            val profileExportDataList = profiles.mapNotNull { profile ->
+                try {
+                    val configFile = File(configDir, "${profile.id}.json")
+                    if (configFile.exists()) {
+                        val configJson = configFile.readText()
+                        val config = gson.fromJson(configJson, SingBoxConfig::class.java)
+                        ProfileExportData(profile = profile, config = config)
+                    } else {
+                        Log.w(TAG, "Config file not found for profile: ${profile.id}")
+                        null
+                    }
+                } catch (e: Exception) {
+                    Log.e(TAG, "Failed to load config for profile: ${profile.id}", e)
+                    null
+                }
+            }
+            val completeness = validateProfileExportCompleteness(
+                totalProfiles = profiles.size,
+                exportedProfiles = profileExportDataList.size
+            )
+            if (completeness.isFailure) {
+                return@withContext Result.failure(
+                    completeness.exceptionOrNull() ?: IllegalStateException("Export failed")
+                )
+            }
+
+            val packageInfo = context.packageManager.getPackageInfo(context.packageName, 0)
+            val appVersionName = packageInfo.versionName ?: "Unknown"
+
+            val exportData = ExportData(
+                version = CURRENT_VERSION,
+                exportTime = System.currentTimeMillis(),
+                appVersion = appVersionName,
+                settings = settings,
+                profiles = profileExportDataList,
+                activeProfileId = activeProfileId,
+                activeNodeId = activeNodeId,
+                profileNodeMemory = configRepository.getProfileNodeMemorySnapshot(),
+                profileAutoSelection = configRepository.getProfileAutoSelectionSnapshot()
+            )
+
+            val jsonString = gson.toJson(exportData)
+
+            Result.success(jsonString)
+        } catch (e: Exception) {
+            Log.e(TAG, "Export failed", e)
+            Result.failure(e)
+        }
+    }
+
+    suspend fun exportToFile(uri: Uri): Result<Unit> = withContext(Dispatchers.IO) {
+        try {
+            val jsonResult = exportAllData()
+            if (jsonResult.isFailure) {
+                return@withContext Result.failure(jsonResult.exceptionOrNull() ?: Exception(context.getString(R.string.export_failed)))
+            }
+
+            val jsonString = jsonResult.getOrThrow()
+
+            context.contentResolver.openOutputStream(uri)?.use { outputStream ->
+                outputStream.write(jsonString.toByteArray(Charsets.UTF_8))
+                outputStream.flush()
+            } ?: throw Exception("Could not open file for writing")
+
+            Result.success(Unit)
+        } catch (e: Exception) {
+            Log.e(TAG, "Export to file failed", e)
+            Result.failure(e)
+        }
+    }
+
+    @Suppress("SENSELESS_COMPARISON", "CognitiveComplexMethod")
+    suspend fun validateImportData(jsonData: String): Result<ExportData> = withContext(Dispatchers.IO) {
+        try {
+            validateImportPayloadSize(jsonData)
+            val exportData = gson.fromJson(jsonData, ExportData::class.java)
+
+            if (exportData.version > CURRENT_VERSION) {
+                return@withContext Result.failure(
+                    Exception("Data version too high (v${exportData.version}), please update app and try again")
+                )
+            }
+
+            if (exportData.settings == null) {
+                return@withContext Result.failure(Exception("Data format error: missing settings info"))
+            }
+
+            if (exportData.profiles.size > MAX_IMPORT_PROFILE_COUNT) {
+                return@withContext Result.failure(
+                    Exception("Import rejected: profile count exceeds limit ($MAX_IMPORT_PROFILE_COUNT)")
+                )
+            }
+            if (exportData.profileNodeMemory.orEmpty().size > exportData.profiles.size ||
+                exportData.profileAutoSelection.orEmpty().size > exportData.profiles.size
+            ) {
+                return@withContext Result.failure(
+                    Exception("Data format error: profile selection state exceeds profile count")
+                )
+            }
+
+            Result.success(exportData)
+        } catch (e: JsonSyntaxException) {
+            Log.e(TAG, "Invalid JSON format", e)
+            Result.failure(Exception("Data format error, please check file validity"))
+        } catch (e: Exception) {
+            Log.e(TAG, "Validation failed", e)
+            Result.failure(e)
+        }
+    }
+
+    fun getExportDataSummary(exportData: ExportData): ExportDataSummary {
+        val totalNodeCount = exportData.profiles.sumOf { profileData ->
+            profileData.config.outbounds?.count { outbound ->
+                outbound.type in listOf(
+                    "vless", "trojan", "hysteria2", "anytls"
+                )
+            } ?: 0
+        }
+
+        return ExportDataSummary(
+            version = exportData.version,
+            exportTime = exportData.exportTime,
+            appVersion = exportData.appVersion,
+            profileCount = exportData.profiles.size,
+            totalNodeCount = totalNodeCount,
+            hasSettings = true,
+            hasCustomRules = exportData.settings.customRules.isNotEmpty(),
+            hasRuleSets = exportData.settings.ruleSets.isNotEmpty(),
+            hasAppRules = exportData.settings.appRules.isNotEmpty() || exportData.settings.appGroups.isNotEmpty()
+        )
+    }
+
+    suspend fun importData(jsonData: String, options: ImportOptions = ImportOptions()): Result<ImportResult> = withContext(Dispatchers.IO) {
+        try {
+            val validateResult = validateImportData(jsonData)
+            if (validateResult.isFailure) {
+                val error = validateResult.exceptionOrNull()
+                    ?: Exception(context.getString(R.string.import_failed))
+                return@withContext Result.failure(error)
+            }
+            val exportData = validateResult.getOrThrow()
+            val snapshot = createImportSnapshot(options)
+                ?: return@withContext Result.success(
+                    ImportResult.Failed("Import aborted: failed to create rollback snapshot")
+                )
+
+            var profilesImported = 0
+            var nodesImported = 0
+            var settingsImported = false
+            val errors = mutableListOf<String>()
+
+            if (options.importSettings) {
+                try {
+                    importSettings(exportData.settings, importRules = options.importRules)
+                    settingsImported = true
+                } catch (e: Exception) {
+                    Log.e(TAG, "Failed to import settings", e)
+                    errors.add("Failed to import settings: ${e.message}")
+                }
+            }
+
+            if (options.importProfiles) {
+                for (profileData in exportData.profiles) {
+                    try {
+                        val nodeCount = importProfile(profileData, options.overwriteExisting)
+                        profilesImported++
+                        nodesImported += nodeCount
+                    } catch (e: Exception) {
+                        Log.e(TAG, "Failed to import profile: ${profileData.profile.name}", e)
+                        errors.add("Profile '${profileData.profile.name}' import failed: ${e.message}")
+                    }
+                }
+                try {
+                    restoreImportedProfileSelectionState(exportData, clearExisting = false)
+                } catch (e: Exception) {
+                    Log.e(TAG, "Failed to import profile selection state", e)
+                    errors.add("Profile selection state import failed: ${e.message}")
+                }
+            }
+
+            if (options.importProfiles && exportData.activeProfileId != null) {
+                try {
+                    val profiles = configRepository.profiles.value
+                    if (profiles.any { it.id == exportData.activeProfileId }) {
+                        configRepository.setActiveProfile(
+                            exportData.activeProfileId,
+                            exportData.activeNodeId
+                        )
+                    }
+                } catch (e: Exception) {
+                    Log.w(TAG, "Failed to restore active profile", e)
+                }
+            }
+
+            if (errors.isNotEmpty()) {
+                val rollbackResult = restoreSnapshot(snapshot, options)
+                if (rollbackResult.isFailure) {
+                    val rollbackMessage = rollbackResult.exceptionOrNull()?.message ?: "unknown rollback error"
+                    return@withContext Result.success(
+                        ImportResult.Failed(
+                            errors.joinToString("\n") + "\nRollback failed: $rollbackMessage"
+                        )
+                    )
+                }
+                return@withContext Result.success(
+                    ImportResult.Failed(errors.joinToString("\n"))
+                )
+            }
+
+            if (settingsImported && options.importRules) {
+                val pendingRuleSets = exportData.settings.ruleSets.filter { ruleSet ->
+                    ruleSet.enabled && ruleSet.type == RuleSetType.REMOTE &&
+                        settingsRepository.settings.value.ruleSets.any { it.id == ruleSet.id && !it.enabled }
+                }
+                if (pendingRuleSets.isNotEmpty()) {
+                    repositoryScope.launch {
+                        pendingRuleSets.forEach { ruleSet ->
+                            try {
+                                // ponytail: 导入保持离线可用；后台只下载，不自动开启，避免覆盖用户后续的关闭操作。
+                                if (ruleSetRepository.prefetchRuleSet(ruleSet, forceUpdate = true)) {
+                                    Log.i(TAG, "Imported rule set ${ruleSet.tag} downloaded; enable it in settings")
+                                } else {
+                                    Log.w(TAG, "Imported rule set ${ruleSet.tag} was not downloaded")
+                                }
+                            } catch (e: Exception) {
+                                if (e is CancellationException) throw e
+                                Log.e(TAG, "Failed to download imported rule set ${ruleSet.tag}", e)
+                            }
+                        }
+                    }
+                }
+            }
+
+            val result = ImportResult.Success(
+                profilesImported = profilesImported,
+                nodesImported = nodesImported,
+                settingsImported = settingsImported
+            )
+
+            Result.success(result)
+        } catch (e: Exception) {
+            Log.e(TAG, "Import failed", e)
+            Result.failure(e)
+        }
+    }
+
+    suspend fun importFromFile(uri: Uri, options: ImportOptions = ImportOptions()): Result<ImportResult> = withContext(Dispatchers.IO) {
+        try {
+            validateImportFileSize(uri)
+            val jsonData = readImportJson(uri)
+
+            importData(jsonData, options)
+        } catch (e: Exception) {
+            Log.e(TAG, "Import from file failed", e)
+            Result.failure(e)
+        }
+    }
+
+    suspend fun validateFromFile(uri: Uri): Result<ExportData> = withContext(Dispatchers.IO) {
+        try {
+            validateImportFileSize(uri)
+            val jsonData = readImportJson(uri)
+
+            validateImportData(jsonData)
+        } catch (e: Exception) {
+            Log.e(TAG, "Validate from file failed", e)
+            Result.failure(e)
+        }
+    }
+
+    private suspend fun importSettings(settings: AppSettings, importRules: Boolean = true) {
+
+        settingsRepository.replaceImportedSettings(imported = settings, importRules = importRules)
+    }
+
+    private suspend fun importProfile(profileData: ProfileExportData, overwrite: Boolean): Int {
+        val profile = profileData.profile
+        val config = profileData.config
+
+        val existingProfiles = configRepository.profiles.value
+        val existingById = existingProfiles.find { it.id == profile.id }
+        val existingByName = existingProfiles.find { it.name == profile.name }
+
+        if (!overwrite && (existingById != null || existingByName != null)) {
+            throw Exception("Profile already exists")
+        }
+
+        val configFile = File(configDir, "${profile.id}.json")
+        val oldConfigText = configFile.takeIf { it.exists() }?.readText()
+        try {
+            ConfigRepository.writeTextFileAtomically(configFile, gson.toJson(config))
+
+            val newProfile = profile.copy(
+                id = profile.id,
+                lastUpdated = System.currentTimeMillis(),
+                updateStatus = UpdateStatus.Idle
+            )
+
+            configRepository.importProfileDirectly(newProfile, config)
+        } catch (e: Exception) {
+            if (oldConfigText != null) {
+                runCatching {
+                    ConfigRepository.writeTextFileAtomically(configFile, oldConfigText)
+                }.onFailure { restoreError ->
+                    Log.e(TAG, "Failed to restore overwritten config: ${configFile.absolutePath}", restoreError)
+                }
+            } else if (configFile.exists() && !configFile.delete()) {
+                Log.w(TAG, "Failed to delete orphaned imported config: ${configFile.absolutePath}")
+            }
+            throw e
+        }
+
+        if (overwrite) {
+            val oldProfileId = existingByName
+                ?.takeIf { existingById == null && it.id != profile.id }
+                ?.id
+            if (oldProfileId != null) {
+                configRepository.deleteProfile(oldProfileId)
+            }
+        }
+
+        val nodeCount = config.outbounds?.count { outbound ->
+            outbound.type in listOf(
+                "vless", "trojan", "hysteria2", "anytls"
+            )
+        } ?: 0
+
+        return nodeCount
+    }
+
+    private fun validateImportPayloadSize(jsonData: String) {
+        val sizeBytes = jsonData.toByteArray(Charsets.UTF_8).size
+        require(sizeBytes <= MAX_IMPORT_JSON_BYTES) {
+            "Import rejected: payload exceeds ${MAX_IMPORT_JSON_BYTES / 1024}KB"
+        }
+    }
+
+    private fun validateImportFileSize(uri: Uri) {
+        val fileSize = runCatching {
+            context.contentResolver.openAssetFileDescriptor(uri, "r")?.use { descriptor ->
+                descriptor.length
+            }
+        }.getOrNull() ?: return
+
+        require(fileSize <= MAX_IMPORT_JSON_BYTES) {
+            "Import rejected: file exceeds ${MAX_IMPORT_JSON_BYTES / 1024}KB"
+        }
+    }
+
+    private fun readImportJson(uri: Uri): String {
+        return context.contentResolver.openInputStream(uri)?.use { inputStream ->
+            val buffer = ByteArray(DEFAULT_BUFFER_SIZE)
+            val output = java.io.ByteArrayOutputStream()
+            var totalBytes = 0
+
+            while (true) {
+                val read = inputStream.read(buffer)
+                if (read <= 0) break
+                totalBytes += read
+                require(totalBytes <= MAX_IMPORT_JSON_BYTES) {
+                    "Import rejected: file exceeds ${MAX_IMPORT_JSON_BYTES / 1024}KB"
+                }
+                output.write(buffer, 0, read)
+            }
+
+            output.toString(Charsets.UTF_8.name())
+        } ?: throw IllegalStateException("Could not read file")
+    }
+
+    private suspend fun createImportSnapshot(options: ImportOptions): ExportData? {
+        if (!options.importProfiles) {
+            return ExportData(
+                exportTime = System.currentTimeMillis(),
+                appVersion = context.packageManager.getPackageInfo(context.packageName, 0).versionName ?: "Unknown",
+                settings = settingsRepository.settings.first(),
+                profiles = emptyList(),
+                activeProfileId = configRepository.activeProfileId.value,
+                activeNodeId = configRepository.activeNodeId.value
+            )
+        }
+
+        val snapshotJson = exportAllData().getOrNull() ?: return null
+        val snapshot = gson.fromJson(snapshotJson, ExportData::class.java)
+        if (options.importProfiles && snapshot.profiles.size != configRepository.profiles.value.size) {
+            Log.e(TAG, "Rollback snapshot is incomplete, aborting import")
+            return null
+        }
+        return snapshot
+    }
+
+    private suspend fun restoreSnapshot(snapshot: ExportData, options: ImportOptions): Result<Unit> {
+        val rollbackErrors = mutableListOf<String>()
+
+        if (options.importSettings) {
+            runCatching {
+                importSettings(snapshot.settings)
+            }.onFailure { error ->
+                rollbackErrors += "settings rollback failed: ${error.message}"
+            }
+        }
+
+        if (options.importProfiles) {
+            snapshot.profiles.forEach { profileData ->
+                runCatching {
+                    importProfile(profileData, overwrite = true)
+                }.onFailure { error ->
+                    rollbackErrors += "profile rollback failed: ${profileData.profile.name}: ${error.message}"
+                }
+            }
+
+            if (rollbackErrors.isEmpty()) {
+                val snapshotIds = snapshot.profiles.map { it.profile.id }.toSet()
+                val currentProfiles = configRepository.profiles.value
+                currentProfiles
+                    .filter { it.id !in snapshotIds }
+                    .forEach { profile ->
+                        runCatching {
+                            configRepository.deleteProfile(profile.id)
+                        }.onFailure { error ->
+                            rollbackErrors += "profile cleanup failed: ${profile.name}: ${error.message}"
+                        }
+                    }
+            }
+
+            if (rollbackErrors.isEmpty()) {
+                runCatching {
+                    restoreImportedProfileSelectionState(snapshot, clearExisting = true)
+                }.onFailure { error ->
+                    rollbackErrors += "profile selection rollback failed: ${error.message}"
+                }
+            }
+
+            snapshot.activeProfileId?.let { activeProfileId ->
+                runCatching {
+                    val profiles = configRepository.profiles.value
+                    if (profiles.any { it.id == activeProfileId }) {
+                        configRepository.setActiveProfile(activeProfileId, snapshot.activeNodeId)
+                    }
+                }.onFailure { error ->
+                    rollbackErrors += "active profile rollback failed: ${error.message}"
+                }
+            }
+        }
+
+        return if (rollbackErrors.isEmpty()) {
+            Result.success(Unit)
+        } else {
+            Result.failure(IllegalStateException(rollbackErrors.joinToString("; ")))
+        }
+    }
+
+    private suspend fun restoreImportedProfileSelectionState(
+        exportData: ExportData,
+        clearExisting: Boolean
+    ) {
+        val importedProfileIds = exportData.profiles.mapTo(mutableSetOf()) { it.profile.id }
+        val nodeMemory = exportData.profileNodeMemory.orEmpty().toMutableMap()
+        val activeProfileId = exportData.activeProfileId
+        val activeNodeId = exportData.activeNodeId
+        if (!activeProfileId.isNullOrBlank() &&
+            !activeNodeId.isNullOrBlank() &&
+            activeProfileId in importedProfileIds
+        ) {
+            nodeMemory.putIfAbsent(activeProfileId, activeNodeId)
+        }
+        val autoSelection = importedProfileIds.associateWith { profileId ->
+            exportData.profileAutoSelection.orEmpty()[profileId] == true
+        }
+        configRepository.replaceProfileSelectionState(
+            nodeMemory = nodeMemory,
+            autoSelection = autoSelection,
+            allowedProfileIds = importedProfileIds,
+            clearExisting = clearExisting
+        )
+    }
+
+    fun cleanup() {
+        repositoryScope.cancel()
+        Log.i(TAG, "DataExportRepository cleanup completed")
+    }
+}
