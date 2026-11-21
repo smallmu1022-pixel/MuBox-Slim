@@ -69,7 +69,7 @@ data class AppSettings(
 
     @SerializedName("connectTimeout") val connectTimeout: Int = 10,
 
-    @SerializedName("latencyTestMethod") val latencyTestMethod: LatencyTestMethod = LatencyTestMethod.REAL_RTT,
+    @SerializedName("latencyTestMethod") val latencyTestMethod: LatencyTestMethod = LatencyTestMethod.URL_TEST,
     @SerializedName("latencyTestUrl") val latencyTestUrl: String = DEFAULT_LATENCY_TEST_URL,
     @SerializedName("latencyTestTimeout") val latencyTestTimeout: Int = 5000,
     @SerializedName("latencyTestConcurrency") val latencyTestConcurrency: Int = 5,
@@ -181,15 +181,28 @@ enum class TrafficCaptureMode(@StringRes val displayNameRes: Int) {
 }
 
 enum class LatencyTestMethod(@StringRes val displayNameRes: Int) {
+    @SerializedName("URL_TEST") URL_TEST(R.string.latency_test_url_direct),
+    @SerializedName("TCP_PING") TCP_PING(R.string.latency_test_tcping),
+
+    // Legacy values from before v1.0.1. Kept only so existing settings still
+    // deserialize; they are normalized to a selectable method on load and are
+    // never offered in the UI.
     @SerializedName("TCP") TCP(R.string.latency_test_tcp),
     @SerializedName("REAL_RTT") REAL_RTT(R.string.latency_test_rtt),
-    @SerializedName("HANDSHAKE") HANDSHAKE(R.string.latency_test_handshake),
-    @SerializedName("URL_TEST") URL_TEST(R.string.latency_test_url_test);
+    @SerializedName("HANDSHAKE") HANDSHAKE(R.string.latency_test_handshake);
+
+    fun normalized(): LatencyTestMethod = when (this) {
+        TCP -> TCP_PING
+        REAL_RTT, HANDSHAKE -> URL_TEST
+        URL_TEST, TCP_PING -> this
+    }
 
     companion object {
+        val selectable: List<LatencyTestMethod> = listOf(URL_TEST, TCP_PING)
+
         fun fromDisplayName(name: String): LatencyTestMethod {
             // Deprecated: use enum name for storage
-            return entries.find { it.name == name } ?: REAL_RTT
+            return entries.find { it.name == name }?.normalized() ?: URL_TEST
         }
     }
 }
