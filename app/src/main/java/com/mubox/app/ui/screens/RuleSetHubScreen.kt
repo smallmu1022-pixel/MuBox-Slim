@@ -1,0 +1,499 @@
+package com.mubox.app.ui.screens
+
+import com.mubox.app.R
+import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.lazy.grid.GridCells
+import androidx.compose.foundation.lazy.grid.GridItemSpan
+import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
+import androidx.compose.foundation.lazy.grid.items
+import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.rounded.Refresh
+import androidx.compose.material.icons.rounded.Search
+import androidx.compose.material.icons.rounded.Visibility
+import androidx.compose.material3.*
+import androidx.compose.ui.res.stringResource
+import androidx.compose.runtime.*
+import androidx.compose.ui.Alignment
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
+import androidx.lifecycle.viewmodel.compose.viewModel
+import androidx.navigation.NavController
+import com.mubox.app.model.RuleSet
+import com.mubox.app.model.RuleSetType
+import com.mubox.app.model.HubRuleSet
+import com.mubox.app.ui.components.AppNotificationManager
+import com.mubox.app.ui.components.FloatingPageLayout
+import com.mubox.app.ui.components.StandardCard
+import com.mubox.app.ui.theme.isLiquidGlassTheme
+import com.mubox.app.ui.theme.liquidGlassButtonColors
+import com.mubox.app.ui.theme.liquidGlassButtonContentColor
+import com.mubox.app.ui.theme.liquidGlassButtonPanel
+import com.mubox.app.ui.theme.liquidGlassEmptyStatePanel
+import com.mubox.app.ui.theme.liquidGlassLoadingStatePanel
+import com.mubox.app.ui.theme.liquidGlassOutlinedTextFieldColors
+import com.mubox.app.ui.theme.liquidGlassPanel
+import com.mubox.app.ui.theme.liquidGlassProgressColor
+import com.mubox.app.ui.theme.liquidGlassProgressTrackColor
+import com.mubox.app.ui.theme.liquidGlassTextFieldBorderColor
+import com.mubox.app.ui.theme.liquidGlassTextFieldContainerColor
+import com.mubox.app.ui.theme.liquidGlassTextFieldPanel
+import com.mubox.app.ui.theme.liquidGlassTextButtonContentColor
+import com.mubox.app.ui.theme.liquidGlassTextButtonColors
+import com.mubox.app.ui.theme.liquidGlassTextButtonPanel
+import com.mubox.app.viewmodel.RuleSetViewModel
+import com.mubox.app.viewmodel.SettingsViewModel
+import com.mubox.app.ui.theme.liquidGlassTopAppBarContainerColor
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
+
+@Composable
+private fun ruleSetBadgeContentColor(defaultColor: Color): Color {
+    return if (isLiquidGlassTheme()) MaterialTheme.colorScheme.primary else defaultColor
+}
+
+@Composable
+private fun RuleSetBadge(
+    text: String,
+    backgroundColor: Color,
+    contentColor: Color,
+    modifier: Modifier = Modifier
+) {
+    val shape = RoundedCornerShape(4.dp)
+    Box(
+        modifier = modifier
+            .then(
+                if (isLiquidGlassTheme()) {
+                    Modifier.liquidGlassPanel(shape = shape, selected = true, shadowElevation = 4.dp)
+                } else {
+                    Modifier.background(backgroundColor, shape)
+                }
+            )
+            .padding(horizontal = 6.dp, vertical = 2.dp)
+    ) {
+        Text(
+            text = text,
+            color = ruleSetBadgeContentColor(contentColor),
+            style = MaterialTheme.typography.labelSmall
+        )
+    }
+}
+
+@Composable
+private fun Modifier.ruleSetHubItemPanel(): Modifier {
+    val shape = RoundedCornerShape(12.dp)
+    return if (isLiquidGlassTheme()) {
+        fillMaxWidth()
+            .liquidGlassPanel(shape = shape, shadowElevation = 8.dp)
+    } else {
+        fillMaxWidth()
+    }
+}
+
+@Composable
+private fun ruleSetHubItemContainerColor(defaultColor: Color): Color {
+    return if (isLiquidGlassTheme()) Color.Transparent else defaultColor
+}
+
+@Composable
+private fun Modifier.ruleSetHubStatusPanel(): Modifier {
+    return if (isLiquidGlassTheme()) {
+        fillMaxWidth()
+            .liquidGlassEmptyStatePanel()
+            .padding(24.dp)
+    } else {
+        this
+    }
+}
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+fun RuleSetHubScreen(
+    navController: NavController,
+    settingsViewModel: SettingsViewModel = viewModel(),
+    ruleSetViewModel: RuleSetViewModel = viewModel()
+) {
+
+    val activityRuleSetViewModel: RuleSetViewModel = viewModel(
+        viewModelStoreOwner = (navController.context as? androidx.activity.ComponentActivity)
+            ?: throw IllegalStateException("Context is not a ComponentActivity")
+    )
+
+    var searchQuery by remember { mutableStateOf("") }
+    val ruleSets by activityRuleSetViewModel.ruleSets.collectAsStateWithLifecycle()
+    val isLoading by activityRuleSetViewModel.isLoading.collectAsStateWithLifecycle()
+    val error by activityRuleSetViewModel.error.collectAsStateWithLifecycle()
+    val downloadingRuleSets by settingsViewModel.downloadingRuleSets.collectAsStateWithLifecycle()
+
+    val ruleSetSettings by activityRuleSetViewModel.settings.collectAsStateWithLifecycle()
+
+    val addedRuleSetTags = remember(ruleSetSettings.ruleSets) {
+        ruleSetSettings.ruleSets.map { it.tag }.toSet()
+    }
+
+    val context = LocalContext.current
+
+    val filteredRuleSets = remember(searchQuery, ruleSets) {
+        if (searchQuery.isBlank()) ruleSets
+        else ruleSets.filter { it.name.contains(searchQuery, ignoreCase = true) }
+    }
+
+    FloatingPageLayout(
+        title = stringResource(R.string.ruleset_hub_title) + " · " +
+            stringResource(R.string.import_count_items, filteredRuleSets.size),
+        onBack = { navController.popBackStack() },
+        actions = {
+            IconButton(
+                onClick = { activityRuleSetViewModel.fetchRuleSets() }
+            ) {
+                Icon(Icons.Rounded.Refresh, contentDescription = stringResource(R.string.common_refresh), tint = MaterialTheme.colorScheme.onBackground)
+            }
+        }
+    ) { contentTopPadding ->
+        Scaffold(
+            contentWindowInsets = WindowInsets(0, 0, 0, 0),
+            containerColor = liquidGlassTopAppBarContainerColor(MaterialTheme.colorScheme.background)
+        ) { padding ->
+            LazyVerticalGrid(
+                columns = GridCells.Adaptive(minSize = 300.dp),
+                modifier = Modifier
+                    .fillMaxSize()
+                    .padding(padding),
+                contentPadding = PaddingValues(
+                    start = 16.dp,
+                    top = contentTopPadding + 16.dp,
+                    end = 16.dp,
+                    bottom = 16.dp + WindowInsets.navigationBars.asPaddingValues().calculateBottomPadding()
+                ),
+                horizontalArrangement = Arrangement.spacedBy(12.dp),
+                verticalArrangement = Arrangement.spacedBy(12.dp)
+            ) {
+                item(
+                    key = "ruleset_hub_search",
+                    span = { GridItemSpan(maxLineSpan) }
+                ) {
+                    StandardCard {
+                        RuleSetHubSearchField(
+                            searchQuery = searchQuery,
+                            onSearchQueryChange = { searchQuery = it }
+                        )
+                    }
+                }
+
+                if (isLoading) {
+                    item(
+                        key = "ruleset_hub_loading",
+                        span = { GridItemSpan(maxLineSpan) }
+                    ) {
+                        Box(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .height(320.dp),
+                            contentAlignment = Alignment.Center
+                        ) {
+                            Box(
+                                modifier = Modifier.liquidGlassLoadingStatePanel(),
+                                contentAlignment = Alignment.Center
+                            ) {
+                                CircularProgressIndicator(
+                                    color = liquidGlassProgressColor(MaterialTheme.colorScheme.primary),
+                                    trackColor = liquidGlassProgressTrackColor(Color.Transparent)
+                                )
+                            }
+                        }
+                    }
+                } else if (error != null) {
+                    val errorMessage = error.orEmpty()
+                    item(
+                        key = "ruleset_hub_error",
+                        span = { GridItemSpan(maxLineSpan) }
+                    ) {
+                        Box(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .height(320.dp),
+                            contentAlignment = Alignment.Center
+                        ) {
+                            Column(
+                                modifier = Modifier.ruleSetHubStatusPanel(),
+                                horizontalAlignment = Alignment.CenterHorizontally
+                            ) {
+                                Text(text = errorMessage, color = MaterialTheme.colorScheme.error)
+                                Button(
+                                    onClick = { activityRuleSetViewModel.fetchRuleSets() },
+                                    modifier = Modifier.liquidGlassButtonPanel(),
+                                    colors = liquidGlassButtonColors(
+                                        defaultContainerColor = MaterialTheme.colorScheme.primary,
+                                        defaultContentColor = MaterialTheme.colorScheme.onPrimary
+                                    )
+                                ) {
+                                    Text(
+                                        text = stringResource(R.string.common_retry),
+                                        color = liquidGlassButtonContentColor(MaterialTheme.colorScheme.onPrimary)
+                                    )
+                                }
+                            }
+                        }
+                    }
+                } else {
+                    items(filteredRuleSets) { ruleSet ->
+                        HubRuleSetItem(
+                            ruleSet = ruleSet,
+                            isDownloading = downloadingRuleSets.contains(ruleSet.name),
+                            isDownloaded = addedRuleSetTags.contains(ruleSet.name),
+                            onAddSource = {
+                                settingsViewModel.addRuleSet(
+                                    RuleSet(
+                                        tag = ruleSet.name,
+                                        type = RuleSetType.REMOTE,
+                                        format = "source",
+                                        url = ruleSet.sourceUrl
+                                    )
+                                ) { _, message ->
+                                    AppNotificationManager.showMessage(context, message)
+                                }
+                            },
+                            onAddBinary = {
+                                settingsViewModel.addRuleSet(
+                                    RuleSet(
+                                        tag = ruleSet.name,
+                                        type = RuleSetType.REMOTE,
+                                        format = "binary",
+                                        url = ruleSet.binaryUrl
+                                    )
+                                ) { _, message ->
+                                    AppNotificationManager.showMessage(context, message)
+                                }
+                            }
+                        )
+                    }
+                }
+            }
+        }
+    }
+}
+
+@Composable
+private fun RuleSetHubSearchField(
+    searchQuery: String,
+    onSearchQueryChange: (String) -> Unit
+) {
+    val searchFieldShape = RoundedCornerShape(12.dp)
+    OutlinedTextField(
+        value = searchQuery,
+        onValueChange = onSearchQueryChange,
+        placeholder = {
+            Text(stringResource(R.string.common_search), color = MaterialTheme.colorScheme.onSurfaceVariant)
+        },
+        leadingIcon = {
+            Icon(
+                Icons.Rounded.Search,
+                contentDescription = stringResource(R.string.common_search),
+                tint = MaterialTheme.colorScheme.onSurfaceVariant
+            )
+        },
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(4.dp)
+            .liquidGlassTextFieldPanel(shape = searchFieldShape),
+        singleLine = true,
+        shape = searchFieldShape,
+        colors = liquidGlassOutlinedTextFieldColors(
+            focusedContainerColor = liquidGlassTextFieldContainerColor(Color.Transparent),
+            unfocusedContainerColor = liquidGlassTextFieldContainerColor(Color.Transparent),
+            focusedBorderColor = liquidGlassTextFieldBorderColor(Color.Transparent),
+            unfocusedBorderColor = liquidGlassTextFieldBorderColor(Color.Transparent),
+            cursorColor = MaterialTheme.colorScheme.onSurface,
+            focusedTextColor = MaterialTheme.colorScheme.onSurface,
+            unfocusedTextColor = MaterialTheme.colorScheme.onSurface
+        )
+    )
+}
+
+@Composable
+fun HubRuleSetItem(
+    ruleSet: HubRuleSet,
+    isDownloading: Boolean = false,
+    onAddSource: () -> Unit,
+    onAddBinary: () -> Unit,
+    isDownloaded: Boolean
+) {
+    val shape = RoundedCornerShape(12.dp)
+
+    if (isLiquidGlassTheme()) {
+        Column(
+            modifier = Modifier
+                .ruleSetHubItemPanel()
+                .padding(16.dp)
+        ) {
+            HubRuleSetItemContent(
+                ruleSet = ruleSet,
+                isDownloading = isDownloading,
+                onAddSource = onAddSource,
+                onAddBinary = onAddBinary,
+                isDownloaded = isDownloaded
+            )
+        }
+        return
+    }
+
+    Card(
+        colors = CardDefaults.cardColors(
+            containerColor = ruleSetHubItemContainerColor(MaterialTheme.colorScheme.surface)
+        ),
+        shape = shape,
+        modifier = Modifier.ruleSetHubItemPanel()
+    ) {
+        Column(
+            modifier = Modifier.padding(16.dp)
+        ) {
+            HubRuleSetItemContent(
+                ruleSet = ruleSet,
+                isDownloading = isDownloading,
+                onAddSource = onAddSource,
+                onAddBinary = onAddBinary,
+                isDownloaded = isDownloaded
+            )
+        }
+    }
+}
+
+@Composable
+private fun HubRuleSetItemContent(
+    ruleSet: HubRuleSet,
+    isDownloading: Boolean,
+    onAddSource: () -> Unit,
+    onAddBinary: () -> Unit,
+    isDownloaded: Boolean
+) {
+    HubRuleSetItemHeader(
+        ruleSet = ruleSet,
+        isDownloading = isDownloading,
+        isDownloaded = isDownloaded
+    )
+    Spacer(modifier = Modifier.height(8.dp))
+    Row(
+        modifier = Modifier.fillMaxWidth(),
+        horizontalArrangement = Arrangement.End,
+        verticalAlignment = Alignment.CenterVertically
+    ) {
+        Icon(
+            imageVector = Icons.Rounded.Visibility,
+            contentDescription = stringResource(R.string.common_view),
+            tint = MaterialTheme.colorScheme.onSurfaceVariant,
+            modifier = Modifier.size(16.dp)
+        )
+    }
+    Spacer(modifier = Modifier.height(12.dp))
+    HubRuleSetItemActions(
+        onAddSource = onAddSource,
+        onAddBinary = onAddBinary
+    )
+}
+
+@Composable
+private fun HubRuleSetItemHeader(
+    ruleSet: HubRuleSet,
+    isDownloading: Boolean,
+    isDownloaded: Boolean
+) {
+    Row(
+        modifier = Modifier.fillMaxWidth(),
+        horizontalArrangement = Arrangement.SpaceBetween,
+        verticalAlignment = Alignment.CenterVertically
+    ) {
+        Row(
+            modifier = Modifier.weight(1f),
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            Text(
+                text = ruleSet.name,
+                style = MaterialTheme.typography.titleMedium,
+                color = MaterialTheme.colorScheme.onSurface,
+                fontWeight = FontWeight.Bold,
+                modifier = Modifier.weight(1f, fill = false)
+            )
+            if (isDownloading) {
+                Spacer(modifier = Modifier.width(8.dp))
+                CircularProgressIndicator(
+                    modifier = Modifier.size(14.dp),
+                    strokeWidth = 2.dp,
+                    color = liquidGlassProgressColor(MaterialTheme.colorScheme.primary),
+                    trackColor = liquidGlassProgressTrackColor(Color.Transparent)
+                )
+            } else if (isDownloaded) {
+                Spacer(modifier = Modifier.width(8.dp))
+                RuleSetBadge(
+                    text = stringResource(R.string.common_downloaded),
+                    backgroundColor = Color(0xFF2E7D32),
+                    contentColor = Color.White
+                )
+            }
+        }
+
+        Row(verticalAlignment = Alignment.CenterVertically) {
+            ruleSet.tags.forEach { tag ->
+                val isDark = MaterialTheme.colorScheme.background.red < 0.5f
+                val (bgColor, txtColor) = if (isDark) {
+                    MaterialTheme.colorScheme.secondary to MaterialTheme.colorScheme.onSecondary
+                } else {
+                    MaterialTheme.colorScheme.surfaceVariant to MaterialTheme.colorScheme.onSurfaceVariant
+                }
+                RuleSetBadge(
+                    text = tag,
+                    backgroundColor = bgColor,
+                    contentColor = txtColor,
+                    modifier = Modifier.padding(start = 4.dp)
+                )
+            }
+        }
+    }
+}
+
+@Composable
+private fun HubRuleSetItemActions(
+    onAddSource: () -> Unit,
+    onAddBinary: () -> Unit
+) {
+    Row(
+        modifier = Modifier.fillMaxWidth(),
+        horizontalArrangement = Arrangement.End,
+        verticalAlignment = Alignment.CenterVertically
+    ) {
+        TextButton(
+            modifier = Modifier.liquidGlassTextButtonPanel(),
+            colors = liquidGlassTextButtonColors(
+                contentColor = liquidGlassTextButtonContentColor(MaterialTheme.colorScheme.primary)
+            ),
+            onClick = onAddSource,
+            contentPadding = PaddingValues(horizontal = 8.dp)
+        ) {
+            Text(
+                stringResource(R.string.common_add) + " Source",
+                fontSize = 12.sp,
+                color = liquidGlassTextButtonContentColor(MaterialTheme.colorScheme.primary)
+            )
+        }
+
+        Spacer(modifier = Modifier.width(8.dp))
+
+        TextButton(
+            modifier = Modifier.liquidGlassTextButtonPanel(),
+            colors = liquidGlassTextButtonColors(
+                contentColor = liquidGlassTextButtonContentColor(MaterialTheme.colorScheme.primary)
+            ),
+            onClick = onAddBinary,
+            contentPadding = PaddingValues(horizontal = 8.dp)
+        ) {
+            Text(
+                stringResource(R.string.common_add) + " Binary",
+                fontSize = 12.sp,
+                color = liquidGlassTextButtonContentColor(MaterialTheme.colorScheme.primary)
+            )
+        }
+    }
+}

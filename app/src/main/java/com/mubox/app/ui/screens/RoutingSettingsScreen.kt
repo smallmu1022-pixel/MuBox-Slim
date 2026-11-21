@@ -1,0 +1,310 @@
+package com.mubox.app.ui.screens
+
+import com.mubox.app.R
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.WindowInsets
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.navigationBarsPadding
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.rounded.ChevronRight
+import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.Icon
+import androidx.compose.material3.Scaffold
+import androidx.compose.material3.Text
+import androidx.compose.ui.res.stringResource
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.runtime.Composable
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
+import androidx.compose.foundation.layout.Row
+import androidx.compose.ui.Modifier
+import androidx.compose.foundation.layout.widthIn
+import androidx.compose.foundation.layout.width
+import androidx.compose.ui.text.style.TextOverflow
+import androidx.compose.ui.Alignment
+import androidx.compose.ui.unit.dp
+import androidx.lifecycle.viewmodel.compose.viewModel
+import androidx.navigation.NavController
+import com.mubox.app.model.DefaultRule
+import com.mubox.app.model.AppSettings
+import com.mubox.app.model.RoutingMode
+import com.mubox.app.model.GhProxyMirror
+import com.mubox.app.model.LatencyTestMethod
+import com.mubox.app.ui.components.InputDialog
+import com.mubox.app.ui.components.FloatingPageLayout
+import com.mubox.app.ui.components.SettingItem
+import com.mubox.app.ui.components.SettingSwitchItem
+import com.mubox.app.ui.components.SingleSelectDialog
+import com.mubox.app.ui.components.StandardCard
+import com.mubox.app.ui.components.rememberLocalNetworkPermissionRequest
+import com.mubox.app.ui.navigation.Screen
+import com.mubox.app.ui.theme.Neutral500
+import com.mubox.app.viewmodel.SettingsViewModel
+import com.mubox.app.ui.theme.liquidGlassMutedContentColor
+import com.mubox.app.ui.theme.liquidGlassTopAppBarContainerColor
+
+private typealias RequestLocalNetworkPermission = ((() -> Unit) -> Unit)
+
+private fun handleRoutingModeSelect(
+    mode: RoutingMode,
+    settingsViewModel: SettingsViewModel,
+    requestLocalNetworkPermission: RequestLocalNetworkPermission
+) {
+    if (mode == RoutingMode.GLOBAL_DIRECT) {
+        requestLocalNetworkPermission {
+            settingsViewModel.setRoutingMode(mode)
+        }
+    } else {
+        settingsViewModel.setRoutingMode(mode)
+    }
+}
+
+private fun handleDefaultRuleSelect(
+    defaultRule: DefaultRule,
+    settingsViewModel: SettingsViewModel,
+    requestLocalNetworkPermission: RequestLocalNetworkPermission
+) {
+    if (defaultRule == DefaultRule.DIRECT) {
+        requestLocalNetworkPermission {
+            settingsViewModel.setDefaultRule(defaultRule)
+        }
+    } else {
+        settingsViewModel.setDefaultRule(defaultRule)
+    }
+}
+
+private fun handleBypassLanChange(
+    enabled: Boolean,
+    settingsViewModel: SettingsViewModel,
+    requestLocalNetworkPermission: RequestLocalNetworkPermission
+) {
+    if (!enabled) {
+        settingsViewModel.setBypassLan(false)
+    } else {
+        requestLocalNetworkPermission {
+            settingsViewModel.setBypassLan(true)
+        }
+    }
+}
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+fun RoutingSettingsScreen(
+    navController: NavController,
+    settingsViewModel: SettingsViewModel = viewModel()
+) {
+    val scrollState = rememberScrollState()
+    val settings by settingsViewModel.settings.collectAsStateWithLifecycle()
+    val requestLocalNetworkPermission = rememberLocalNetworkPermissionRequest()
+
+    // Dialog States
+    var showModeDialog by remember { mutableStateOf(false) }
+    var showDefaultRuleDialog by remember { mutableStateOf(false) }
+    var showMirrorDialog by remember { mutableStateOf(false) }
+    var showLatencyMethodDialog by remember { mutableStateOf(false) }
+    var showLatencyUrlDialog by remember { mutableStateOf(false) }
+    var showSubscriptionTimeoutDialog by remember { mutableStateOf(false) }
+
+    if (showLatencyMethodDialog) {
+        val options = LatencyTestMethod.entries.map { stringResource(it.displayNameRes) }
+        SingleSelectDialog(
+            title = stringResource(R.string.routing_settings_latency_test_method),
+            options = options,
+            selectedIndex = LatencyTestMethod.entries.indexOf(settings.latencyTestMethod).coerceAtLeast(0),
+            onSelect = { index ->
+                settingsViewModel.setLatencyTestMethod(LatencyTestMethod.entries[index])
+                showLatencyMethodDialog = false
+            },
+            onDismiss = { showLatencyMethodDialog = false }
+        )
+    }
+
+    if (showLatencyUrlDialog) {
+        InputDialog(
+            title = stringResource(R.string.routing_settings_latency_test_url),
+            initialValue = settings.latencyTestUrl,
+            placeholder = "e.g. ${AppSettings.DEFAULT_LATENCY_TEST_URL}",
+            isConfirmEnabled = { AppSettings.validateLatencyTestUrl(it) != null },
+            onConfirm = { url ->
+                settingsViewModel.setLatencyTestUrl(url.trim())
+                showLatencyUrlDialog = false
+            },
+            onDismiss = { showLatencyUrlDialog = false }
+        )
+    }
+
+    if (showSubscriptionTimeoutDialog) {
+        InputDialog(
+            title = stringResource(R.string.routing_settings_subscription_timeout),
+            initialValue = settings.subscriptionUpdateTimeout.toString(),
+            placeholder = "e.g. 30",
+            onConfirm = { input ->
+                val seconds = input.trim().toIntOrNull()
+                if (seconds != null && seconds >= 10) {
+                    settingsViewModel.setSubscriptionUpdateTimeout(seconds)
+                }
+                showSubscriptionTimeoutDialog = false
+            },
+            onDismiss = { showSubscriptionTimeoutDialog = false }
+        )
+    }
+
+    if (showModeDialog) {
+        val options = RoutingMode.entries.map { stringResource(it.displayNameRes) }
+        SingleSelectDialog(
+            title = stringResource(R.string.routing_settings_mode),
+            options = options,
+            selectedIndex = RoutingMode.entries.indexOf(settings.routingMode).coerceAtLeast(0),
+            onSelect = { index ->
+                val mode = RoutingMode.entries[index]
+                handleRoutingModeSelect(mode, settingsViewModel, requestLocalNetworkPermission)
+                showModeDialog = false
+            },
+            onDismiss = { showModeDialog = false }
+        )
+    }
+
+    if (showDefaultRuleDialog) {
+        val options = DefaultRule.entries.map { stringResource(it.displayNameRes) }
+        SingleSelectDialog(
+            title = stringResource(R.string.routing_settings_default_rule),
+            options = options,
+            selectedIndex = DefaultRule.entries.indexOf(settings.defaultRule).coerceAtLeast(0),
+            onSelect = { index ->
+                val defaultRule = DefaultRule.entries[index]
+                handleDefaultRuleSelect(defaultRule, settingsViewModel, requestLocalNetworkPermission)
+                showDefaultRuleDialog = false
+            },
+            onDismiss = { showDefaultRuleDialog = false }
+        )
+    }
+
+    if (showMirrorDialog) {
+        val options = GhProxyMirror.entries.map { stringResource(it.displayNameRes) }
+        SingleSelectDialog(
+            title = stringResource(R.string.routing_settings_github_mirror),
+            options = options,
+            selectedIndex = GhProxyMirror.entries.indexOf(settings.ghProxyMirror).coerceAtLeast(0),
+            onSelect = { index ->
+                settingsViewModel.setGhProxyMirror(GhProxyMirror.entries[index])
+                showMirrorDialog = false
+            },
+            onDismiss = { showMirrorDialog = false }
+        )
+    }
+
+    FloatingPageLayout(
+        title = stringResource(R.string.routing_settings_title),
+        onBack = { navController.popBackStack() }
+    ) { contentTopPadding ->
+        Scaffold(
+            contentWindowInsets = WindowInsets(0, 0, 0, 0),
+            containerColor = liquidGlassTopAppBarContainerColor(MaterialTheme.colorScheme.background)
+        ) { padding ->
+            Column(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .padding(padding)
+                    .verticalScroll(scrollState)
+                    .padding(
+                        start = 16.dp,
+                        top = contentTopPadding + 16.dp,
+                        end = 16.dp,
+                        bottom = 16.dp
+                    )
+                    .navigationBarsPadding()
+            ) {
+                StandardCard {
+                    SettingItem(title = stringResource(R.string.routing_settings_mode), value = stringResource(settings.routingMode.displayNameRes), onClick = { showModeDialog = true })
+                    SettingItem(title = stringResource(R.string.routing_settings_default_rule), value = stringResource(settings.defaultRule.displayNameRes), onClick = { showDefaultRuleDialog = true })
+                    SettingItem(title = stringResource(R.string.routing_settings_latency_test_method), value = stringResource(settings.latencyTestMethod.displayNameRes), onClick = { showLatencyMethodDialog = true })
+                    SettingItem(
+                        title = stringResource(R.string.routing_settings_latency_test_url),
+                        onClick = { showLatencyUrlDialog = true },
+                        trailing = {
+                            Row(verticalAlignment = Alignment.CenterVertically) {
+                                Text(
+                                    text = settings.latencyTestUrl,
+                                    style = MaterialTheme.typography.bodySmall,
+                                    color = MaterialTheme.colorScheme.onSurfaceVariant,
+                                    maxLines = 1,
+                                    overflow = TextOverflow.Ellipsis,
+                                    modifier = Modifier.widthIn(max = 140.dp)
+                                )
+                                Spacer(modifier = Modifier.width(6.dp))
+                                Icon(
+                                    imageVector = Icons.Rounded.ChevronRight,
+                                    contentDescription = null,
+                                    tint = liquidGlassMutedContentColor(Neutral500)
+                                )
+                            }
+                        }
+                    )
+                    SettingItem(title = stringResource(R.string.routing_settings_github_mirror), value = stringResource(settings.ghProxyMirror.displayNameRes), onClick = { showMirrorDialog = true })
+                    SettingItem(
+                        title = stringResource(R.string.routing_settings_subscription_timeout),
+                        value = stringResource(R.string.routing_settings_latency_test_timeout_s, settings.subscriptionUpdateTimeout),
+                        onClick = { showSubscriptionTimeoutDialog = true }
+                    )
+                }
+
+                Spacer(modifier = Modifier.height(16.dp))
+
+                StandardCard {
+                    SettingSwitchItem(
+                        title = stringResource(R.string.routing_settings_block_quic),
+                        subtitle = stringResource(R.string.routing_settings_block_quic_subtitle),
+                        checked = settings.blockQuic,
+                        onCheckedChange = { settingsViewModel.setBlockQuic(it) }
+                    )
+                    SettingSwitchItem(
+                        title = stringResource(R.string.routing_settings_bypass_lan),
+                        subtitle = stringResource(R.string.routing_settings_bypass_lan_subtitle),
+                        checked = settings.bypassLan,
+                        onCheckedChange = { enabled ->
+                            handleBypassLanChange(enabled, settingsViewModel, requestLocalNetworkPermission)
+                        }
+                    )
+                    SettingSwitchItem(
+                        title = stringResource(R.string.routing_settings_icmp_echo_routing),
+                        subtitle = stringResource(R.string.routing_settings_icmp_echo_routing_subtitle),
+                        checked = settings.icmpEchoRoutingEnabled,
+                        onCheckedChange = { settingsViewModel.setIcmpEchoRoutingEnabled(it) }
+                    )
+                }
+
+                Spacer(modifier = Modifier.height(16.dp))
+
+                StandardCard {
+                    SettingItem(
+                        title = stringResource(R.string.routing_settings_app_routing),
+                        value = stringResource(R.string.routing_settings_app_routing_rules, settings.appGroups.size),
+                        onClick = { navController.navigate(Screen.AppRouting.route) }
+                    )
+                    val domainRuleCount = settings.customRules.count {
+                        it.enabled && it.type in listOf(
+                            com.mubox.app.model.RuleType.DOMAIN,
+                            com.mubox.app.model.RuleType.DOMAIN_SUFFIX,
+                            com.mubox.app.model.RuleType.DOMAIN_KEYWORD
+                        )
+                    }
+                    SettingItem(
+                        title = stringResource(R.string.routing_settings_domain_routing),
+                        value = stringResource(R.string.routing_settings_app_routing_rules, domainRuleCount),
+                        onClick = { navController.navigate(Screen.DomainRules.route) }
+                    )
+                    SettingItem(title = stringResource(R.string.routing_settings_manage_rulesets), onClick = { navController.navigate(Screen.RuleSets.route) })
+                }
+                Spacer(modifier = Modifier.height(16.dp))
+            }
+        }
+    }
+}

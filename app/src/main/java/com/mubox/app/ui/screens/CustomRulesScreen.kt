@@ -1,0 +1,377 @@
+package com.mubox.app.ui.screens
+
+import com.mubox.app.R
+import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.items
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.rounded.Add
+import androidx.compose.material.icons.rounded.Edit
+import androidx.compose.material3.*
+import androidx.compose.ui.res.stringResource
+import androidx.compose.runtime.*
+import androidx.compose.runtime.saveable.rememberSaveable
+import androidx.compose.ui.Alignment
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.unit.dp
+import androidx.lifecycle.viewmodel.compose.viewModel
+import androidx.navigation.NavController
+import com.mubox.app.model.CustomRule
+import com.mubox.app.model.OutboundTag
+import com.mubox.app.model.RuleType
+import com.mubox.app.ui.components.ClickableDropdownField
+import com.mubox.app.ui.components.ConfirmDialog
+import com.mubox.app.ui.components.FloatingPageLayout
+import com.mubox.app.ui.components.SingleSelectDialog
+import com.mubox.app.ui.components.StandardCard
+import com.mubox.app.ui.components.StyledTextField
+import androidx.compose.foundation.shape.RoundedCornerShape
+import com.mubox.app.ui.theme.liquidGlassDialogContainerColor
+import com.mubox.app.ui.theme.liquidGlassDialogPanel
+import com.mubox.app.ui.theme.LiquidGlassDialogEffect
+import com.mubox.app.ui.theme.liquidGlassEmptyStatePanel
+import com.mubox.app.ui.theme.liquidGlassTextButtonContentColor
+import com.mubox.app.ui.theme.liquidGlassTextButtonColors
+import com.mubox.app.ui.theme.liquidGlassTextButtonPanel
+import com.mubox.app.ui.theme.liquidGlassPressFeedback
+import com.mubox.app.viewmodel.SettingsViewModel
+import com.mubox.app.ui.theme.liquidGlassTopAppBarContainerColor
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
+
+@Composable
+private fun Modifier.customRuleItemPressFeedback(onClick: () -> Unit): Modifier =
+    liquidGlassPressFeedback(
+        label = "liquid_glass_custom_rule_item_scale",
+        onClick = onClick
+    )
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+fun CustomRulesScreen(
+    navController: NavController,
+    settingsViewModel: SettingsViewModel = viewModel()
+) {
+    val settings by settingsViewModel.settings.collectAsStateWithLifecycle()
+    var showAddDialog by remember { mutableStateOf(false) }
+    var editingRule by remember { mutableStateOf<CustomRule?>(null) }
+
+    if (showAddDialog) {
+        CustomRuleEditorDialog(
+            onDismiss = { showAddDialog = false },
+            onConfirm = { rule ->
+                settingsViewModel.addCustomRule(rule)
+                showAddDialog = false
+            }
+        )
+    }
+
+    if (editingRule != null) {
+        val currentRule = checkNotNull(editingRule)
+        CustomRuleEditorDialog(
+            initialRule = currentRule,
+            onDismiss = { editingRule = null },
+            onConfirm = { rule ->
+                settingsViewModel.updateCustomRule(rule)
+                editingRule = null
+            },
+            onDelete = {
+                settingsViewModel.deleteCustomRule(currentRule.id)
+                editingRule = null
+            }
+        )
+    }
+
+    FloatingPageLayout(
+        title = stringResource(R.string.custom_rules_title),
+        onBack = { navController.popBackStack() },
+        actions = {
+            IconButton(onClick = { showAddDialog = true }) {
+                Icon(
+                    Icons.Rounded.Add,
+                    contentDescription = stringResource(R.string.common_add),
+                    tint = MaterialTheme.colorScheme.onBackground
+                )
+            }
+        }
+    ) { contentTopPadding ->
+        Scaffold(
+            contentWindowInsets = WindowInsets(0, 0, 0, 0),
+            containerColor = liquidGlassTopAppBarContainerColor(MaterialTheme.colorScheme.background)
+        ) { padding ->
+            LazyColumn(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .padding(padding),
+                contentPadding = PaddingValues(
+                    start = 16.dp,
+                    top = contentTopPadding + 16.dp,
+                    end = 16.dp,
+                    bottom = 16.dp + WindowInsets.navigationBars.asPaddingValues().calculateBottomPadding()
+                ),
+                verticalArrangement = Arrangement.spacedBy(16.dp)
+            ) {
+                if (settings.customRules.isEmpty()) {
+                    item {
+                        Box(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .liquidGlassEmptyStatePanel()
+                                .padding(32.dp),
+                            contentAlignment = Alignment.Center
+                        ) {
+                            Text(
+                                text = stringResource(R.string.custom_rules_empty),
+                                color = MaterialTheme.colorScheme.onSurfaceVariant,
+                                style = MaterialTheme.typography.bodyLarge
+                            )
+                        }
+                    }
+                } else {
+                    items(settings.customRules) { rule ->
+                        CustomRuleItem(
+                            rule = rule,
+                            onClick = { editingRule = rule }
+                        )
+                    }
+                }
+            }
+        }
+    }
+}
+
+@Composable
+fun CustomRuleItem(
+    rule: CustomRule,
+    onClick: () -> Unit
+) {
+    StandardCard {
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .customRuleItemPressFeedback(onClick = onClick)
+                .padding(16.dp),
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            Column(modifier = Modifier.weight(1f)) {
+                Text(
+                    text = rule.name,
+                    style = MaterialTheme.typography.titleMedium,
+                    color = MaterialTheme.colorScheme.onSurface,
+                    fontWeight = FontWeight.Bold
+                )
+                Spacer(modifier = Modifier.height(4.dp))
+                Text(
+                    text = "${stringResource(rule.type.displayNameRes)}: ${rule.value}",
+                    style = MaterialTheme.typography.bodyMedium,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant,
+                    maxLines = 1
+                )
+                Text(
+                    text = "-> ${stringResource(rule.outbound.displayNameRes)}",
+                    style = MaterialTheme.typography.bodySmall,
+                    color = MaterialTheme.colorScheme.primary,
+                    fontWeight = FontWeight.SemiBold
+                )
+            }
+            Icon(
+                imageVector = Icons.Rounded.Edit,
+                contentDescription = stringResource(R.string.common_edit),
+                tint = MaterialTheme.colorScheme.onSurfaceVariant
+            )
+        }
+    }
+}
+
+@Composable
+@Suppress("CyclomaticComplexMethod", "CognitiveComplexMethod", "LongMethod")
+fun CustomRuleEditorDialog(
+    initialRule: CustomRule? = null,
+    onDismiss: () -> Unit,
+    onConfirm: (CustomRule) -> Unit,
+    onDelete: (() -> Unit)? = null
+) {
+    var name by rememberSaveable(initialRule?.name) {
+        mutableStateOf(initialRule?.name ?: "")
+    }
+    var type by rememberSaveable(initialRule?.type) {
+        mutableStateOf(initialRule?.type ?: RuleType.DOMAIN_SUFFIX)
+    }
+    var value by rememberSaveable(initialRule?.value) {
+        mutableStateOf(initialRule?.value ?: "")
+    }
+    var outbound by rememberSaveable(initialRule?.outbound) {
+        mutableStateOf(initialRule?.outbound ?: OutboundTag.PROXY)
+    }
+
+    var showTypeDialog by remember { mutableStateOf(false) }
+    var showOutboundDialog by remember { mutableStateOf(false) }
+    var showDeleteConfirm by remember { mutableStateOf(false) }
+
+    if (showTypeDialog) {
+        val options = RuleType.entries.map { stringResource(it.displayNameRes) }
+        SingleSelectDialog(
+            title = stringResource(R.string.custom_rules_type),
+            options = options,
+            selectedIndex = RuleType.entries.indexOf(type),
+            onSelect = { index ->
+                type = RuleType.entries[index]
+                showTypeDialog = false
+            },
+            onDismiss = { showTypeDialog = false }
+        )
+    }
+
+    if (showOutboundDialog) {
+        val options = OutboundTag.entries.map { stringResource(it.displayNameRes) }
+        SingleSelectDialog(
+            title = stringResource(R.string.common_outbound),
+            options = options,
+            selectedIndex = OutboundTag.entries.indexOf(outbound),
+            onSelect = { index ->
+                outbound = OutboundTag.entries[index]
+                showOutboundDialog = false
+            },
+            onDismiss = { showOutboundDialog = false }
+        )
+    }
+
+    if (showDeleteConfirm) {
+        ConfirmDialog(
+            title = stringResource(R.string.custom_rules_delete_title),
+            message = stringResource(R.string.custom_rules_delete_confirm, name),
+            confirmText = stringResource(R.string.common_delete),
+            onConfirm = {
+                onDelete?.invoke()
+                showDeleteConfirm = false
+            },
+            onDismiss = { showDeleteConfirm = false }
+        )
+    }
+
+    AlertDialog(
+        modifier = Modifier.liquidGlassDialogPanel(RoundedCornerShape(24.dp)),
+        onDismissRequest = onDismiss,
+        shape = RoundedCornerShape(24.dp),
+        containerColor = liquidGlassDialogContainerColor(),
+        title = {
+            Text(
+                text = if (initialRule == null) stringResource(R.string.custom_rules_add) else stringResource(R.string.custom_rules_edit),
+                fontWeight = FontWeight.Bold,
+                color = MaterialTheme.colorScheme.onSurface
+            )
+        },
+        text = {
+            LiquidGlassDialogEffect()
+            Column(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .verticalScroll(rememberScrollState()),
+                verticalArrangement = Arrangement.spacedBy(20.dp)
+            ) {
+                StyledTextField(
+                    label = stringResource(R.string.custom_rules_name),
+                    value = name,
+                    onValueChange = { name = it },
+                    placeholder = stringResource(R.string.custom_rules_name_hint)
+                )
+
+                ClickableDropdownField(
+                    label = stringResource(R.string.custom_rules_type),
+                    value = stringResource(type.displayNameRes),
+                    onClick = { showTypeDialog = true }
+                )
+
+                StyledTextField(
+                    label = stringResource(R.string.custom_rules_content),
+                    value = value,
+                    onValueChange = { value = it },
+                    placeholder = when (type) {
+                        RuleType.DOMAIN -> "example.com"
+                        RuleType.DOMAIN_SUFFIX -> "example.com"
+                        RuleType.IP_CIDR -> "192.168.0.0/16"
+                        else -> stringResource(R.string.custom_rules_content_hint)
+                    }
+                )
+
+                ClickableDropdownField(
+                    label = stringResource(R.string.common_outbound),
+                    value = stringResource(outbound.displayNameRes),
+                    onClick = { showOutboundDialog = true }
+                )
+            }
+        },
+        confirmButton = {
+            TextButton(
+                modifier = Modifier.liquidGlassTextButtonPanel(
+                    enabled = name.isNotBlank() && value.isNotBlank()
+                ),
+                colors = liquidGlassTextButtonColors(
+                    contentColor = liquidGlassTextButtonContentColor(MaterialTheme.colorScheme.primary)
+                ),
+                onClick = {
+                    val newRule = initialRule?.copy(
+                        name = name.trim(),
+                        type = type,
+                        value = value.trim(),
+                        outbound = outbound
+                    ) ?: CustomRule(
+                        name = name.trim(),
+                        type = type,
+                        value = value.trim(),
+                        outbound = outbound
+                    )
+                    onConfirm(newRule)
+                },
+                enabled = name.isNotBlank() && value.isNotBlank()
+            ) {
+                Text(stringResource(R.string.common_save))
+            }
+        },
+        dismissButton = {
+            Row {
+                if (initialRule != null && onDelete != null) {
+                    TextButton(
+                        modifier = Modifier.liquidGlassTextButtonPanel(),
+                        colors = liquidGlassTextButtonColors(
+                            contentColor = liquidGlassTextButtonContentColor(
+                                defaultColor = MaterialTheme.colorScheme.error,
+                                liquidColor = MaterialTheme.colorScheme.error
+                            )
+                        ),
+                        onClick = { showDeleteConfirm = true }
+                    ) {
+                        Text(
+                            stringResource(R.string.common_delete),
+                            color = liquidGlassTextButtonContentColor(
+                                defaultColor = MaterialTheme.colorScheme.error,
+                                liquidColor = MaterialTheme.colorScheme.error
+                            )
+                        )
+                    }
+                }
+                TextButton(
+                    modifier = Modifier.liquidGlassTextButtonPanel(),
+                    colors = liquidGlassTextButtonColors(
+                        contentColor = liquidGlassTextButtonContentColor(
+                            defaultColor = MaterialTheme.colorScheme.onSurfaceVariant,
+                            liquidColor = MaterialTheme.colorScheme.onSurfaceVariant
+                        )
+                    ),
+                    onClick = onDismiss
+                ) {
+                    Text(
+                        stringResource(R.string.common_cancel),
+                        color = liquidGlassTextButtonContentColor(
+                            defaultColor = MaterialTheme.colorScheme.onSurfaceVariant,
+                            liquidColor = MaterialTheme.colorScheme.onSurfaceVariant
+                        )
+                    )
+                }
+            }
+        }
+    )
+}
