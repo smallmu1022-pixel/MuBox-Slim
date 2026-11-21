@@ -1,0 +1,497 @@
+package com.mubox.app.viewmodel
+
+import com.mubox.app.ipc.VpnStateStore
+import com.mubox.app.ipc.DataPlaneReadinessSnapshot
+import com.mubox.app.ipc.DataPlaneStatus
+import com.mubox.app.ipc.VpnOwnerStatus
+import com.mubox.app.model.ConnectionState
+import com.mubox.app.service.ServiceState
+import org.junit.Assert.assertEquals
+import org.junit.Assert.assertFalse
+import org.junit.Assert.assertTrue
+import org.junit.Test
+import java.io.File
+
+class DashboardViewModelStateResolutionTest {
+    @Test
+    fun repeatedStartingHeartbeatsDoNotRenewGraceOrHideStopping() {
+        val source = File("src/main/java/com/mubox/app/viewmodel/DashboardViewModel.kt")
+            .readText(Charsets.UTF_8)
+        val stateSetter = source.substringAfter("internal fun setConnectionState(newState: ConnectionState)")
+            .substringBefore("internal fun performDisconnect()")
+        val connectingBranch = stateSetter.substringAfter("if (newState == ConnectionState.Connecting)")
+            .substringBefore("if (_connectionState.value != newState)")
+        assertTrue(connectingBranch.contains("if (_connectionState.value != ConnectionState.Connecting)"))
+        assertFalse(stateSetter.contains("if (newState == ConnectionState.Disconnecting"))
+        val readyBranch = source.substringAfter("INFO [Startup] ui_ready service_wait_ms=")
+            .substringBefore("val err = SingBoxRemote.lastError.value")
+        assertTrue(readyBranch.contains("setConnectionState(ConnectionState.Connected)"))
+    }
+
+    @Test
+    fun everyServiceSyncEntryRespectsUserStopIncludingResumeRefresh() {
+        assertFalse(DashboardViewModel.shouldApplyConnectionState(ConnectionState.Connecting, stopRequested = true))
+        assertFalse(DashboardViewModel.shouldApplyConnectionState(ConnectionState.Connected, stopRequested = true))
+        assertTrue(DashboardViewModel.shouldApplyConnectionState(ConnectionState.Disconnecting, stopRequested = true))
+        assertTrue(DashboardViewModel.shouldApplyConnectionState(ConnectionState.Idle, stopRequested = true))
+        assertTrue(DashboardViewModel.shouldApplyConnectionState(ConnectionState.Error, stopRequested = true))
+        assertTrue(DashboardViewModel.shouldApplyConnectionState(ConnectionState.Connecting, stopRequested = false))
+        assertTrue(DashboardViewModel.shouldApplyConnectionState(ConnectionState.Connected, stopRequested = false))
+
+        val source = File("src/main/java/com/mubox/app/viewmodel/DashboardViewModel.kt").readText(Charsets.UTF_8)
+        val setter = source.substringAfter("internal fun setConnectionState(newState: ConnectionState)")
+            .substringBefore("internal fun performDisconnect()")
+        assertTrue(setter.indexOf("shouldApplyConnectionState") in 0 until setter.indexOf("when (newState)"))
+        val initialSync = source.substringAfter("val trustedInitialState =")
+            .substringBefore("// 第三阶段")
+        assertTrue(initialSync.contains("setConnectionState(trustedInitialState)"))
+    }
+
+    @Test
+    fun rootLifecycleTransitionsRemainInDiagnosticsWithDebugLogsDisabled() {
+        val source = File("src/main/java/com/mubox/app/service/root/RootTransparentForegroundService.kt")
+            .readText(Charsets.UTF_8)
+        val lifecycleLog = source.substringAfter("internal fun logLifecycle(")
+            .substringBefore("internal fun loadRootGenerationResult(")
+        assertTrue(lifecycleLog.contains("addAlwaysLog(\"INFO [Lifecycle] service=root"))
+        assertTrue(lifecycleLog.contains("rootPhase="))
+        assertTrue(lifecycleLog.contains("rootError="))
+    }
+
+    @Test
+    fun stopCancelsPendingCoreStartBeforeItCanDispatchService() {
+        val source = File("src/main/java/com/mubox/app/viewmodel/DashboardConnectionRuntime.kt")
+            .readText(Charsets.UTF_8)
+        val stopBody = source.substringAfter("internal suspend fun DashboardViewModel.stopVpnRuntime()")
+            .substringBefore("internal fun DashboardViewModel.startPingTestRuntime")
+        assertTrue(stopBody.contains("startCoreJob?.cancel()"))
+        val dashboardSource = File("src/main/java/com/mubox/app/viewmodel/DashboardViewModel.kt")
+            .readText(Charsets.UTF_8)
+        assertTrue(dashboardSource.contains("catch (_: CancellationException)"))
+    }
+
+    @Test
+    fun cancellingBeforeServiceDispatchDoesNotCreateAServiceToStop() {
+        val source = File("src/main/java/com/mubox/app/viewmodel/DashboardConnectionRuntime.kt")
+            .readText(Charsets.UTF_8)
+
+        assertTrue(source.contains("startWasNotDispatched"))
+        assertTrue(source.contains("!startServiceDispatched"))
+        assertTrue(source.contains("if (startWasNotDispatched)"))
+        assertTrue(source.contains("VpnTileService.persistVpnPending(\"\")"))
+        assertTrue(source.indexOf("if (startWasNotDispatched)") < source.indexOf("VpnServiceManager.stopVpn"))
+    }
+
+    @Test
+    fun modeSwitchDoesNotStartUntilOppositeServiceCleanupCompletes() {
+        val source = File("src/main/java/com/mubox/app/viewmodel/DashboardViewModel.kt")
+            .readText(Charsets.UTF_8)
+        assertTrue(source.contains("VpnServiceManager.awaitModeStopped(activeMode, 8_000L)"))
+        assertTrue(source.contains("Timeout waiting for opposite service cleanup"))
+        assertTrue(source.contains("return@launch"))
+        assertFalse(source.contains("SingBoxRemote.state\n                                .drop(1)"))
+    }
+
+    @Test
+    fun stopReturnsToIdleWithoutWaitingForServiceConfirmation() {
+        val runtime = File("src/main/java/com/mubox/app/viewmodel/DashboardConnectionRuntime.kt")
+            .readText(Charsets.UTF_8)
+
+        assertTrue(runtime.contains("_connectionState.value = ConnectionState.Idle"))
+        assertTrue(!runtime.contains("withTimeout"))
+        assertTrue(!runtime.contains("forceStop(context)"))
+    }
+    @Test
+    fun persistedActiveDoesNotCreateConnectedUiStateWithoutRunningService() {
+        assertEquals(
+            ConnectionState.Idle,
+            resolveTrustedDashboardConnectionState(
+                serviceState = ServiceState.STOPPED,
+                ipcBound = false
+            )
+        )
+        assertEquals(
+            ConnectionState.Idle,
+            resolveTrustedDashboardConnectionState(
+                serviceState = ServiceState.STOPPED,
+                ipcBound = true
+            )
+        )
+    }
+
+    @Test
+    fun onlyTrustedServiceStateCanShowRunningUi() {
+        assertEquals(
+            ConnectionState.Connecting,
+            resolveTrustedDashboardConnectionState(
+                serviceState = ServiceState.STARTING,
+                ipcBound = false
+            )
+        )
+        assertEquals(
+            ConnectionState.Connecting,
+            resolveTrustedDashboardConnectionState(
+                serviceState = ServiceState.STARTING,
+                ipcBound = true
+            )
+        )
+        assertEquals(
+            ConnectionState.Connected,
+            resolveTrustedDashboardConnectionState(
+                serviceState = ServiceState.RUNNING,
+                ipcBound = true,
+                readiness = DataPlaneReadinessSnapshot(
+                    status = DataPlaneStatus.READY,
+                    tunEstablished = true,
+                    systemVpnTransport = true,
+                    systemVpnOwnerStatus = VpnOwnerStatus.MATCH,
+                    coreReady = true,
+                    selectorReady = true,
+                    updatedAtElapsedMs = 1_000L
+                ),
+                mode = VpnStateStore.CoreMode.VPN,
+                apiLevel = 30,
+                nowElapsedMs = 1_000L
+            )
+        )
+    }
+
+    @Test
+    fun connectedUiPrefersRuntimeLabelOverUserSelection() {
+        assertEquals(
+            "麒麟",
+            resolveDashboardDisplayedNodeName(
+                connectionState = ConnectionState.Connected,
+                runtimeLabel = "麒麟",
+                selectedNodeDisplayName = "...24"
+            )
+        )
+        assertEquals(
+            "...24",
+            resolveDashboardDisplayedNodeName(
+                connectionState = ConnectionState.Idle,
+                runtimeLabel = "麒麟",
+                selectedNodeDisplayName = "...24"
+            )
+        )
+        assertEquals(
+            "...24",
+            resolveDashboardDisplayedNodeName(
+                connectionState = ConnectionState.Connecting,
+                runtimeLabel = "旧节点",
+                selectedNodeDisplayName = "...24"
+            )
+        )
+        assertEquals(
+            "...24",
+            resolveDashboardDisplayedNodeName(
+                connectionState = ConnectionState.Connecting,
+                runtimeLabel = "",
+                selectedNodeDisplayName = "...24"
+            )
+        )
+    }
+
+    @Test
+    fun newStartReportsAnyErrorAfterTheOldErrorWasCleared() {
+        assertFalse(
+            DashboardViewModel.shouldPresentServiceError(
+                connectionState = ConnectionState.Connecting,
+                error = "Failed to restart VPN: null"
+            )
+        )
+        assertTrue(
+            DashboardViewModel.shouldReportStartError(
+                currentError = "Failed to restart VPN: null"
+            )
+        )
+        assertTrue(
+            DashboardViewModel.shouldPresentServiceError(
+                connectionState = ConnectionState.Error,
+                error = "Libbox start failed"
+            )
+        )
+        assertTrue(
+            DashboardViewModel.shouldReportStartError(
+                currentError = "Libbox start failed"
+            )
+        )
+    }
+
+    @Test
+    fun boundStoppedServiceEndsConnectingAfterStartWasObservedOrGraceElapsed() {
+        assertTrue(
+            DashboardViewModel.shouldFinishStartAsStopped(
+                serviceState = ServiceState.STOPPED,
+                ipcBound = true,
+                observedActiveState = true,
+                elapsedMs = 0L
+            )
+        )
+        assertTrue(
+            DashboardViewModel.shouldFinishStartAsStopped(
+                serviceState = ServiceState.STOPPED,
+                ipcBound = true,
+                observedActiveState = false,
+                elapsedMs = DashboardViewModel.START_STOPPED_CONFIRM_MS
+            )
+        )
+        assertFalse(
+            DashboardViewModel.shouldFinishStartAsStopped(
+                serviceState = ServiceState.STOPPED,
+                ipcBound = false,
+                observedActiveState = true,
+                elapsedMs = DashboardViewModel.START_STOPPED_CONFIRM_MS
+            )
+        )
+    }
+
+    @Test
+    fun startMonitorHasFiniteOverallTimeout() {
+        assertFalse(
+            DashboardViewModel.hasStartMonitorTimedOut(
+                DashboardViewModel.START_MONITOR_TIMEOUT_MS - 1L
+            )
+        )
+        assertTrue(
+            DashboardViewModel.hasStartMonitorTimedOut(
+                DashboardViewModel.START_MONITOR_TIMEOUT_MS
+            )
+        )
+    }
+
+    @Test
+    fun runtimeChangesRequireFullRestart() {
+        assertTrue(
+            DashboardViewModel.requiresFullRestart(
+                perAppSettingsChanged = true,
+                tunSettingsChanged = false,
+                routingModeChanged = false
+            )
+        )
+        assertTrue(
+            DashboardViewModel.requiresFullRestart(
+                perAppSettingsChanged = false,
+                tunSettingsChanged = true,
+                routingModeChanged = false
+            )
+        )
+        assertTrue(
+            DashboardViewModel.requiresFullRestart(
+                perAppSettingsChanged = false,
+                tunSettingsChanged = false,
+                routingModeChanged = true
+            )
+        )
+        assertFalse(
+            DashboardViewModel.requiresFullRestart(
+                perAppSettingsChanged = false,
+                tunSettingsChanged = false,
+                routingModeChanged = false
+            )
+        )
+    }
+
+    @Test
+    fun startMonitorClearsOldErrorsAndStopsTimedOutService() {
+        val source = File("src/main/java/com/mubox/app/viewmodel/DashboardViewModel.kt")
+            .readText(Charsets.UTF_8)
+
+        assertTrue(source.contains("SingBoxRemote.clearLastErrorForNewStart()"))
+        assertTrue(source.contains("VpnTileService.persistVpnPending(\"\")"))
+        assertTrue(
+            source.contains("VpnServiceManager.stopVpn(context, VpnStopInitiator.START_TIMEOUT)")
+        )
+        assertEquals(
+            ConnectionState.Connecting,
+            resolveTrustedDashboardConnectionState(
+                serviceState = ServiceState.RUNNING,
+                ipcBound = true
+            )
+        )
+    }
+
+    @Test
+    fun errorStateRetriesCleanupWhenServiceIsStillStopping() {
+        val source = File("src/main/java/com/mubox/app/viewmodel/DashboardViewModel.kt")
+            .readText(Charsets.UTF_8)
+        val toggle = source.substringAfter("fun toggleConnection()")
+            .substringBefore("@Suppress(\"LongMethod\"")
+        assertTrue(toggle.contains("ConnectionState.Error"))
+        assertTrue(toggle.contains("SingBoxRemote.state.value == ServiceState.STOPPING"))
+        assertTrue(toggle.contains("stopVpn()"))
+    }
+
+    @Test
+    fun oldFailureDoesNotOverrideLifecycleStates() {
+        val failed = DataPlaneReadinessSnapshot(status = DataPlaneStatus.FAILED_UNPROTECTED)
+        assertEquals(
+            ConnectionState.Connecting,
+            resolveTrustedDashboardConnectionState(
+                serviceState = ServiceState.STARTING,
+                ipcBound = true,
+                readiness = failed,
+                mode = VpnStateStore.CoreMode.VPN
+            )
+        )
+        assertEquals(
+            ConnectionState.Error,
+            resolveTrustedDashboardConnectionState(
+                serviceState = ServiceState.STOPPING,
+                ipcBound = true,
+                readiness = failed,
+                mode = VpnStateStore.CoreMode.VPN
+            )
+        )
+        assertEquals(
+            ConnectionState.Idle,
+            resolveTrustedDashboardConnectionState(
+                serviceState = ServiceState.STOPPED,
+                ipcBound = true,
+                readiness = failed,
+                mode = VpnStateStore.CoreMode.VPN
+            )
+        )
+    }
+
+    @Test
+    fun recoveringDataPlaneDoesNotBecomeIdleDuringIpcReconnect() {
+        assertEquals(
+            ConnectionState.Connecting,
+            resolveTrustedDashboardConnectionState(
+                serviceState = ServiceState.RUNNING,
+                ipcBound = false,
+                readiness = DataPlaneReadinessSnapshot(
+                    status = DataPlaneStatus.RECOVERING,
+                    coreReady = true,
+                    selectorReady = true,
+                    recoveryActive = true,
+                    updatedAtElapsedMs = 1_000L
+                ),
+                mode = VpnStateStore.CoreMode.VPN,
+                apiLevel = 36,
+                nowElapsedMs = 1_000L
+            )
+        )
+    }
+
+    @Test
+    fun normalVpnConnectionDoesNotShowSystemLockdownReminder() {
+        val source = File("src/main/java/com/mubox/app/ui/screens/DashboardScreen.kt")
+            .readText(Charsets.UTF_8)
+        val warningBody = source
+            .substringAfter("val protectionWarning = when")
+            .substringBefore("if (protectionWarning != null)")
+
+        assertFalse(warningBody.contains("lockdownStatus"))
+        assertFalse(warningBody.contains("vpn_lockdown_incomplete"))
+        assertTrue(warningBody.contains("vpn_status_failed_unprotected"))
+    }
+
+    @Test
+    fun onlyAnActuallyActiveOppositeCoreIsStoppedBeforeStartup() {
+        assertFalse(
+            DashboardViewModel.shouldStopOppositeService(
+                VpnStateStore.CoreMode.VPN,
+                VpnStateStore.CoreMode.NONE
+            )
+        )
+        assertFalse(
+            DashboardViewModel.shouldStopOppositeService(
+                VpnStateStore.CoreMode.VPN,
+                VpnStateStore.CoreMode.VPN
+            )
+        )
+        assertTrue(
+            DashboardViewModel.shouldStopOppositeService(
+                VpnStateStore.CoreMode.VPN,
+                VpnStateStore.CoreMode.PROXY
+            )
+        )
+    }
+
+    @Test
+    fun currentNodePingUsesTheManualSingleNodeLatencyPath() {
+        val source = File("src/main/java/com/mubox/app/viewmodel/DashboardConnectionRuntime.kt")
+            .readText(Charsets.UTF_8)
+        val body = source.substringAfter("internal fun DashboardViewModel.startPingTestRuntime()")
+            .substringBefore("internal fun DashboardViewModel.stopPingTestRuntime()")
+
+        assertTrue(body.contains("configRepository.testNodeLatency(targetNodeId)"))
+        assertFalse(body.contains("configRepository.testAllNodesLatency"))
+    }
+
+    @Test
+    fun mainActivityGatesAutoConnectOnRecoveryPolicy() {
+        val source = File("src/main/java/com/mubox/app/MainActivity.kt")
+            .readText(Charsets.UTF_8)
+
+        assertTrue(source.contains("SingBoxRemote.ensureBound(context)"))
+        assertTrue(source.contains("SingBoxRemote.queryAndSyncState(context)"))
+        assertTrue(source.contains("if (!SingBoxRemote.isBound()) return@LaunchedEffect"))
+        assertTrue(source.contains("SingBoxRemote.isRunning.value || SingBoxRemote.isStarting.value"))
+        assertTrue(source.contains("autoConnectAttempted = true"))
+        // mode / 持久化手动停不再参与 autoConnect；进入界面 once 尝试即可
+        assertFalse(
+            source.contains("hasRecoverableIntent = RecoveryPolicy.hasRecoverableIntent")
+        )
+        assertFalse(source.contains("VpnStateStore.isManuallyStopped()"))
+        assertFalse(source.contains("shouldBlockAutoConnectForPersistedRuntime"))
+    }
+
+    @Test
+    fun mainActivityStartsRootPrewarmBeforeCompose() {
+        val source = File("src/main/java/com/mubox/app/MainActivity.kt")
+            .readText(Charsets.UTF_8)
+        val onCreate = source.substringAfter("override fun onCreate(savedInstanceState: Bundle?)")
+        val bindIndex = onCreate.indexOf("SingBoxRemote.ensureBound(this)")
+        val composeIndex = onCreate.indexOf("setContent {")
+
+        assertTrue(bindIndex >= 0)
+        assertTrue(composeIndex > bindIndex)
+    }
+
+    @Test
+    fun persistedActiveIsClearedOnBootOnlyWhenIpcConfirmsStopped() {
+        // IPC 未绑定：无权清，避免"假停"窗口
+        assertFalse(
+            shouldClearPersistedActiveOnBoot(
+                hasSystemVpn = false,
+                persistedActive = true,
+                mode = VpnStateStore.CoreMode.VPN,
+                ipcBound = false,
+                serviceState = ServiceState.STOPPED
+            )
+        )
+        // IPC 绑定但服务仍在跑：不清
+        assertFalse(
+            shouldClearPersistedActiveOnBoot(
+                hasSystemVpn = false,
+                persistedActive = true,
+                mode = VpnStateStore.CoreMode.VPN,
+                ipcBound = true,
+                serviceState = ServiceState.RUNNING
+            )
+        )
+        // 系统 VPN 仍在：不清
+        assertFalse(
+            shouldClearPersistedActiveOnBoot(
+                hasSystemVpn = true,
+                persistedActive = true,
+                mode = VpnStateStore.CoreMode.VPN,
+                ipcBound = true,
+                serviceState = ServiceState.STOPPED
+            )
+        )
+        // IPC 确认 STOPPED + 无系统 VPN + persisted active：允许清
+        assertTrue(
+            shouldClearPersistedActiveOnBoot(
+                hasSystemVpn = false,
+                persistedActive = true,
+                mode = VpnStateStore.CoreMode.VPN,
+                ipcBound = true,
+                serviceState = ServiceState.STOPPED
+            )
+        )
+    }
+}

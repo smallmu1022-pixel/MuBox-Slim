@@ -1,0 +1,39 @@
+package com.mubox.app.viewmodel
+
+import org.junit.Assert.assertTrue
+import org.junit.Test
+import java.io.File
+
+class DashboardViewModelStopTileStateTest {
+
+    @Test
+    fun stopVpnReturnsToIdleImmediatelyAfterDispatch() {
+        val source = File("src/main/java/com/mubox/app/viewmodel/DashboardConnectionRuntime.kt").readText()
+        val body = source.substring(
+            source.indexOf("internal suspend fun DashboardViewModel.stopVpnRuntime()"),
+            source.indexOf("internal fun DashboardViewModel.startPingTestRuntime()")
+        )
+
+        val pendingIndex = body.indexOf("VpnTileService.persistVpnPending(\"stopping\")")
+        val stopIndex = body.indexOf("VpnServiceManager.stopVpn(context, VpnStopInitiator.USER_UI)")
+        val refreshIndex = body.indexOf("action = VpnTileService.ACTION_REFRESH_TILE")
+
+        assertTrue(pendingIndex >= 0)
+        assertTrue(stopIndex >= 0)
+        assertTrue(pendingIndex < stopIndex)
+        assertTrue(refreshIndex >= 0)
+        assertTrue(body.contains("ConnectionState.Disconnecting"))
+        assertTrue(body.contains("ConnectionState.Idle"))
+        assertTrue(body.indexOf("withContext(Dispatchers.IO)") < stopIndex)
+        assertTrue(body.indexOf("_connectionState.value = ConnectionState.Idle") < refreshIndex)
+        assertTrue(!body.contains("VpnServiceManager.forceStop(context)"))
+        assertTrue(!body.contains("VpnTileService.persistVpnState(false)"))
+    }
+
+    @Test
+    fun disconnectingToggleDoesNotSendDuplicateStopCommands() {
+        val source = File("src/main/java/com/mubox/app/viewmodel/DashboardViewModel.kt").readText()
+
+        assertTrue(source.contains("ConnectionState.Disconnecting -> Unit"))
+    }
+}

@@ -1,0 +1,548 @@
+diff --git a/daemon/started_service_tailscale_ssh.go b/daemon/started_service_tailscale_ssh.go
+index bc8b372..cb174aa 100644
+--- a/daemon/started_service_tailscale_ssh.go
++++ b/daemon/started_service_tailscale_ssh.go
+@@ -1,331 +1,16 @@
+ package daemon
+ 
+ import (
+-	"bytes"
+-	"context"
+-	"io"
+-	"net"
+-	"os"
+-	"strings"
+-	"sync"
+-	"time"
+-
+-	"github.com/sagernet/sing/common"
+-	"github.com/sagernet/sing/common/buf"
+ 	E "github.com/sagernet/sing/common/exceptions"
+-	M "github.com/sagernet/sing/common/metadata"
+-	N "github.com/sagernet/sing/common/network"
+-
+-	"golang.org/x/crypto/ssh"
+-	"golang.org/x/crypto/ssh/agent"
+ 	"google.golang.org/grpc"
+ )
+ 
+-type windowChangeRequest struct {
+-	Columns      uint32
+-	Rows         uint32
+-	WidthPixels  uint32
+-	HeightPixels uint32
+-}
+-
++// StartTailscaleSSHSession is stubbed out in the MuBox slim kernel:
++// the Tailscale endpoint is not included in this build, so no SSH
++// session can ever be established. The method is kept to satisfy the
++// generated StartedServiceServer interface.
+ func (s *StartedService) StartTailscaleSSHSession(
+ 	server grpc.BidiStreamingServer[TailscaleSSHClientMessage, TailscaleSSHServerMessage],
+ ) error {
+-	ctx := server.Context()
+-	err := s.waitForStarted(ctx)
+-	if err != nil {
+-		return err
+-	}
+-	s.serviceAccess.RLock()
+-	boxService := s.instance
+-	s.serviceAccess.RUnlock()
+-
+-	firstMessage, err := server.Recv()
+-	if err != nil {
+-		return err
+-	}
+-	start := firstMessage.GetStart()
+-
+-	hostKeys := make([]ssh.PublicKey, 0, len(start.HostKeys))
+-	for _, line := range start.HostKeys {
+-		key, _, _, _, parseErr := ssh.ParseAuthorizedKey([]byte(line))
+-		if parseErr != nil {
+-			return E.Cause(parseErr, "parse host key")
+-		}
+-		hostKeys = append(hostKeys, key)
+-	}
+-
+-	endpoint, err := resolveTailscaleEndpoint(boxService, start.EndpointTag)
+-	if err != nil {
+-		return err
+-	}
+-
+-	peerAddr := M.ParseSocksaddrHostPort(start.PeerAddress, 22)
+-
+-	sessionCtx, cancel := context.WithCancel(ctx)
+-	defer cancel()
+-
+-	var sendAccess sync.Mutex
+-	sendMessage := func(msg *TailscaleSSHServerMessage) {
+-		sendAccess.Lock()
+-		defer sendAccess.Unlock()
+-		sendErr := server.Send(msg)
+-		if sendErr != nil {
+-			cancel()
+-		}
+-	}
+-
+-	finishWithError := func(message string) error {
+-		sendMessage(&TailscaleSSHServerMessage{
+-			Message: &TailscaleSSHServerMessage_Error{Error: &TailscaleSSHError{Message: message}},
+-		})
+-		return nil
+-	}
+-
+-	peerConn, err := endpoint.DialContext(ctx, N.NetworkTCP, peerAddr)
+-	if err != nil {
+-		return finishWithError(E.Cause(err, "dial peer").Error())
+-	}
+-
+-	var lastBanner string
+-	config := &ssh.ClientConfig{
+-		User: start.Username,
+-		Auth: nil,
+-		BannerCallback: func(message string) error {
+-			lastBanner = message
+-			sendMessage(&TailscaleSSHServerMessage{
+-				Message: &TailscaleSSHServerMessage_AuthBanner{
+-					AuthBanner: &TailscaleSSHAuthBanner{Message: message},
+-				},
+-			})
+-			return nil
+-		},
+-		HostKeyCallback: func(hostname string, remote net.Addr, key ssh.PublicKey) error {
+-			serverKey := key.Marshal()
+-			for _, hostKey := range hostKeys {
+-				if bytes.Equal(serverKey, hostKey.Marshal()) {
+-					return nil
+-				}
+-			}
+-			return E.New("untrusted host key: ", key.Type())
+-		},
+-	}
+-	sshConn, chans, reqs, err := ssh.NewClientConn(peerConn, peerAddr.String(), config)
+-	if err != nil {
+-		common.Close(peerConn)
+-		banner := strings.TrimSpace(lastBanner)
+-		if banner != "" {
+-			return finishWithError(banner)
+-		}
+-		return finishWithError(E.Cause(err, "ssh handshake").Error())
+-	}
+-	sshClient := ssh.NewClient(sshConn, chans, reqs)
+-
+-	if start.ForwardAgent && s.handler != nil {
+-		agentChannels := sshClient.HandleChannelOpen("auth-agent@openssh.com")
+-		if agentChannels != nil {
+-			go func() {
+-				for newChannel := range agentChannels {
+-					channel, reqs, acceptErr := newChannel.Accept()
+-					if acceptErr != nil {
+-						continue
+-					}
+-					go ssh.DiscardRequests(reqs)
+-					go s.forwardSSHAgentChannel(channel)
+-				}
+-			}()
+-		}
+-	}
+-
+-	sshSession, err := sshClient.NewSession()
+-	if err != nil {
+-		common.Close(sshClient)
+-		return finishWithError(E.Cause(err, "open ssh session").Error())
+-	}
+-
+-	cols := int(start.Columns)
+-	rows := int(start.Rows)
+-	err = sshSession.RequestPty(start.TerminalType, rows, cols, ssh.TerminalModes{
+-		ssh.ECHO:          1,
+-		ssh.ECHOE:         1,
+-		ssh.ECHOK:         1,
+-		ssh.ECHOKE:        1,
+-		ssh.ECHOCTL:       1,
+-		ssh.ICANON:        1,
+-		ssh.ISIG:          1,
+-		ssh.IEXTEN:        1,
+-		ssh.ICRNL:         1,
+-		ssh.IXON:          1,
+-		ssh.IXANY:         1,
+-		ssh.IMAXBEL:       1,
+-		ssh.OPOST:         1,
+-		ssh.ONLCR:         1,
+-		ssh.TTY_OP_ISPEED: 14400,
+-		ssh.TTY_OP_OSPEED: 14400,
+-	})
+-	if err != nil {
+-		common.Close(sshSession, sshClient)
+-		return finishWithError(E.Cause(err, "request pty").Error())
+-	}
+-	if start.WidthPixels > 0 || start.HeightPixels > 0 {
+-		_, _ = sshSession.SendRequest("window-change", false, ssh.Marshal(&windowChangeRequest{
+-			Columns:      uint32(start.Columns),
+-			Rows:         uint32(start.Rows),
+-			WidthPixels:  uint32(start.WidthPixels),
+-			HeightPixels: uint32(start.HeightPixels),
+-		}))
+-	}
+-
+-	if start.ForwardAgent && s.handler != nil {
+-		err = agent.RequestAgentForwarding(sshSession)
+-		if err != nil {
+-			common.Close(sshSession, sshClient)
+-			return finishWithError(E.Cause(err, "request agent forwarding").Error())
+-		}
+-	}
+-
+-	stdin, err := sshSession.StdinPipe()
+-	if err != nil {
+-		common.Close(sshSession, sshClient)
+-		return finishWithError(E.Cause(err, "stdin pipe").Error())
+-	}
+-	stdout, err := sshSession.StdoutPipe()
+-	if err != nil {
+-		common.Close(sshSession, sshClient)
+-		return finishWithError(E.Cause(err, "stdout pipe").Error())
+-	}
+-	stderr, err := sshSession.StderrPipe()
+-	if err != nil {
+-		common.Close(sshSession, sshClient)
+-		return finishWithError(E.Cause(err, "stderr pipe").Error())
+-	}
+-	err = sshSession.Shell()
+-	if err != nil {
+-		common.Close(sshSession, sshClient)
+-		return finishWithError(E.Cause(err, "start shell").Error())
+-	}
+-
+-	var workersWg sync.WaitGroup
+-
+-	sendMessage(&TailscaleSSHServerMessage{
+-		Message: &TailscaleSSHServerMessage_Ready{Ready: &TailscaleSSHReady{}},
+-	})
+-
+-	workersWg.Go(func() {
+-		for {
+-			msg, recvErr := server.Recv()
+-			if recvErr == io.EOF {
+-				stdin.Close()
+-				return
+-			}
+-			if recvErr != nil {
+-				cancel()
+-				return
+-			}
+-			switch m := msg.GetMessage().(type) {
+-			case *TailscaleSSHClientMessage_Input:
+-				if len(m.Input.Data) == 0 {
+-					continue
+-				}
+-				_, writeErr := stdin.Write(m.Input.Data)
+-				if writeErr != nil {
+-					cancel()
+-					return
+-				}
+-			case *TailscaleSSHClientMessage_Resize:
+-				_, _ = sshSession.SendRequest("window-change", false, ssh.Marshal(&windowChangeRequest{
+-					Columns:      uint32(m.Resize.Columns),
+-					Rows:         uint32(m.Resize.Rows),
+-					WidthPixels:  uint32(m.Resize.WidthPixels),
+-					HeightPixels: uint32(m.Resize.HeightPixels),
+-				}))
+-			}
+-		}
+-	})
+-
+-	pumpReader := func(reader io.Reader) {
+-		buffer := buf.Get(buf.BufferSize)
+-		defer buf.Put(buffer)
+-		for {
+-			n, readErr := reader.Read(buffer)
+-			if n > 0 {
+-				sendMessage(&TailscaleSSHServerMessage{
+-					Message: &TailscaleSSHServerMessage_Output{Output: &TailscaleSSHOutput{Data: bytes.Clone(buffer[:n])}},
+-				})
+-			}
+-			if readErr != nil {
+-				return
+-			}
+-		}
+-	}
+-	workersWg.Go(func() { pumpReader(stdout) })
+-	workersWg.Go(func() { pumpReader(stderr) })
+-
+-	workersWg.Go(func() {
+-		ticker := time.NewTicker(30 * time.Second)
+-		defer ticker.Stop()
+-		for {
+-			select {
+-			case <-sessionCtx.Done():
+-				return
+-			case <-ticker.C:
+-				_, _, keepAliveErr := sshConn.SendRequest("keepalive@openssh.com", true, nil)
+-				if keepAliveErr != nil {
+-					cancel()
+-					return
+-				}
+-			}
+-		}
+-	})
+-
+-	workersWg.Go(func() {
+-		waitErr := sshSession.Wait()
+-		exitMessage := &TailscaleSSHExit{}
+-		switch waitErrTyped := waitErr.(type) {
+-		case nil:
+-		case *ssh.ExitError:
+-			exitMessage.ExitCode = int32(waitErrTyped.ExitStatus())
+-			exitMessage.Signal = waitErrTyped.Signal()
+-		default:
+-			exitMessage.ErrorMessage = waitErrTyped.Error()
+-		}
+-		sendMessage(&TailscaleSSHServerMessage{
+-			Message: &TailscaleSSHServerMessage_Exit{Exit: exitMessage},
+-		})
+-		cancel()
+-	})
+-
+-	go func() {
+-		<-sessionCtx.Done()
+-		common.Close(peerConn, sshSession, sshClient)
+-	}()
+-
+-	workersWg.Wait()
+-	return nil
+-}
+-
+-func (s *StartedService) forwardSSHAgentChannel(channel ssh.Channel) {
+-	defer channel.Close()
+-	fd, err := s.handler.ConnectSSHAgent()
+-	if err != nil {
+-		return
+-	}
+-	file := os.NewFile(uintptr(fd), "ssh-agent")
+-	conn, err := net.FileConn(file)
+-	file.Close()
+-	if err != nil {
+-		return
+-	}
+-	defer conn.Close()
+-	var wg sync.WaitGroup
+-	wg.Add(2)
+-	go func() {
+-		defer wg.Done()
+-		io.Copy(conn, channel)
+-	}()
+-	go func() {
+-		defer wg.Done()
+-		io.Copy(channel, conn)
+-	}()
+-	wg.Wait()
++	return E.New("Tailscale SSH is not included in this build")
+ }
+diff --git a/experimental/libbox/native_shell_session.go b/experimental/libbox/native_shell_session.go
+deleted file mode 100644
+index d9bd5d2..0000000
+--- a/experimental/libbox/native_shell_session.go
++++ /dev/null
+@@ -1,78 +0,0 @@
+-//go:build linux || android || darwin || ios
+-
+-package libbox
+-
+-import (
+-	"github.com/sagernet/sing-box/protocol/tailscale/tailssh"
+-	"github.com/sagernet/sing/common"
+-)
+-
+-type nativeShellSession struct {
+-	shell *tailssh.Shell
+-}
+-
+-func OpenNativeShellSession(
+-	shell, cwd string,
+-	args, environ StringIterator,
+-	term string,
+-	rows, cols, uid, gid int32,
+-	groups Int32Iterator,
+-) (ShellSession, error) {
+-	sh, err := tailssh.OpenPtyShell(
+-		shell,
+-		iteratorToArray[string](args),
+-		iteratorToArray[string](environ),
+-		cwd,
+-		int(uid), int(gid),
+-		common.Map(iteratorToArray[int32](groups), func(g int32) int { return int(g) }),
+-		uint16(rows), uint16(cols), 0, 0,
+-	)
+-	if err != nil {
+-		return nil, err
+-	}
+-	return &nativeShellSession{shell: sh}, nil
+-}
+-
+-func OpenNativePipeSession(
+-	shell, cwd string,
+-	args, environ StringIterator,
+-	uid, gid int32,
+-	groups Int32Iterator,
+-) (ShellSession, error) {
+-	sh, err := tailssh.OpenSocketpairShell(
+-		shell,
+-		iteratorToArray[string](args),
+-		iteratorToArray[string](environ),
+-		cwd,
+-		int(uid), int(gid),
+-		common.Map(iteratorToArray[int32](groups), func(g int32) int { return int(g) }),
+-	)
+-	if err != nil {
+-		return nil, err
+-	}
+-	return &nativeShellSession{shell: sh}, nil
+-}
+-
+-func (s *nativeShellSession) MasterFD() int32 {
+-	return int32(s.shell.MasterFD())
+-}
+-
+-func (s *nativeShellSession) Resize(rows, cols int32) error {
+-	return s.shell.Resize(uint16(rows), uint16(cols), 0, 0)
+-}
+-
+-func (s *nativeShellSession) Signal(sig int32) error {
+-	return s.shell.Signal(int(sig))
+-}
+-
+-func (s *nativeShellSession) WaitExit() (int32, error) {
+-	status, err := s.shell.Wait()
+-	if err != nil {
+-		return 0, err
+-	}
+-	return int32(status), nil
+-}
+-
+-func (s *nativeShellSession) Close() error {
+-	return s.shell.Close()
+-}
+diff --git a/experimental/libbox/native_shell_session_stub.go b/experimental/libbox/native_shell_session_stub.go
+index 8544efa..fe81647 100644
+--- a/experimental/libbox/native_shell_session_stub.go
++++ b/experimental/libbox/native_shell_session_stub.go
+@@ -1,5 +1,3 @@
+-//go:build !linux && !android && !darwin && !ios
+-
+ package libbox
+ 
+ import (
+diff --git a/include/quic.go b/include/quic.go
+index 42182c2..8ff6c3e 100644
+--- a/include/quic.go
++++ b/include/quic.go
+@@ -8,22 +8,15 @@ import (
+ 	"github.com/sagernet/sing-box/adapter/service"
+ 	"github.com/sagernet/sing-box/dns"
+ 	"github.com/sagernet/sing-box/dns/transport/quic"
+-	"github.com/sagernet/sing-box/protocol/hysteria"
+ 	"github.com/sagernet/sing-box/protocol/hysteria2"
+-	_ "github.com/sagernet/sing-box/protocol/naive/quic"
+-	"github.com/sagernet/sing-box/protocol/tuic"
+ 	_ "github.com/sagernet/sing-box/transport/v2rayquic"
+ )
+ 
+ func registerQUICInbounds(registry *inbound.Registry) {
+-	hysteria.RegisterInbound(registry)
+-	tuic.RegisterInbound(registry)
+ 	hysteria2.RegisterInbound(registry)
+ }
+ 
+ func registerQUICOutbounds(registry *outbound.Registry) {
+-	hysteria.RegisterOutbound(registry)
+-	tuic.RegisterOutbound(registry)
+ 	hysteria2.RegisterOutbound(registry)
+ }
+ 
+diff --git a/include/registry.go b/include/registry.go
+index 9bb9220..1ea4ffb 100644
+--- a/include/registry.go
++++ b/include/registry.go
+@@ -26,22 +26,14 @@ import (
+ 	"github.com/sagernet/sing-box/protocol/group"
+ 	"github.com/sagernet/sing-box/protocol/http"
+ 	"github.com/sagernet/sing-box/protocol/mixed"
+-	"github.com/sagernet/sing-box/protocol/naive"
+ 	"github.com/sagernet/sing-box/protocol/redirect"
+-	"github.com/sagernet/sing-box/protocol/shadowsocks"
+-	"github.com/sagernet/sing-box/protocol/shadowtls"
+-	"github.com/sagernet/sing-box/protocol/snell"
+ 	"github.com/sagernet/sing-box/protocol/socks"
+-	"github.com/sagernet/sing-box/protocol/ssh"
+-	"github.com/sagernet/sing-box/protocol/tor"
+ 	"github.com/sagernet/sing-box/protocol/trojan"
+ 	"github.com/sagernet/sing-box/protocol/tun"
+ 	"github.com/sagernet/sing-box/protocol/vless"
+-	"github.com/sagernet/sing-box/protocol/vmess"
+ 	"github.com/sagernet/sing-box/service/api"
+ 	originca "github.com/sagernet/sing-box/service/origin_ca"
+ 	"github.com/sagernet/sing-box/service/resolved"
+-	"github.com/sagernet/sing-box/service/ssmapi"
+ 	E "github.com/sagernet/sing/common/exceptions"
+ )
+ 
+@@ -61,12 +53,7 @@ func InboundRegistry() *inbound.Registry {
+ 	http.RegisterInbound(registry)
+ 	mixed.RegisterInbound(registry)
+ 
+-	shadowsocks.RegisterInbound(registry)
+-	snell.RegisterInbound(registry)
+-	vmess.RegisterInbound(registry)
+ 	trojan.RegisterInbound(registry)
+-	naive.RegisterInbound(registry)
+-	shadowtls.RegisterInbound(registry)
+ 	vless.RegisterInbound(registry)
+ 	anytls.RegisterInbound(registry)
+ 
+@@ -90,14 +77,8 @@ func OutboundRegistry() *outbound.Registry {
+ 
+ 	socks.RegisterOutbound(registry)
+ 	http.RegisterOutbound(registry)
+-	shadowsocks.RegisterOutbound(registry)
+-	snell.RegisterOutbound(registry)
+-	vmess.RegisterOutbound(registry)
+ 	trojan.RegisterOutbound(registry)
+ 	registerNaiveOutbound(registry)
+-	tor.RegisterOutbound(registry)
+-	ssh.RegisterOutbound(registry)
+-	shadowtls.RegisterOutbound(registry)
+ 	vless.RegisterOutbound(registry)
+ 	anytls.RegisterOutbound(registry)
+ 
+@@ -145,7 +126,6 @@ func ServiceRegistry() *service.Registry {
+ 
+ 	api.RegisterService(registry)
+ 	resolved.RegisterService(registry)
+-	ssmapi.RegisterService(registry)
+ 
+ 	registerQUICServices(registry)
+ 	registerDERPService(registry)
+diff --git a/protocol/hysteria2/outbound.go b/protocol/hysteria2/outbound.go
+index e235a47..9d5709f 100644
+--- a/protocol/hysteria2/outbound.go
++++ b/protocol/hysteria2/outbound.go
+@@ -16,7 +16,6 @@ import (
+ 	C "github.com/sagernet/sing-box/constant"
+ 	"github.com/sagernet/sing-box/log"
+ 	"github.com/sagernet/sing-box/option"
+-	"github.com/sagernet/sing-box/protocol/tuic"
+ 	qtls "github.com/sagernet/sing-quic"
+ 	"github.com/sagernet/sing-quic/hysteria"
+ 	"github.com/sagernet/sing-quic/hysteria2"
+@@ -35,8 +34,8 @@ func RegisterOutbound(registry *outbound.Registry) {
+ }
+ 
+ var (
+-	_ adapter.Outbound                = (*tuic.Outbound)(nil)
+-	_ adapter.InterfaceUpdateListener = (*tuic.Outbound)(nil)
++	_ adapter.Outbound                = (*Outbound)(nil)
++	_ adapter.InterfaceUpdateListener = (*Outbound)(nil)
+ )
+ 
+ type Outbound struct {
