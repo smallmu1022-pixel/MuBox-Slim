@@ -17,11 +17,6 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.statusBars
 import androidx.compose.foundation.layout.width
-import androidx.compose.ui.geometry.Offset
-import androidx.compose.ui.graphics.Path
-import androidx.compose.ui.graphics.drawscope.Stroke
-import kotlin.math.cos
-import kotlin.math.sin
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.rounded.Bolt
 import androidx.compose.material.icons.rounded.BugReport
@@ -46,7 +41,6 @@ import androidx.compose.runtime.derivedStateOf
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.luminance
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
@@ -78,15 +72,9 @@ import android.app.Activity
 import android.net.VpnService
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
-import androidx.compose.animation.core.RepeatMode
-import androidx.compose.animation.core.animateFloat
-import androidx.compose.animation.core.infiniteRepeatable
-import androidx.compose.animation.core.rememberInfiniteTransition
-import androidx.compose.animation.core.tween
 import com.mubox.app.ui.theme.liquidGlassIconButtonPanel
 import com.mubox.app.ui.theme.liquidGlassMutedContentColor
 import com.mubox.app.ui.theme.liquidGlassStrongContentColor
-import com.mubox.app.ui.theme.isLiquidGlassTheme
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.flow.collectLatest
 
@@ -276,90 +264,7 @@ fun DashboardScreen(
 
     val statusBarPadding = WindowInsets.statusBars.asPaddingValues()
 
-    // Background Animation
-    val isRunning = connectionState == ConnectionState.Connected || connectionState == ConnectionState.Connecting
-    val infiniteTransition = rememberInfiniteTransition(label = "BackgroundAnimation")
-
-    val pulseScale by infiniteTransition.animateFloat(
-        initialValue = 1f,
-        targetValue = if (isRunning) 1.05f else 1f,
-        animationSpec = infiniteRepeatable(
-            animation = tween(1500, easing = androidx.compose.animation.core.FastOutSlowInEasing),
-            repeatMode = RepeatMode.Reverse
-        ),
-        label = "PulseScale"
-    )
-
-    val pulseAlpha by infiniteTransition.animateFloat(
-        initialValue = 0.3f,
-        targetValue = if (isRunning) 0.6f else 0.3f,
-        animationSpec = infiniteRepeatable(
-            animation = tween(1500, easing = androidx.compose.animation.core.FastOutSlowInEasing),
-            repeatMode = RepeatMode.Reverse
-        ),
-        label = "PulseAlpha"
-    )
-
-    val defaultBaseColor = MaterialTheme.colorScheme.onSurface
-    val useLiquidGlass = isLiquidGlassTheme()
-    val isDark = MaterialTheme.colorScheme.background.luminance() < 0.5f
-    val primaryColor = MaterialTheme.colorScheme.primary
-
     Box(modifier = Modifier.fillMaxSize()) {
-        // Background Decoration - 3D Box Cage (Back Face & Connections)
-        androidx.compose.foundation.Canvas(modifier = Modifier.fillMaxSize()) {
-            val center = center
-            val baseSize = size.minDimension * 0.55f * pulseScale
-
-            val baseAlpha = if (isRunning) pulseAlpha * 0.5f else 0.15f
-            val color = if (useLiquidGlass) {
-                primaryColor.copy(alpha = if (isDark) baseAlpha * 1.5f else baseAlpha * 1.6f)
-            } else {
-                defaultBaseColor.copy(alpha = baseAlpha)
-            }
-            val strokeWidth = if (isRunning) 2.dp.toPx() else 1.dp.toPx()
-
-            val rotationX = Math.toRadians(15.0).toFloat()
-            val rotationY = Math.toRadians(35.0).toFloat()
-
-            fun project(x: Float, y: Float, z: Float): Offset {
-                val y1 = y * cos(rotationX) - z * sin(rotationX)
-                val z1 = y * sin(rotationX) + z * cos(rotationX)
-                val x2 = x * cos(rotationY) + z1 * sin(rotationY)
-                return Offset(center.x + x2, center.y + y1)
-            }
-
-            val s = baseSize / 1.5f
-
-            val p1 = project(-s, -s, -s)
-            val p2 = project(s, -s, -s)
-            val p3 = project(s, s, -s)
-            val p4 = project(-s, s, -s)
-            val p5 = project(-s, -s, s)
-            val p6 = project(s, -s, s)
-            val p7 = project(s, s, s)
-            val p8 = project(-s, s, s)
-
-            val path = Path()
-            // Back Face (p5-p8)
-            path.moveTo(p5.x, p5.y)
-            path.lineTo(p6.x, p6.y)
-            path.lineTo(p7.x, p7.y)
-            path.lineTo(p8.x, p8.y)
-            path.close()
-
-            // Connections
-            path.moveTo(p1.x, p1.y); path.lineTo(p5.x, p5.y)
-            path.moveTo(p2.x, p2.y); path.lineTo(p6.x, p6.y)
-            path.moveTo(p3.x, p3.y); path.lineTo(p7.x, p7.y)
-            path.moveTo(p4.x, p4.y); path.lineTo(p8.x, p8.y)
-
-            drawPath(
-                path = path,
-                color = color,
-                style = Stroke(width = strokeWidth)
-            )
-        }
 
         Column(
             modifier = Modifier
@@ -587,53 +492,6 @@ fun DashboardScreen(
                     }
                 }
             }
-        }
-
-        // Foreground Decoration - 3D Box Cage (Front Face)
-        // Drawn on top of Column to create "Trapped" effect
-        androidx.compose.foundation.Canvas(modifier = Modifier.fillMaxSize()) {
-            val center = center
-            val baseSize = size.minDimension * 0.55f * pulseScale
-
-            val baseAlpha = if (isRunning) pulseAlpha * 0.5f else 0.15f
-            val color = if (useLiquidGlass) {
-                primaryColor.copy(alpha = if (isDark) baseAlpha * 1.5f else baseAlpha * 1.6f)
-            } else {
-                defaultBaseColor.copy(alpha = baseAlpha)
-            }
-            val strokeWidth = if (isRunning) 2.dp.toPx() else 1.dp.toPx()
-
-            val rotationX = Math.toRadians(15.0).toFloat()
-            val rotationY = Math.toRadians(35.0).toFloat()
-
-            fun project(x: Float, y: Float, z: Float): Offset {
-                val y1 = y * cos(rotationX) - z * sin(rotationX)
-                val z1 = y * sin(rotationX) + z * cos(rotationX)
-                val x2 = x * cos(rotationY) + z1 * sin(rotationY)
-                return Offset(center.x + x2, center.y + y1)
-            }
-
-            val s = baseSize / 1.5f
-
-            // Only need p1-p4 for front face
-            val p1 = project(-s, -s, -s)
-            val p2 = project(s, -s, -s)
-            val p3 = project(s, s, -s)
-            val p4 = project(-s, s, -s)
-
-            val path = Path()
-            // Front Face
-            path.moveTo(p1.x, p1.y)
-            path.lineTo(p2.x, p2.y)
-            path.lineTo(p3.x, p3.y)
-            path.lineTo(p4.x, p4.y)
-            path.close()
-
-            drawPath(
-                path = path,
-                color = color,
-                style = Stroke(width = strokeWidth)
-            )
         }
     }
 }
