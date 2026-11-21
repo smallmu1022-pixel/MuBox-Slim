@@ -13,7 +13,7 @@
 
 </div>
 
-> Based on MuBox (derived from KunBox v2.24.3, roseforljh/KunBox)
+> **Fork notice**: MuBox Slim is the slim edition of MuBox; MuBox is a fork of [KunBox](https://github.com/roseforljh/KunBox) v2.24.3 by the original author **roseforljh**, to whom we are grateful. This project is maintained independently; the trimming work is described below.
 
 ---
 
@@ -81,6 +81,13 @@ Nodes of removed protocols inside a subscription or backup are silently skipped 
 Releases are built by GitHub Actions (triggered by a `v*` tag): check out sing-box v1.14.2 → apply the kernel trim patch → verify the dependency graph → build libbox.aar with gomobile → package both ABI APKs onto the release.
 
 Local builds need JDK 17, the Android SDK/NDK and Go 1.26.5; see `.github/workflows/` for details.
+
+---
+
+## 🙏 Credits
+
+- **App base**: [KunBox](https://github.com/roseforljh/KunBox) v2.24.3 by the original author **roseforljh**. MuBox is an independently maintained rebrand of it, and MuBox Slim is MuBox's slim edition. The app's features and UI foundation come from the original author's work; the trimming and later changes are this project's own.
+- **Proxy kernel**: [sing-box](https://github.com/SagerNet/sing-box) by SagerNet; this project builds a custom-trimmed v1.14.2.
 
 ---
 

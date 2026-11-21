@@ -13,7 +13,7 @@
 
 </div>
 
-> 基于 MuBox（源自 KunBox v2.24.3，roseforljh/KunBox）
+> **Fork 说明**：本项目是 MuBox 的精简版；MuBox Fork 自 [KunBox](https://github.com/roseforljh/KunBox) v2.24.3（原作者 **roseforljh**），在此向原作者表示感谢。本项目在原作基础上独立维护，精简改动见下文。
 
 ---
 
@@ -81,6 +81,13 @@
 发布构建由 GitHub Actions 完成（打 `v*` 标签触发）：检出 sing-box v1.14.2 → 应用内核裁剪补丁 → 依赖图守卫校验 → gomobile 编译 libbox.aar → 打包双架构 APK 并附到正式发布。
 
 本地构建需要 JDK 17、Android SDK/NDK 与 Go 1.26.5，细节见 `.github/workflows/`。
+
+---
+
+## 🙏 来源与致谢
+
+- **应用基础**：[KunBox](https://github.com/roseforljh/KunBox) v2.24.3，原作者 **roseforljh**。MuBox 在其基础上换牌并独立维护，MuBox Slim 是 MuBox 的精简版。本项目的功能与界面基础来自原作者的工作，精简与后续改动为本项目所加。
+- **代理内核**：[sing-box](https://github.com/SagerNet/sing-box)（SagerNet），本项目使用 v1.14.2 自编裁剪版。
 
 ---
 
