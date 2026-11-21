@@ -27,6 +27,7 @@ import androidx.compose.material.icons.rounded.Info
 import androidx.compose.material.icons.rounded.Language
 import androidx.compose.material.icons.rounded.Palette
 import androidx.compose.material.icons.rounded.PowerSettingsNew
+import androidx.compose.material.icons.rounded.Refresh
 import androidx.compose.material.icons.rounded.Route
 import androidx.compose.material.icons.rounded.Sync
 import androidx.compose.material.icons.rounded.SystemUpdate
@@ -243,6 +244,23 @@ fun SettingsScreen(
                     icon = Icons.Rounded.SystemUpdate,
                     checked = settings.autoCheckUpdate,
                     onCheckedChange = { scope.launch { viewModel.setAutoCheckUpdate(it) } }
+                )
+                SettingItem(
+                    title = "检查更新",
+                    subtitle = "查看是否有新版本，可在应用内直接更新",
+                    icon = Icons.Rounded.Refresh,
+                    onClick = {
+                        scope.launch {
+                            when (val result = com.mubox.app.utils.AppUpdateChecker.check(context)) {
+                                is com.mubox.app.utils.UpdateCheckResult.UpdateAvailable ->
+                                    com.mubox.app.utils.UpdateUiEvents.post(result)
+                                is com.mubox.app.utils.UpdateCheckResult.UpToDate ->
+                                    android.widget.Toast.makeText(context, "已是最新版本", android.widget.Toast.LENGTH_SHORT).show()
+                                is com.mubox.app.utils.UpdateCheckResult.Error ->
+                                    android.widget.Toast.makeText(context, "检查失败，请稍后再试", android.widget.Toast.LENGTH_SHORT).show()
+                            }
+                        }
+                    }
                 )
                 SettingItem(
                     title = stringResource(R.string.settings_connection_startup),

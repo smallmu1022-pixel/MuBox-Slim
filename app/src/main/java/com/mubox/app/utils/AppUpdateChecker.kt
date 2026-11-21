@@ -1,4 +1,4 @@
-﻿package com.mubox.app.utils
+package com.mubox.app.utils
 
 import android.Manifest
 import android.app.NotificationChannel
@@ -34,6 +34,10 @@ object AppUpdateChecker {
     private const val PREFS_NAME = "app_update_prefs"
     private const val KEY_LAST_NOTIFIED_VERSION = "last_notified_version"
 
+    // 发布说明正文里以 HTML 注释携带目标 versionCode（页面渲染不可见），
+    // 使同名热修（versionName 不变、versionCode 递增）也能被检查到。
+    private val VERSION_CODE_COMMENT = Regex("""<!--\s*vc:\s*(\d+)\s*-->""")
+
     private val gson = Gson()
 
     data class GitHubRelease(
@@ -48,20 +52,18 @@ object AppUpdateChecker {
     data class ReleaseAsset(
         @SerializedName("name") val name: String,
         @SerializedName("browser_download_url") val downloadUrl: String,
-        @SerializedName("size") val size: Long
+        @SerializedName("size") val size: Long,
+        @SerializedName("digest") val digest: String?
     )
 
     /**
-     *
-     * @param context Context
+     * 只做检查并返回结果，不发通知。界面层据此弹内置更新弹窗。
      */
-    suspend fun checkAndNotify(
-        context: Context,
-        forceNotify: Boolean = false
-    ): UpdateCheckResult = withContext(Dispatchers.IO) {
+    suspend fun check(context: Context): UpdateCheckResult = withContext(Dispatchers.IO) {
         try {
             val currentVersion = getCurrentVersion(context)
-            Log.d(TAG, "Current version: $currentVersion")
+            val currentVersionCode = getCurrentVersionCode(context)
+            Log.d(TAG, "Current version: $currentVersion ($currentVersionCode)")
 
             val release = fetchLatestReleaseWithFallback(context)
             if (release == null) {
@@ -70,25 +72,25 @@ object AppUpdateChecker {
             }
 
             val latestVersion = release.tagName.removePrefix("v")
-            Log.d(TAG, "Latest version: $latestVersion")
+            val releaseVersionCode = parseReleaseVersionCode(release.body)
+            Log.d(TAG, "Latest version: $latestVersion ($releaseVersionCode)")
 
-            if (isNewerVersion(latestVersion, currentVersion)) {
+            // 正文带 vc 注释时按 versionCode 判断（可识别同名热修），否则回退版本名比较。
+            val isNewer = if (releaseVersionCode != null) {
+                releaseVersionCode > currentVersionCode
+            } else {
+                isNewerVersion(latestVersion, currentVersion)
+            }
+
+            if (isNewer) {
                 Log.i(TAG, "New version available: $latestVersion")
-
-                val lastNotifiedVersion = getLastNotifiedVersion(context)
-                if (forceNotify || lastNotifiedVersion != latestVersion) {
-                    if (showUpdateNotification(context, release)) {
-                        setLastNotifiedVersion(context, latestVersion)
-                    }
-                } else {
-                    Log.d(TAG, "Already notified for version $latestVersion, skipping")
-                }
-
                 return@withContext UpdateCheckResult.UpdateAvailable(
                     currentVersion = currentVersion,
                     latestVersion = latestVersion,
+                    latestVersionCode = releaseVersionCode,
                     releaseUrl = release.htmlUrl,
-                    releaseNotes = release.body
+                    releaseNotes = cleanReleaseNotes(release.body),
+                    asset = selectAssetForDevice(release.assets)
                 )
             } else {
                 Log.d(TAG, "Already on latest version")
@@ -100,6 +102,28 @@ object AppUpdateChecker {
         }
     }
 
+    /**
+     * 检查并在有新版时发一条通知（旧入口，保留兼容）。
+     */
+    suspend fun checkAndNotify(
+        context: Context,
+        forceNotify: Boolean = false
+    ): UpdateCheckResult {
+        val result = check(context)
+        if (result is UpdateCheckResult.UpdateAvailable) {
+            val notifyKey = result.latestVersion + ":" + (result.latestVersionCode?.toString() ?: "")
+            val lastNotifiedVersion = getLastNotifiedVersion(context)
+            if (forceNotify || lastNotifiedVersion != notifyKey) {
+                if (showUpdateNotification(context, result.latestVersion, result.releaseNotes, result.releaseUrl)) {
+                    setLastNotifiedVersion(context, notifyKey)
+                }
+            } else {
+                Log.d(TAG, "Already notified for version ${result.latestVersion}, skipping")
+            }
+        }
+        return result
+    }
+
     private fun getCurrentVersion(context: Context): String {
         return try {
             val packageInfo = context.packageManager.getPackageInfo(context.packageName, 0)
@@ -108,6 +132,43 @@ object AppUpdateChecker {
             Log.e(TAG, "Failed to get current version", e)
             "0.0.0"
         }
+    }
+
+    private fun getCurrentVersionCode(context: Context): Long {
+        return try {
+            val packageInfo = context.packageManager.getPackageInfo(context.packageName, 0)
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
+                packageInfo.longVersionCode
+            } else {
+                @Suppress("DEPRECATION")
+                packageInfo.versionCode.toLong()
+            }
+        } catch (e: Exception) {
+            Log.e(TAG, "Failed to get current version code", e)
+            0L
+        }
+    }
+
+    private fun parseReleaseVersionCode(body: String?): Long? {
+        if (body.isNullOrEmpty()) return null
+        return VERSION_CODE_COMMENT.find(body)?.groupValues?.get(1)?.toLongOrNull()
+    }
+
+    private fun cleanReleaseNotes(body: String?): String? {
+        if (body.isNullOrEmpty()) return null
+        return body.replace(VERSION_CODE_COMMENT, "").trim().ifEmpty { null }
+    }
+
+    /**
+     * 按本机支持的 ABI 顺序挑对应的 APK 资产（arm64 机型拿 arm64 包，v7a 拿 v7a 包）。
+     */
+    private fun selectAssetForDevice(assets: List<ReleaseAsset>?): ReleaseAsset? {
+        if (assets.isNullOrEmpty()) return null
+        for (abi in Build.SUPPORTED_ABIS) {
+            val match = assets.firstOrNull { it.name.endsWith(".apk") && it.name.contains(abi) }
+            if (match != null) return match
+        }
+        return assets.firstOrNull { it.name.endsWith(".apk") }
     }
 
     private suspend fun fetchLatestReleaseWithFallback(context: Context): GitHubRelease? {
@@ -207,7 +268,12 @@ object AppUpdateChecker {
         return cleanVersion.split(".").mapNotNull { it.toIntOrNull() }
     }
 
-    private fun showUpdateNotification(context: Context, release: GitHubRelease): Boolean {
+    private fun showUpdateNotification(
+        context: Context,
+        version: String,
+        body: String?,
+        htmlUrl: String
+    ): Boolean {
         if (!canPostNotifications(context)) {
             Log.w(TAG, "Notification permission not granted, update notification skipped")
             return false
@@ -215,9 +281,7 @@ object AppUpdateChecker {
 
         createNotificationChannel(context)
 
-        val version = release.tagName.removePrefix("v")
-
-        val intent = Intent(Intent.ACTION_VIEW, Uri.parse(release.htmlUrl))
+        val intent = Intent(Intent.ACTION_VIEW, Uri.parse(htmlUrl))
         val pendingIntent = PendingIntent.getActivity(
             context,
             0,
@@ -235,7 +299,7 @@ object AppUpdateChecker {
             .setStyle(NotificationCompat.BigTextStyle().bigText(
                 buildString {
                     append(content)
-                    release.body?.let { notes ->
+                    body?.let { notes ->
                         append("\n\n")
 
                         val truncatedNotes = if (notes.length > 200) {
@@ -302,8 +366,10 @@ sealed class UpdateCheckResult {
     data class UpdateAvailable(
         val currentVersion: String,
         val latestVersion: String,
+        val latestVersionCode: Long?,
         val releaseUrl: String,
-        val releaseNotes: String?
+        val releaseNotes: String?,
+        val asset: AppUpdateChecker.ReleaseAsset?
     ) : UpdateCheckResult()
 
     data class UpToDate(val currentVersion: String) : UpdateCheckResult()

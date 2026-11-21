@@ -181,7 +181,10 @@ fun SingBoxApp() {
 
             kotlinx.coroutines.delay(1000L)
             updateChecked = true
-            com.mubox.app.utils.AppUpdateChecker.checkAndNotify(context)
+            val result = com.mubox.app.utils.AppUpdateChecker.check(context)
+            if (result is com.mubox.app.utils.UpdateCheckResult.UpdateAvailable) {
+                com.mubox.app.utils.UpdateUiEvents.post(result)
+            }
         }
     }
 
@@ -190,7 +193,10 @@ fun SingBoxApp() {
         kotlinx.coroutines.delay(10000L)
         if (!updateChecked) {
             updateChecked = true
-            com.mubox.app.utils.AppUpdateChecker.checkAndNotify(context)
+            val result = com.mubox.app.utils.AppUpdateChecker.check(context)
+            if (result is com.mubox.app.utils.UpdateCheckResult.UpdateAvailable) {
+                com.mubox.app.utils.UpdateUiEvents.post(result)
+            }
         }
     }
 
@@ -431,6 +437,15 @@ fun SingBoxApp() {
                     )
                 }
             }
+        }
+
+        // 内置更新弹窗：启动自动检查或设置页手动检查发现新版时统一在此弹出
+        val pendingUpdate by com.mubox.app.utils.UpdateUiEvents.pending.collectAsStateWithLifecycle()
+        pendingUpdate?.let { update ->
+            com.mubox.app.ui.components.AppUpdateDialog(
+                update = update,
+                onDismiss = { com.mubox.app.utils.UpdateUiEvents.clear() }
+            )
         }
     }
 }
