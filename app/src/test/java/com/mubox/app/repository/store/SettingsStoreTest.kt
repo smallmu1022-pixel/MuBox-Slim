@@ -1,0 +1,398 @@
+package com.mubox.app.repository.store
+
+import com.google.gson.Gson
+import com.mubox.app.database.entity.SettingsEntity
+import com.mubox.app.model.AppSettings
+import com.mubox.app.model.AppThemeStyle
+import com.mubox.app.model.AppGroup
+import com.mubox.app.model.AppInfo
+import com.mubox.app.model.AppRule
+import com.mubox.app.model.RuleSetOutboundMode
+import com.mubox.app.model.TrafficCaptureMode
+import org.junit.Assert.assertEquals
+import org.junit.Assert.assertFalse
+import org.junit.Assert.assertTrue
+import org.junit.Test
+import java.io.File
+
+class SettingsStoreTest {
+
+    @Test
+    fun testMigrateSettingsMapsLegacyTunModesToTrafficCaptureMode() {
+        val vpn = SettingsStore.migrateSettings(
+            version = 12,
+            settings = AppSettings(tunEnabled = true, trafficCaptureMode = null)
+        )
+        val proxy = SettingsStore.migrateSettings(
+            version = 12,
+            settings = AppSettings(tunEnabled = false, trafficCaptureMode = null)
+        )
+
+        assertEquals(TrafficCaptureMode.VPN, vpn.trafficCaptureMode)
+        assertEquals(TrafficCaptureMode.PROXY_ONLY, proxy.trafficCaptureMode)
+        assertTrue(vpn.tunEnabled)
+        assertFalse(proxy.tunEnabled)
+    }
+
+    @Test
+    fun testMigrateSettingsKeepsExplicitRootTrafficCaptureMode() {
+        val migrated = SettingsStore.migrateSettings(
+            version = SettingsEntity.CURRENT_VERSION,
+            settings = AppSettings(
+                tunEnabled = true,
+                trafficCaptureMode = TrafficCaptureMode.ROOT_TRANSPARENT
+            )
+        )
+
+        assertEquals(TrafficCaptureMode.ROOT_TRANSPARENT, migrated.trafficCaptureMode)
+        assertFalse(migrated.tunEnabled)
+    }
+
+    @Test
+    fun testMigrateSettingsReplacesLegacyLocalDnsAtVersionFour() {
+        val migrated = SettingsStore.migrateSettings(
+            version = 3,
+            settings = AppSettings(localDns = AppSettings.LEGACY_LOCAL_DNS)
+        )
+
+        assertEquals(AppSettings.DEFAULT_LOCAL_DNS, migrated.localDns)
+    }
+
+    @Test
+    fun testMigrateSettingsKeepsCustomLocalDns() {
+        val customDns = "https://dns.google/dns-query"
+        val migrated = SettingsStore.migrateSettings(
+            version = 3,
+            settings = AppSettings(localDns = customDns)
+        )
+
+        assertEquals(customDns, migrated.localDns)
+    }
+
+    @Test
+    fun testMigrateSettingsReplacesDomainLocalDnsWithIpDoh() {
+        val migrated = SettingsStore.migrateSettings(
+            version = 9,
+            settings = AppSettings(localDns = AppSettings.LEGACY_DOMAIN_LOCAL_DNS)
+        )
+
+        assertEquals(AppSettings.DEFAULT_LOCAL_DNS, migrated.localDns)
+    }
+
+    @Test
+    fun testMigrateSettingsReplacesOldVersionLocalDefaultWithDoh() {
+        val migrated = SettingsStore.migrateSettings(
+            version = 2,
+            settings = AppSettings(localDns = "223.5.5.5")
+        )
+
+        assertEquals(AppSettings.DEFAULT_LOCAL_DNS, migrated.localDns)
+    }
+
+    @Test
+    fun testMigrateSettingsNormalizesNullAppOutboundModesToProxy() {
+        val migrated = SettingsStore.migrateSettings(
+            version = 4,
+            settings = AppSettings(
+                appRules = listOf(
+                    AppRule(
+                        packageName = "com.example.x",
+                        appName = "X",
+                        outboundMode = null
+                    )
+                ),
+                appGroups = listOf(
+                    AppGroup(
+                        name = "social",
+                        apps = listOf(AppInfo(packageName = "com.example.y", appName = "Y")),
+                        outboundMode = null
+                    )
+                )
+            )
+        )
+
+        assertTrue(migrated.appRules.isEmpty())
+        assertEquals(2, migrated.appGroups.size)
+        assertTrue(migrated.appGroups.all { it.outboundMode == RuleSetOutboundMode.PROXY })
+    }
+
+    @Test
+    fun testMigrateSettingsConvertsLegacyAppRulesToGroups() {
+        val migrated = SettingsStore.migrateSettings(
+            version = 10,
+            settings = AppSettings(
+                appRules = listOf(
+                    AppRule(
+                        id = "old",
+                        packageName = "com.example.duplicate",
+                        appName = "Old",
+                        outboundMode = RuleSetOutboundMode.DIRECT
+                    ),
+                    AppRule(
+                        id = "latest",
+                        packageName = " com.example.duplicate ",
+                        appName = "Latest",
+                        outboundMode = RuleSetOutboundMode.PROXY
+                    ),
+                    AppRule(
+                        id = "grouped",
+                        packageName = "com.example.grouped",
+                        appName = "Hidden"
+                    )
+                ),
+                appGroups = listOf(
+                    AppGroup(
+                        id = "existing",
+                        name = "Existing",
+                        apps = listOf(AppInfo("com.example.grouped", "Grouped"))
+                    )
+                )
+            )
+        )
+
+        assertTrue(migrated.appRules.isEmpty())
+        assertEquals(listOf("legacy-rule-latest", "existing"), migrated.appGroups.map { it.id })
+        assertEquals("Latest", migrated.appGroups.first().name)
+        assertEquals("com.example.duplicate", migrated.appGroups.first().apps.single().packageName)
+    }
+
+    @Test
+    fun testMigrateSettingsEnablesAutoRouteForLegacyTunSettings() {
+        val migrated = SettingsStore.migrateSettings(
+            version = 5,
+            settings = AppSettings(autoRoute = false, strictRoute = true)
+        )
+
+        assertTrue(migrated.autoRoute)
+        assertTrue(migrated.strictRoute)
+    }
+
+    @Test
+    fun testDefaultFakeIpRangeIncludesIpv4AndIpv6Ranges() {
+        assertEquals("198.18.0.0/15,fc00::/18", AppSettings().fakeIpRange)
+    }
+
+    @Test
+    fun testDefaultAppThemeStyleIsDefault() {
+        assertEquals(AppThemeStyle.DEFAULT, AppSettings().appThemeStyle)
+    }
+
+    @Test
+    fun testMigrateSettingsAddsIpv6RangeToLegacyDefaultFakeIpRange() {
+        val migrated = SettingsStore.migrateSettings(
+            version = 6,
+            settings = AppSettings(fakeIpRange = "198.18.0.0/15")
+        )
+
+        assertEquals("198.18.0.0/15,fc00::/18", migrated.fakeIpRange)
+    }
+
+    @Test
+    fun testMigrateSettingsRecoversNullFakeIpRange() {
+        val settings = Gson().fromJson("""{"fakeIpRange":null}""", AppSettings::class.java)
+
+        val migrated = SettingsStore.migrateSettings(version = 6, settings = settings)
+
+        assertEquals(AppSettings.DEFAULT_FAKE_IP_RANGE, migrated.fakeIpRange)
+    }
+
+    @Test
+    fun testMigrateSettingsRecoversNullFakeIpRangeAtCurrentVersion() {
+        val settings = Gson().fromJson("""{"fakeIpRange":null}""", AppSettings::class.java)
+
+        val migrated = SettingsStore.migrateSettings(version = SettingsEntity.CURRENT_VERSION, settings = settings)
+
+        assertEquals(AppSettings.DEFAULT_FAKE_IP_RANGE, migrated.fakeIpRange)
+    }
+
+    @Test
+    fun testMigrateSettingsNormalizesLatencyTestUrlAtCurrentVersion() {
+        val missing = Gson().fromJson("""{"latencyTestUrl":null}""", AppSettings::class.java)
+        val invalid = AppSettings(latencyTestUrl = "ftp://probe.example/file")
+        val valid = AppSettings(latencyTestUrl = "  http://probe.example/204  ")
+        val unsafeValues = listOf(
+            "http://user@probe.example/204",
+            "http://localhost/204",
+            "http://127.0.0.1/204",
+            "http://192.168.1.2/204",
+            "http://[::1]/204"
+        )
+
+        assertEquals(
+            AppSettings.DEFAULT_LATENCY_TEST_URL,
+            SettingsStore.migrateSettings(SettingsEntity.CURRENT_VERSION, missing).latencyTestUrl
+        )
+        assertEquals(
+            AppSettings.DEFAULT_LATENCY_TEST_URL,
+            SettingsStore.migrateSettings(SettingsEntity.CURRENT_VERSION, invalid).latencyTestUrl
+        )
+        assertEquals(
+            "http://probe.example/204",
+            SettingsStore.migrateSettings(SettingsEntity.CURRENT_VERSION, valid).latencyTestUrl
+        )
+        unsafeValues.forEach { value ->
+            assertEquals(
+                AppSettings.DEFAULT_LATENCY_TEST_URL,
+                SettingsStore.migrateSettings(
+                    SettingsEntity.CURRENT_VERSION,
+                    AppSettings(latencyTestUrl = value)
+                ).latencyTestUrl
+            )
+        }
+        assertEquals(true, runCatching { AppSettings.latencyTestUri("ftp://probe.example/file") }.isFailure)
+    }
+
+    @Test
+    fun testRemovedLegacySettingsAreIgnoredAndNotReserialized() {
+        val gson = Gson()
+        val settings = gson.fromJson(
+            """
+            {
+              "wakeResetConnections": false,
+              "tunInterfaceName": "custom0",
+              "tunAddress": {"ipv4":"10.0.0.1/30","ipv6":"fd10::1/126"},
+              "endpointIndependentNat": false,
+              "proxyPort": 3080
+            }
+            """.trimIndent(),
+            AppSettings::class.java
+        )
+
+        assertEquals(3080, settings.proxyPort)
+        val serialized = gson.toJson(settings)
+        listOf(
+            "wakeResetConnections",
+            "tunInterfaceName",
+            "tunAddress",
+            "endpointIndependentNat"
+        ).forEach { removedField ->
+            assertFalse(serialized.contains(removedField))
+        }
+    }
+
+    @Test
+    fun testMigrateSettingsRecoversNullTrustedWifiSsids() {
+        val settings = Gson().fromJson("""{"trustedWifiSsids":null}""", AppSettings::class.java)
+
+        val migrated = SettingsStore.migrateSettings(version = 7, settings = settings)
+
+        assertEquals("", migrated.trustedWifiSsids)
+    }
+
+    @Test
+    fun testMigrateSettingsRecoversNullAppThemeStyle() {
+        val settings = Gson().fromJson("""{"appThemeStyle":null}""", AppSettings::class.java)
+
+        val migrated = SettingsStore.migrateSettings(version = 8, settings = settings)
+
+        assertEquals(AppThemeStyle.DEFAULT, migrated.appThemeStyle)
+    }
+
+    @Test
+    fun testShouldPersistCurrentVersionWhenMigrationChangesSettings() {
+        val loaded = Gson().fromJson("""{"fakeIpRange":null}""", AppSettings::class.java)
+        val migrated = SettingsStore.migrateSettings(version = SettingsEntity.CURRENT_VERSION, settings = loaded)
+
+        assertTrue(
+            SettingsStore.shouldPersistMigratedSettings(
+                version = SettingsEntity.CURRENT_VERSION,
+                loaded = loaded,
+                migrated = migrated
+            )
+        )
+    }
+
+    @Test
+    fun testShouldNotPersistCurrentVersionWhenMigrationDoesNotChangeSettings() {
+        val loaded = AppSettings()
+        val migrated = SettingsStore.migrateSettings(version = SettingsEntity.CURRENT_VERSION, settings = loaded)
+
+        assertFalse(
+            SettingsStore.shouldPersistMigratedSettings(
+                version = SettingsEntity.CURRENT_VERSION,
+                loaded = loaded,
+                migrated = migrated
+            )
+        )
+    }
+
+    @Test
+    fun testMigrateSettingsRepairsDuplicateAppAssignmentsAtCurrentVersion() {
+        val loaded = AppSettings(
+            appRules = listOf(
+                AppRule(id = "rule", packageName = "com.shared", appName = "Shared")
+            ),
+            appGroups = listOf(
+                AppGroup(
+                    id = "group-a",
+                    name = "A",
+                    apps = listOf(AppInfo(packageName = "com.shared", appName = "Shared"))
+                ),
+                AppGroup(
+                    id = "group-b",
+                    name = "B",
+                    apps = listOf(AppInfo(packageName = "com.shared", appName = "Shared"))
+                )
+            )
+        )
+
+        val migrated = SettingsStore.migrateSettings(SettingsEntity.CURRENT_VERSION, loaded)
+
+        assertTrue(migrated.appRules.isEmpty())
+        assertTrue(migrated.appGroups[0].apps.isEmpty())
+        assertEquals(listOf("com.shared"), migrated.appGroups[1].apps.map { it.packageName })
+        assertTrue(
+            SettingsStore.shouldPersistMigratedSettings(
+                version = SettingsEntity.CURRENT_VERSION,
+                loaded = loaded,
+                migrated = migrated
+            )
+        )
+    }
+
+    @Test
+    fun testFailedSettingsPersistenceRollsBackInMemorySettings() {
+        val previous = AppSettings(localDns = "https://old.example/dns-query")
+        val updated = previous.copy(localDns = "https://new.example/dns-query")
+
+        val result = SettingsStore.resolveSettingsAfterPersistence(
+            previous = previous,
+            updated = updated,
+            persisted = false
+        )
+
+        assertEquals(previous, result)
+    }
+
+    @Test
+    fun testSuccessfulSettingsPersistenceKeepsUpdatedSettings() {
+        val previous = AppSettings(localDns = "https://old.example/dns-query")
+        val updated = previous.copy(localDns = "https://new.example/dns-query")
+
+        val result = SettingsStore.resolveSettingsAfterPersistence(
+            previous = previous,
+            updated = updated,
+            persisted = true
+        )
+
+        assertEquals(updated, result)
+    }
+
+    @Test
+    fun settingsStoreDoesNotUseSynchronousSettingsDaoMethods() {
+        val storeSource = File("src/main/java/com/mubox/app/repository/store/SettingsStore.kt").readText()
+        val daoSource = File("src/main/java/com/mubox/app/database/dao/SettingsDao.kt").readText()
+
+        assertTrue(storeSource.contains("runBlocking(Dispatchers.IO)"))
+        assertTrue(storeSource.contains("private suspend fun loadSettings()"))
+        assertTrue(storeSource.contains("suspend fun reload()"))
+        assertTrue(storeSource.contains("settingsDao.getSettings()"))
+        assertTrue(storeSource.contains("settingsDao.hasSettings()"))
+        assertFalse(storeSource.contains("getSettingsSync"))
+        assertFalse(storeSource.contains("saveSettingsSync"))
+        assertFalse(storeSource.contains("hasSettingsSync"))
+        assertFalse(daoSource.contains("getSettingsSync"))
+        assertFalse(daoSource.contains("saveSettingsSync"))
+        assertFalse(daoSource.contains("hasSettingsSync"))
+    }
+}

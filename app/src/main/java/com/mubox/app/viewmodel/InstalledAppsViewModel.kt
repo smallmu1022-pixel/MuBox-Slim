@@ -1,0 +1,40 @@
+package com.mubox.app.viewmodel
+
+import android.app.Application
+import android.graphics.Bitmap
+import androidx.lifecycle.AndroidViewModel
+import androidx.lifecycle.viewModelScope
+import com.mubox.app.model.InstalledAppUi
+import com.mubox.app.repository.InstalledAppsRepository
+import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.launch
+
+class InstalledAppsViewModel(application: Application) : AndroidViewModel(application) {
+
+    private val repository = InstalledAppsRepository.getInstance(application)
+
+    /** 加载状态 */
+    val loadingState: StateFlow<InstalledAppsRepository.LoadingState> = repository.loadingState
+
+    val appItems: StateFlow<List<InstalledAppUi>> = repository.appItems
+
+    val installedPackageNames: StateFlow<Set<String>> = repository.installedPackageNames
+
+    fun loadAppsIfNeeded() {
+        if (repository.needsLoading()) {
+            viewModelScope.launch {
+                repository.loadApps()
+            }
+        }
+    }
+
+    fun reloadApps() {
+        viewModelScope.launch {
+            repository.reloadApps()
+        }
+    }
+
+    suspend fun loadIcon(packageName: String): Bitmap? = repository.loadIcon(packageName)
+
+    suspend fun loadIcons(packageNames: Collection<String>): Map<String, Bitmap> = repository.loadIcons(packageNames)
+}

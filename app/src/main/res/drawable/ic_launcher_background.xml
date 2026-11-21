@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="108dp"
+    android:height="108dp"
+    android:viewportWidth="108"
+    android:viewportHeight="108">
+    <!-- Gray-white rounded tile -->
+    <path
+        android:fillColor="#EFF1F4"
+        android:pathData="M30,6 L78,6 A24,24 0 0 1 102,30 L102,78 A24,24 0 0 1 78,102 L30,102 A24,24 0 0 1 6,78 L6,30 A24,24 0 0 1 30,6 Z"/>
+</vector>

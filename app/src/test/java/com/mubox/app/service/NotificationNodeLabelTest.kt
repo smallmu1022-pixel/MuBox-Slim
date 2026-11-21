@@ -1,0 +1,151 @@
+package com.mubox.app.service
+
+import com.mubox.app.model.Outbound
+import com.mubox.app.model.SingBoxConfig
+import com.mubox.app.repository.RuntimeNodeRef
+import org.junit.Assert.assertEquals
+import org.junit.Assert.assertNull
+import org.junit.Test
+
+class NotificationNodeLabelTest {
+
+    @Test
+    fun resolveNodeLabel_prefersRuntimeOverSelectedAndStored() {
+        val label = resolveNotificationNodeLabel(
+            selectedNodeName = "手选节点",
+            selectedNodeStoreLabel = "存储节点",
+            runtimeNodeName = "运行态节点"
+        )
+
+        assertEquals("运行态节点", label)
+    }
+
+    @Test
+    fun resolveNodeLabel_fallsBackToStoredWhenRuntimeBlank() {
+        val label = resolveNotificationNodeLabel(
+            selectedNodeName = "手选节点",
+            selectedNodeStoreLabel = "存储节点",
+            runtimeNodeName = "  "
+        )
+
+        assertEquals("存储节点", label)
+    }
+
+    @Test
+    fun resolveNodeLabel_fallsBackToSelectedWhenRuntimeAndStoredMissing() {
+        val label = resolveNotificationNodeLabel(
+            selectedNodeName = "手选节点"
+        )
+
+        assertEquals("手选节点", label)
+    }
+
+    @Test
+    fun resolveNodeLabel_returnsNullWhenAllBlank() {
+        val label = resolveNotificationNodeLabel(
+            selectedNodeName = null,
+            selectedNodeStoreLabel = "",
+            runtimeNodeName = null
+        )
+
+        assertNull(label)
+    }
+
+    @Test
+    fun confirmedProxyRuntimeLabelTrustsKernelTagWithoutRepositoryMapping() {
+        assertEquals(
+            "香港节点",
+            resolveConfirmedProxyRuntimeLabel(
+                kernelResolvedTag = "香港节点",
+                preferredTag = "香港节点",
+                currentRuntimeTag = "日本节点"
+            )
+        )
+    }
+
+    @Test
+    fun confirmedProxyRuntimeLabelKeepsConcreteStateForUnresolvedAutoGroup() {
+        assertEquals(
+            "现有节点",
+            resolveConfirmedProxyRuntimeLabel(
+                kernelResolvedTag = null,
+                preferredTag = "P:配置#AUTO",
+                currentRuntimeTag = "现有节点"
+            )
+        )
+        assertNull(
+            resolveConfirmedProxyRuntimeLabel(
+                kernelResolvedTag = null,
+                preferredTag = "P:配置#AUTO",
+                currentRuntimeTag = null
+            )
+        )
+    }
+
+    @Test
+    fun runtimeNodeLabelRestoresDisplayNameFromExactRuntimeMapping() {
+        val internalTag = "🇺🇸 AnyTLS | 美国 24#973db114"
+        val mappings = mapOf(
+            internalTag to RuntimeNodeRef(
+                nodeId = "node-id",
+                nodeName = "🇺🇸 AnyTLS | 美国 24"
+            )
+        )
+
+        assertEquals(
+            "🇺🇸 AnyTLS | 美国 24",
+            resolveRuntimeNodeLabel(internalTag, mappings)
+        )
+        assertEquals(
+            "用户自定义#合法名称",
+            resolveRuntimeNodeLabel("用户自定义#合法名称", mappings)
+        )
+    }
+
+    @Test
+    fun resolveStartupProxyTagPrefersExplicitThenDefaultThenFirstOutbound() {
+        val proxy = Outbound(type = "selector", tag = "PROXY", outbounds = listOf("node-a"))
+
+        assertEquals("node-c", resolveStartupProxyTag(SingBoxConfig(), explicitTag = "node-c"))
+        assertEquals(
+            "node-b",
+            resolveStartupProxyTag(SingBoxConfig(outbounds = listOf(proxy.copy(default = "node-b"))))
+        )
+        assertEquals("node-a", resolveStartupProxyTag(SingBoxConfig(outbounds = listOf(proxy))))
+    }
+
+    @Test
+    fun resolveStartupProxyTagReturnsNullWithoutUsableProxySelector() {
+        assertNull(resolveStartupProxyTag(SingBoxConfig()))
+        assertNull(
+            resolveStartupProxyTag(
+                SingBoxConfig(outbounds = listOf(Outbound(type = "selector", tag = "PROXY")))
+            )
+        )
+    }
+
+    @Test
+    fun resolveStartupProxyTagDoesNotExposeAutomaticGroupAsConcreteNode() {
+        val autoTag = "P:profile#AUTO"
+        val config = SingBoxConfig(
+            outbounds = listOf(
+                Outbound(type = "selector", tag = "PROXY", outbounds = listOf(autoTag), default = autoTag),
+                Outbound(type = "urltest", tag = autoTag, outbounds = listOf("node-a")),
+                Outbound(type = "vless", tag = "node-a")
+            )
+        )
+
+        assertNull(resolveStartupProxyTag(config))
+        assertNull(resolveStartupProxyTag(config, explicitTag = autoTag))
+    }
+
+    @Test
+    fun resolveNodeLabel_usesCrossProcessSelectedNodeWhenRepositoryNodeIsStale() {
+        val label = resolveNotificationNodeLabel(
+            selectedNodeName = "上个配置节点",
+            selectedNodeStoreLabel = "新配置节点"
+        )
+
+        assertEquals("新配置节点", label)
+    }
+}

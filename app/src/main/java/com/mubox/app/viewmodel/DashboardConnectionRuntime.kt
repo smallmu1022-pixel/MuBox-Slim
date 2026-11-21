@@ -1,0 +1,143 @@
+@file:Suppress("TooManyFunctions", "Indentation", "InvalidPackageDeclaration", "MaxLineLength", "LoopWithTooManyJumpStatements", "LongMethod", "CognitiveComplexMethod", "ComplexCondition", "CyclomaticComplexMethod", "EmptyCatchBlock", "NestedBlockDepth", "ReturnCount", "SwallowedException", "TooGenericExceptionThrown", "UnusedParameter", "UnusedPrivateProperty", "VariableNaming", "NoUnusedImports", "MayBeConst")
+
+package com.mubox.app.viewmodel
+
+import android.app.Application
+import android.content.Intent
+import android.util.Log
+import androidx.lifecycle.viewModelScope
+import com.mubox.app.manager.VpnServiceManager
+import com.mubox.app.R
+import com.mubox.app.repository.*
+import com.mubox.app.model.ConnectionState
+import com.mubox.app.model.ConnectionStats
+import com.mubox.app.ipc.SingBoxRemote
+import com.mubox.app.service.VpnTileService
+import com.mubox.app.service.manager.VpnStopInitiator
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
+
+internal suspend fun DashboardViewModel.stopVpnRuntime() {
+    val context = getApplication<Application>()
+    val startWasNotDispatched = _connectionState.value == ConnectionState.Connecting &&
+        startCoreJob?.isActive == true &&
+        !startServiceDispatched
+    startCoreJob?.cancel()
+    startCoreJob = null
+    startMonitorJob?.cancel()
+    startMonitorJob = null
+    stopRequestedByUser = true
+    stopTrafficMonitorRuntime()
+    stopPingTestRuntime()
+    _connectionState.value = ConnectionState.Disconnecting
+    _connectedAtElapsedMs.value = null
+    _statsBase.value = ConnectionStats(0, 0, 0, 0, 0)
+    val stopResult = withContext(Dispatchers.IO) {
+        runCatching {
+            VpnTileService.persistVpnPending("stopping")
+            if (startWasNotDispatched) {
+                // 配置尚未提交给服务端时，不要为了停止而创建服务实例。
+                VpnTileService.persistVpnPending("")
+                Result.success(Unit)
+            } else {
+                VpnServiceManager.stopVpn(context, VpnStopInitiator.USER_UI)
+            }
+        }.getOrElse { Result.failure(it) }
+    }
+    if (stopResult.isFailure) {
+        Log.e(DashboardViewModel.TAG, "Failed to dispatch VPN stop", stopResult.exceptionOrNull())
+        stopRequestedByUser = false
+        _connectionState.value = ConnectionState.Error
+        return
+    }
+
+    startServiceDispatched = false
+    _connectionState.value = ConnectionState.Idle
+    _connectedAtElapsedMs.value = null
+    if (!startWasNotDispatched) {
+        viewModelScope.launch(Dispatchers.IO) {
+            runCatching {
+                context.startService(Intent(context, VpnTileService::class.java).apply {
+                    action = VpnTileService.ACTION_REFRESH_TILE
+                })
+            }.onFailure { Log.w(DashboardViewModel.TAG, "Failed to refresh VPN tile after stop", it) }
+        }
+    }
+}
+
+internal fun DashboardViewModel.startPingTestRuntime() {
+    if (_connectionState.value != ConnectionState.Connected || _isPingTesting.value) return
+
+    val targetNodeId = activeNodeId.value
+    if (targetNodeId.isNullOrBlank()) {
+        Log.w(DashboardViewModel.TAG, "No active node to test ping")
+        return
+    }
+
+    stopPingTestRuntime()
+    pingTestJob = viewModelScope.launch {
+        _isPingTesting.value = true
+        try {
+            configRepository.testNodeLatency(targetNodeId)
+        } catch (e: Exception) {
+            Log.e(DashboardViewModel.TAG, "Error during ping test", e)
+        } finally {
+            _isPingTesting.value = false
+        }
+    }
+}
+
+internal fun DashboardViewModel.stopPingTestRuntime() {
+    pingTestJob?.cancel()
+    pingTestJob = null
+    _isPingTesting.value = false
+}
+
+internal fun DashboardViewModel.onVpnPermissionResultRuntime(granted: Boolean, startCore: () -> Unit) {
+    _vpnPermissionNeeded.value = false
+    if (!granted) {
+        startGraceUntilElapsedMs = null
+        startMonitorJob?.cancel()
+        startMonitorJob = null
+        _connectionState.value = ConnectionState.Idle
+        return
+    }
+    startCore()
+}
+
+internal fun DashboardViewModel.updateAllSubscriptionsRuntime() {
+    viewModelScope.launch {
+        emitToast(getApplication<Application>().getString(R.string.common_loading))
+        val result = configRepository.updateAllProfiles()
+        emitToast(result.toDisplayMessage(getApplication()))
+    }
+}
+
+internal fun DashboardViewModel.testAllNodesLatencyRuntime() {
+    viewModelScope.launch {
+        val targetNodeIds = configRepository.nodes.value.map { it.id }
+        if (targetNodeIds.isEmpty()) return@launch
+        emitToast(getApplication<Application>().getString(R.string.common_loading))
+        configRepository.testAllNodesLatency(targetNodeIds = targetNodeIds)
+        emitToast(getApplication<Application>().getString(R.string.dashboard_test_complete))
+    }
+}
+
+internal fun DashboardViewModel.getActiveProfileNameRuntime(): String? =
+    activeProfileId.value?.let { activeId -> profiles.value.find { it.id == activeId }?.name }
+
+internal fun DashboardViewModel.getActiveNodeNameRuntime(): String? {
+    val selectedName = activeNodeId.value?.let { activeId ->
+        configRepository.getNodeById(activeId)?.displayName
+    }
+    return resolveDashboardDisplayedNodeName(
+        connectionState = _connectionState.value,
+        runtimeLabel = SingBoxRemote.activeLabel.value,
+        selectedNodeDisplayName = selectedName
+    )
+}
+
+private fun DashboardViewModel.stopTrafficMonitorRuntime() {
+    trafficMonitor.stop()
+}
