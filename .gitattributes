@@ -1,0 +1,20 @@
+# Text files
+*.md text
+*.txt text
+*.kt text
+*.java text
+*.xml text
+*.json text
+*.properties text
+*.sh text eol=lf
+gradlew text eol=lf
+# Binary files
+*.aar binary
+*.jar binary
+*.so binary
+*.png binary
+*.jpg binary
+*.jks binary
+*.keystore binary
+app/libs/libbox.aar filter=lfs diff=lfs merge=lfs -text
+.kernel-sync-local/patches/*.patch -text -whitespace

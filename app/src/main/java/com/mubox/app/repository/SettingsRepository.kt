@@ -1,0 +1,801 @@
+package com.mubox.app.repository
+
+import android.content.Context
+import android.util.Log
+import com.mubox.app.model.AppSettings
+import com.mubox.app.model.CustomRule
+import com.mubox.app.model.DefaultRule
+import com.mubox.app.model.DnsStrategy
+import com.mubox.app.model.RoutingMode
+import com.mubox.app.model.AppGroup
+import com.mubox.app.model.RuleSet
+import com.mubox.app.model.RuleSetOutboundMode
+import com.mubox.app.model.RuleSetType
+import com.mubox.app.model.TunStack
+import com.mubox.app.model.TrafficCaptureMode
+import com.mubox.app.model.LatencyTestMethod
+import com.mubox.app.model.VpnAppMode
+import com.mubox.app.model.VpnRouteMode
+import com.mubox.app.model.GhProxyMirror
+import com.mubox.app.model.IpVersionMode
+import com.mubox.app.model.AppThemeMode
+import com.mubox.app.model.AppThemeStyle
+import com.mubox.app.model.AppLanguage
+import com.mubox.app.model.NodeSortType
+import com.mubox.app.model.NodeFilter
+import com.mubox.app.model.BackgroundPowerSavingDelay
+import com.mubox.app.model.PerAppVpnPolicy
+import com.mubox.app.repository.store.SettingsStore
+import com.mubox.app.utils.LocaleHelper
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.MutableSharedFlow
+import kotlinx.coroutines.flow.SharedFlow
+import kotlinx.coroutines.flow.asSharedFlow
+import kotlinx.coroutines.flow.StateFlow
+
+data class PerAppPolicyUpdateResult(
+    val changed: Boolean,
+    val runtimeChanged: Boolean,
+    val revision: Long
+)
+
+class SettingsRepository(private val context: Context) {
+
+    private val settingsStore = SettingsStore.getInstance(context)
+
+    fun getDefaultRuleSets(): List<RuleSet> {
+        val geositeBase = "https://raw.githubusercontent.com/SagerNet/sing-geosite/rule-set"
+        val geoipBase = "https://raw.githubusercontent.com/SagerNet/sing-geoip/rule-set"
+        return listOf(
+            RuleSet(
+                tag = "geosite-cn",
+                type = RuleSetType.REMOTE,
+                url = "$geositeBase/geosite-cn.srs",
+                enabled = false,
+                outboundMode = RuleSetOutboundMode.DIRECT
+            ),
+            RuleSet(
+                tag = "geoip-cn",
+                type = RuleSetType.REMOTE,
+                url = "$geoipBase/geoip-cn.srs",
+                enabled = false,
+                outboundMode = RuleSetOutboundMode.DIRECT
+            ),
+            RuleSet(
+                tag = "geosite-geolocation-!cn",
+                type = RuleSetType.REMOTE,
+                url = "$geositeBase/geosite-geolocation-!cn.srs",
+                enabled = false,
+                outboundMode = RuleSetOutboundMode.PROXY
+            ),
+            RuleSet(
+                tag = "geosite-category-ads-all",
+                type = RuleSetType.REMOTE,
+                url = "$geositeBase/geosite-category-ads-all.srs",
+                enabled = false,
+                outboundMode = RuleSetOutboundMode.BLOCK
+            ),
+            RuleSet(
+                tag = "geosite-private",
+                type = RuleSetType.REMOTE,
+                url = "$geositeBase/geosite-private.srs",
+                enabled = false,
+                outboundMode = RuleSetOutboundMode.DIRECT
+            )
+        )
+    }
+
+    val settings: StateFlow<AppSettings> = settingsStore.settings
+
+    suspend fun reloadFromStorage() {
+        settingsStore.reload()
+        repairInvalidEnabledRuleSets()
+    }
+
+    private suspend fun repairInvalidEnabledRuleSets() {
+        val current = settings.value
+        if (current.ruleSets.none { it.enabled }) return
+
+        val ruleSetRepo = RuleSetRepository.getInstance(context)
+        val repaired = current.ruleSets.map { ruleSet ->
+            if (!ruleSet.enabled) return@map ruleSet
+            if (ruleSetRepo.prefetchRuleSet(ruleSet, allowNetwork = false)) return@map ruleSet
+
+            Log.w("SettingsRepository", "Disabling unavailable rule set ${ruleSet.tag}")
+            ruleSet.copy(enabled = false)
+        }
+        if (repaired == current.ruleSets) return
+
+        if (!settingsStore.updateSettingsAndWait { it.copy(ruleSets = repaired) }) {
+            Log.e("SettingsRepository", "Failed to persist repaired rule set state")
+        }
+    }
+
+    suspend fun replaceImportedSettings(imported: AppSettings, importRules: Boolean) {
+        // ponytail: 导入不带规则集文件；未验证同来源缓存时先关闭，后台下载后由用户手动启用。
+        val safeImported = if (importRules) {
+            val previousRuleSets = settings.value.ruleSets
+            val ruleSetRepo = RuleSetRepository.getInstance(context)
+            imported.copy(ruleSets = imported.ruleSets.map { ruleSet ->
+                if (!ruleSet.enabled) return@map ruleSet
+                val previous = previousRuleSets.firstOrNull { it.tag == ruleSet.tag }
+                val ready = ruleSetRepo.prefetchRuleSet(
+                    ruleSet,
+                    allowNetwork = false,
+                    requireSource = ruleSet.type == RuleSetType.REMOTE &&
+                        !RuleSetRepository.canUseLegacyRuleSetCache(ruleSet, previous)
+                )
+                ruleSet.copy(enabled = ready)
+            })
+        } else {
+            imported
+        }
+        val persisted = settingsStore.updateSettingsAndWait { current ->
+            buildImportedSettings(current = current, imported = safeImported, importRules = importRules)
+        }
+        if (!persisted) {
+            throw IllegalStateException("Failed to persist imported settings")
+        }
+        LocaleHelper.saveLanguageCache(context, safeImported.appLanguage)
+        notifyRestartRequired()
+    }
+
+    private suspend fun updateSettingsAndNotifyRestart(update: (AppSettings) -> AppSettings): Boolean {
+        val persisted = settingsStore.updateSettingsAndWait(update)
+        if (persisted) notifyRestartRequired()
+        return persisted
+    }
+
+    suspend fun setAutoConnect(value: Boolean) {
+        settingsStore.updateSettingsAndWait { it.copy(autoConnect = value) }
+    }
+
+    suspend fun setNetworkAutoSwitchEnabled(value: Boolean) {
+        settingsStore.updateSettingsAndWait { it.copy(networkAutoSwitchEnabled = value) }
+    }
+
+    suspend fun setTrustedWifiSsids(value: String) {
+        settingsStore.updateSettingsAndWait { it.copy(trustedWifiSsids = value) }
+    }
+
+    suspend fun setExcludeFromRecent(value: Boolean) {
+        settingsStore.updateSettingsAndWait { it.copy(excludeFromRecent = value) }
+    }
+
+    suspend fun setAppTheme(value: AppThemeMode) {
+        settingsStore.updateSettingsAndWait { it.copy(appTheme = value) }
+    }
+
+    suspend fun setAppThemeStyle(value: AppThemeStyle) {
+        settingsStore.updateSettingsAndWait { it.copy(appThemeStyle = value) }
+    }
+
+    suspend fun setAppLanguage(value: AppLanguage) {
+        if (settingsStore.updateSettingsAndWait { it.copy(appLanguage = value) }) {
+            LocaleHelper.saveLanguageCache(context, value)
+        }
+    }
+
+    suspend fun setShowNotificationSpeed(value: Boolean) {
+        settingsStore.updateSettingsAndWait { it.copy(showNotificationSpeed = value) }
+    }
+
+    suspend fun setTunEnabled(value: Boolean) {
+        setTrafficCaptureMode(if (value) TrafficCaptureMode.VPN else TrafficCaptureMode.PROXY_ONLY)
+    }
+
+    suspend fun setTrafficCaptureMode(value: TrafficCaptureMode) {
+        updateSettingsAndNotifyRestart {
+            it.copy(
+                trafficCaptureMode = value,
+                tunEnabled = value == TrafficCaptureMode.VPN
+            )
+        }
+    }
+
+    suspend fun setTunStack(value: TunStack) {
+        updateSettingsAndNotifyRestart { it.copy(tunStack = value) }
+    }
+
+    suspend fun setIpVersionMode(value: IpVersionMode) {
+        updateSettingsAndNotifyRestart { it.copy(ipVersionMode = value) }
+    }
+
+    suspend fun setTunMtu(value: Int) {
+        updateSettingsAndNotifyRestart { it.copy(tunMtu = value) }
+    }
+
+    suspend fun setTunMtuAuto(value: Boolean) {
+        updateSettingsAndNotifyRestart { it.copy(tunMtuAuto = value) }
+    }
+
+    suspend fun setAutoRoute(value: Boolean) {
+        updateSettingsAndNotifyRestart { it.copy(autoRoute = value) }
+    }
+
+    suspend fun setStrictRoute(value: Boolean) {
+        updateSettingsAndNotifyRestart { it.copy(strictRoute = value) }
+    }
+
+    suspend fun setVpnRouteMode(value: VpnRouteMode) {
+        updateSettingsAndNotifyRestart { it.copy(vpnRouteMode = value) }
+    }
+
+    suspend fun setVpnRouteIncludeCidrs(value: String) {
+        updateSettingsAndNotifyRestart { it.copy(vpnRouteIncludeCidrs = value) }
+    }
+
+    suspend fun setVpnAppMode(value: VpnAppMode): Result<PerAppPolicyUpdateResult> =
+        updatePerAppPolicy { current ->
+            current.copy(vpnAppMode = value) to (current.vpnAppMode != value)
+        }
+
+    suspend fun setVpnAllowlist(value: String): Result<PerAppPolicyUpdateResult> {
+        val normalized = PerAppVpnPolicy.parsePackageNames(value).joinToString("\n")
+        return updatePerAppPolicy { current ->
+            val changed = PerAppVpnPolicy.parsePackageNames(current.vpnAllowlist) !=
+                PerAppVpnPolicy.parsePackageNames(normalized)
+            current.copy(vpnAllowlist = normalized) to
+                (changed && current.vpnAppMode == VpnAppMode.ALLOWLIST)
+        }
+    }
+
+    suspend fun setVpnBlocklist(value: String): Result<PerAppPolicyUpdateResult> {
+        val normalized = PerAppVpnPolicy.parsePackageNames(value).joinToString("\n")
+        return updatePerAppPolicy { current ->
+            val changed = PerAppVpnPolicy.parsePackageNames(current.vpnBlocklist) !=
+                PerAppVpnPolicy.parsePackageNames(normalized)
+            current.copy(vpnBlocklist = normalized) to
+                (changed && current.vpnAppMode == VpnAppMode.BLOCKLIST)
+        }
+    }
+
+    suspend fun setAutoIncludeNewAppsInPerAppRules(value: Boolean) {
+        settingsStore.updateSettingsAndWait { it.copy(autoIncludeNewAppsInPerAppRules = value) }
+    }
+
+    suspend fun addPackageToCurrentPerAppRule(packageName: String): Result<PerAppPolicyUpdateResult> =
+        updatePerAppPolicy { current ->
+            val updated = addPackageToCurrentPerAppRule(current, packageName)
+            updated to (updated != current)
+        }
+
+    suspend fun removePackageFromPerAppSettings(packageName: String): Result<PerAppPolicyUpdateResult> =
+        updatePerAppPolicy { current ->
+            val updated = removePackageFromPerAppSettings(current, packageName)
+            val activeListChanged = when (current.vpnAppMode) {
+                VpnAppMode.ALL -> false
+                VpnAppMode.ALLOWLIST -> current.vpnAllowlist != updated.vpnAllowlist
+                VpnAppMode.BLOCKLIST -> current.vpnBlocklist != updated.vpnBlocklist
+            }
+            updated to activeListChanged
+        }
+
+    suspend fun removeUninstalledPerAppPackages(
+        installedPackages: Set<String>
+    ): Result<PerAppPolicyUpdateResult> {
+        val current = settings.value
+        val updated = removeUninstalledPackagesFromPerAppSettings(current, installedPackages)
+        if (updated == current) {
+            return Result.success(
+                PerAppPolicyUpdateResult(
+                    changed = false,
+                    runtimeChanged = false,
+                    revision = current.perAppPolicyRevision
+                )
+            )
+        }
+        return updatePerAppPolicy { latest ->
+            removeUninstalledPackagesFromPerAppSettings(latest, installedPackages) to false
+        }
+    }
+
+    suspend fun setLocalDns(value: String) {
+        updateSettingsAndNotifyRestart { it.copy(localDns = value) }
+    }
+
+    suspend fun setRemoteDns(value: String) {
+        updateSettingsAndNotifyRestart { it.copy(remoteDns = value) }
+    }
+
+    suspend fun setFakeDnsEnabled(value: Boolean) {
+        updateSettingsAndNotifyRestart { it.copy(fakeDnsEnabled = value) }
+    }
+
+    suspend fun setFakeIpRange(value: String?) {
+        val normalized = value?.takeIf { it.isNotBlank() } ?: AppSettings.DEFAULT_FAKE_IP_RANGE
+        updateSettingsAndNotifyRestart { it.copy(fakeIpRange = normalized) }
+    }
+
+    suspend fun setDnsStrategy(value: DnsStrategy) {
+        updateSettingsAndNotifyRestart { it.copy(dnsStrategy = value) }
+    }
+
+    suspend fun setRemoteDnsStrategy(value: DnsStrategy) {
+        updateSettingsAndNotifyRestart { it.copy(remoteDnsStrategy = value) }
+    }
+
+    suspend fun setDirectDnsStrategy(value: DnsStrategy) {
+        updateSettingsAndNotifyRestart { it.copy(directDnsStrategy = value) }
+    }
+
+    suspend fun setServerAddressStrategy(value: DnsStrategy) {
+        updateSettingsAndNotifyRestart { it.copy(serverAddressStrategy = value) }
+    }
+
+    suspend fun setDnsCacheEnabled(value: Boolean) {
+        updateSettingsAndNotifyRestart { it.copy(dnsCacheEnabled = value) }
+    }
+
+    suspend fun setRoutingMode(value: RoutingMode, notifyRestartRequired: Boolean = true) {
+        val persisted = settingsStore.updateSettingsAndWait { it.copy(routingMode = value) }
+        if (persisted && notifyRestartRequired) {
+            notifyRestartRequired()
+        }
+    }
+
+    suspend fun setDefaultRule(value: DefaultRule) {
+        updateSettingsAndNotifyRestart { it.copy(defaultRule = value) }
+    }
+
+    suspend fun setBlockQuic(value: Boolean) {
+        updateSettingsAndNotifyRestart { it.copy(blockQuic = value) }
+    }
+
+    suspend fun setDebugLoggingEnabled(value: Boolean) {
+        updateSettingsAndNotifyRestart { it.copy(debugLoggingEnabled = value) }
+    }
+
+    suspend fun setLatencyTestMethod(value: LatencyTestMethod) {
+        settingsStore.updateSettingsAndWait { it.copy(latencyTestMethod = value) }
+    }
+
+    suspend fun setLatencyTestUrl(value: String) {
+        val normalized = AppSettings.validateLatencyTestUrl(value) ?: return
+        updateSettingsAndNotifyRestart {
+            it.copy(latencyTestUrl = normalized)
+        }
+    }
+
+    suspend fun setLatencyTestTimeout(value: Int) {
+        settingsStore.updateSettingsAndWait { it.copy(latencyTestTimeout = value) }
+    }
+
+    suspend fun setLatencyTestConcurrency(value: Int) {
+        settingsStore.updateSettingsAndWait { it.copy(latencyTestConcurrency = sanitizeLatencyTestConcurrency(value)) }
+    }
+
+    suspend fun setBypassLan(value: Boolean) {
+        updateSettingsAndNotifyRestart { it.copy(bypassLan = value) }
+    }
+
+    suspend fun setIcmpEchoRoutingEnabled(value: Boolean) {
+        updateSettingsAndNotifyRestart { it.copy(icmpEchoRoutingEnabled = value) }
+    }
+
+    suspend fun setGhProxyMirror(value: GhProxyMirror) {
+        updateSettingsAndNotifyRestart { it.copy(ghProxyMirror = value) }
+    }
+
+    suspend fun setProxyPort(value: Int) {
+        updateSettingsAndNotifyRestart { it.copy(proxyPort = sanitizeProxyPort(value)) }
+    }
+
+    suspend fun setAllowLan(value: Boolean) {
+        updateSettingsAndNotifyRestart { it.copy(allowLan = value) }
+    }
+
+    suspend fun setAppendHttpProxy(value: Boolean) {
+        updateSettingsAndNotifyRestart { it.copy(appendHttpProxy = value) }
+    }
+
+    suspend fun setCustomRules(value: List<CustomRule>) {
+        updateSettingsAndNotifyRestart { it.copy(customRules = value) }
+    }
+
+    suspend fun removeDeletedRoutingReferences(
+        deletedProfileId: String? = null,
+        deletedNodeIds: Set<String> = emptySet(),
+        deletedNodeReferences: Set<String> = emptySet()
+    ): Boolean {
+        var changed = false
+        val persisted = settingsStore.updateSettingsAndWait { current ->
+            val updated = com.mubox.app.repository.removeDeletedRoutingReferences(
+                settings = current,
+                deletedProfileId = deletedProfileId,
+                deletedNodeIds = deletedNodeIds,
+                deletedNodeReferences = deletedNodeReferences
+            )
+            changed = updated != current
+            updated
+        }
+        if (persisted && changed) notifyRestartRequired()
+        return persisted
+    }
+
+    @Suppress("LongParameterList")
+    suspend fun migrateNodeRoutingReferences(
+        oldNodeId: String,
+        newNodeId: String,
+        oldQualifiedReference: String,
+        newQualifiedReference: String,
+        oldBareReference: String,
+        newBareReference: String,
+        oldBareNameIsUnique: Boolean,
+        newBareNameIsUnique: Boolean,
+        notify: Boolean = true
+    ): Boolean {
+        var changed = false
+        val persisted = settingsStore.updateSettingsAndWait { current ->
+            val updated = com.mubox.app.repository.migrateNodeRoutingReferences(
+                settings = current,
+                oldNodeId = oldNodeId,
+                newNodeId = newNodeId,
+                oldQualifiedReference = oldQualifiedReference,
+                newQualifiedReference = newQualifiedReference,
+                oldBareReference = oldBareReference,
+                newBareReference = newBareReference,
+                oldBareNameIsUnique = oldBareNameIsUnique,
+                newBareNameIsUnique = newBareNameIsUnique
+            )
+            changed = updated != current
+            updated
+        }
+        if (persisted && changed && notify) notifyRestartRequired()
+        return persisted
+    }
+
+    suspend fun removeInvalidRoutingReferences(
+        validProfileIds: Set<String>,
+        validNodeIds: Set<String>,
+        validQualifiedNodeReferences: Set<String>,
+        validBareNodeNames: Set<String>
+    ): Boolean {
+        var removed = 0
+        val persisted = settingsStore.updateSettingsAndWait { current ->
+            val updated = com.mubox.app.repository.removeInvalidRoutingReferences(
+                settings = current,
+                validProfileIds = validProfileIds,
+                validNodeIds = validNodeIds,
+                validQualifiedNodeReferences = validQualifiedNodeReferences,
+                validBareNodeNames = validBareNodeNames
+            )
+            removed = current.appRules.size + current.appGroups.size + current.customRules.size +
+                current.ruleSets.size - updated.appRules.size - updated.appGroups.size -
+                updated.customRules.size - updated.ruleSets.size
+            updated
+        }
+        if (persisted && removed > 0) {
+            Log.w("SettingsRepository", "Removed $removed invalid routing reference(s)")
+        }
+        return persisted
+    }
+
+    suspend fun setRuleSets(value: List<RuleSet>, notify: Boolean = true) {
+        val previous = settings.value.ruleSets.associateBy { it.id }
+        val ruleSetRepo = RuleSetRepository.getInstance(context)
+        val safeRuleSets = value.map { ruleSet ->
+            if (!ruleSet.enabled) return@map ruleSet
+            val ready = ruleSetRepo.prefetchRuleSet(
+                ruleSet,
+                allowNetwork = false,
+                requireSource = ruleSet.type == RuleSetType.REMOTE &&
+                    !RuleSetRepository.canUseLegacyRuleSetCache(ruleSet, previous[ruleSet.id])
+            )
+            if (ready) ruleSet else {
+                Log.w("SettingsRepository", "Not enabling rule set ${ruleSet.tag}: no verified local file")
+                ruleSet.copy(enabled = false)
+            }
+        }
+        val persisted = settingsStore.updateSettingsAndWait { it.copy(ruleSets = safeRuleSets) }
+        if (persisted && notify) {
+            notifyRestartRequired()
+        }
+    }
+
+    suspend fun getRuleSets(): List<RuleSet> {
+        return settings.value.ruleSets
+    }
+
+    suspend fun setAppGroups(value: List<AppGroup>): Boolean =
+        updateSettingsAndNotifyRestart { it.copy(appGroups = value) }
+
+    suspend fun upsertAppGroup(value: AppGroup): Boolean =
+        updateSettingsAndNotifyRestart { upsertExclusiveAppGroup(it, value) }
+
+    suspend fun setRuleSetAutoUpdateEnabled(value: Boolean) {
+        settingsStore.updateSettingsAndWait { it.copy(ruleSetAutoUpdateEnabled = value) }
+    }
+
+    suspend fun setRuleSetAutoUpdateInterval(value: Int) {
+        val normalized = com.mubox.app.service.RuleSetAutoUpdateWorker.Companion.normalizeIntervalMinutes(value)
+        settingsStore.updateSettingsAndWait { it.copy(ruleSetAutoUpdateInterval = normalized) }
+    }
+
+    suspend fun setSubscriptionUpdateTimeout(value: Int) {
+        settingsStore.updateSettingsAndWait { it.copy(subscriptionUpdateTimeout = value) }
+    }
+
+    suspend fun setAutoCheckUpdate(value: Boolean) {
+        settingsStore.updateSettingsAndWait { it.copy(autoCheckUpdate = value) }
+    }
+
+    suspend fun setBackgroundPowerSavingDelay(value: BackgroundPowerSavingDelay) {
+        settingsStore.updateSettingsAndWait { it.copy(backgroundPowerSavingDelay = value) }
+    }
+
+    suspend fun setNodeFilter(value: NodeFilter) {
+        settingsStore.updateSettingsAndWait { it.copy(nodeFilter = value) }
+    }
+
+    suspend fun getNodeFilter(): NodeFilter {
+        return settings.value.nodeFilter
+    }
+
+    fun getNodeFilterFlow(): Flow<NodeFilter> {
+        return settings.map { it.nodeFilter }
+    }
+
+    suspend fun setNodeSortType(sortType: NodeSortType) {
+        settingsStore.updateSettingsAndWait { it.copy(nodeSortType = sortType) }
+    }
+
+    fun getNodeSortType(): Flow<NodeSortType> {
+        return settings.map { it.nodeSortType }
+    }
+
+    suspend fun setCustomNodeOrder(nodeIds: List<String>) {
+        settingsStore.updateSettingsAndWait { it.copy(customNodeOrder = nodeIds) }
+    }
+
+    fun getCustomNodeOrder(): Flow<List<String>> {
+        return settings.map { it.customNodeOrder }
+    }
+
+    suspend fun setNodeColumnCount(value: Int) {
+        settingsStore.updateSettingsAndWait { it.copy(nodeColumnCount = value) }
+    }
+
+    fun getNodeColumnCount(): Flow<Int> {
+        return settings.map { it.nodeColumnCount }
+    }
+
+    suspend fun checkAndMigrateRuleSets() {
+        try {
+            val currentSettings = settings.value
+
+            if (currentSettings.ruleSets.isEmpty()) {
+                Log.i("SettingsRepository", "Initializing default rule sets")
+                setRuleSets(getDefaultRuleSets(), notify = false)
+                return
+            }
+
+            val currentMirrorUrl = currentSettings.ghProxyMirror.url
+            val rawPrefix = "https://raw.githubusercontent.com/"
+            val cdnPrefix = "https://cdn.jsdelivr.net/gh/"
+
+            val migratedRuleSets = currentSettings.ruleSets.map { ruleSet ->
+                var updatedUrl = ruleSet.url
+                var updatedTag = ruleSet.tag
+
+                if (updatedTag.equals("geosite-ads", ignoreCase = true)) {
+                    updatedTag = "geosite-category-ads-all"
+                }
+
+                if (updatedUrl.contains("geosite-ads.srs")) {
+                    updatedUrl = updatedUrl.replace("geosite-ads.srs", "geosite-category-ads-all.srs")
+                }
+
+                var rawUrl = updatedUrl
+
+                // Fix corrupted URLs: https://ghp.ci/https://raw.githubusercontent.com/...
+                val proxyPrefixes = listOf(
+                    "https://ghp.ci/",
+                    "https://mirror.ghproxy.com/",
+                    "https://ghproxy.com/",
+                    "https://ghproxy.net/",
+                    "https://ghfast.top/",
+                    "https://gh-proxy.com/"
+                )
+
+                for (proxy in proxyPrefixes) {
+                    if (rawUrl.startsWith(proxy)) {
+                        val afterProxy = rawUrl.removePrefix(proxy)
+                        if (afterProxy.startsWith("http://") || afterProxy.startsWith("https://")) {
+                            // Extract clean path from corrupted URL
+                            val withoutProtocol = afterProxy
+                                .removePrefix("https://")
+                                .removePrefix("http://")
+                            val firstSlash = withoutProtocol.indexOf('/')
+                            if (firstSlash > 0) {
+                                rawUrl = "/" + withoutProtocol.substring(firstSlash)
+                            } else {
+                                rawUrl = "/" + withoutProtocol
+                            }
+                        } else if (afterProxy.startsWith("/")) {
+                            rawUrl = afterProxy
+                        } else {
+                            rawUrl = afterProxy
+                        }
+                        break
+                    }
+                }
+
+                // Handle CDN format
+                if (rawUrl.startsWith(cdnPrefix)) {
+                    val path = rawUrl.removePrefix(cdnPrefix)
+                    val parts = path.split("@", limit = 2)
+                    if (parts.size == 2) {
+                        val userRepo = parts[0]
+                        val branchPath = parts[1]
+                        rawUrl = "$rawPrefix$userRepo/$branchPath"
+                    }
+                }
+
+                // Handle remaining raw.githubusercontent.com URLs
+                if (rawUrl.contains("raw.githubusercontent.com") && !rawUrl.startsWith(rawPrefix)) {
+                    val path = rawUrl.substringAfter("raw.githubusercontent.com/")
+                    if (path.startsWith("http://") || path.startsWith("https://")) {
+                        val cleanPath = path
+                            .removePrefix("https://")
+                            .removePrefix("http://")
+                        rawUrl = rawPrefix + cleanPath
+                    } else if (path.contains("raw.githubusercontent.com/")) {
+                        rawUrl = rawPrefix + path.substringAfter("raw.githubusercontent.com/")
+                    } else {
+                        rawUrl = rawPrefix + path
+                    }
+                }
+
+                if (currentMirrorUrl.contains("cdn.jsdelivr.net")) {
+                    if (rawUrl.startsWith(rawPrefix)) {
+                        val path = rawUrl.removePrefix(rawPrefix)
+                        val parts = path.split("/", limit = 4)
+                        if (parts.size >= 4) {
+                            val user = parts[0]
+                            val repo = parts[1]
+                            val branch = parts[2]
+                            val filePath = parts[3]
+                            updatedUrl = "$cdnPrefix$user/$repo@$branch/$filePath"
+                        }
+                    }
+                } else if (currentMirrorUrl != rawPrefix) {
+                    if (rawUrl.startsWith(rawPrefix)) {
+                        updatedUrl = rawUrl.replace(rawPrefix, currentMirrorUrl)
+                    }
+                } else {
+                    updatedUrl = rawUrl
+                }
+
+                if (updatedUrl != ruleSet.url || updatedTag != ruleSet.tag) {
+                    ruleSet.copy(tag = updatedTag, url = updatedUrl)
+                } else {
+                    ruleSet
+                }
+            }.distinctBy { it.tag }
+
+            if (migratedRuleSets != currentSettings.ruleSets) {
+                Log.i("SettingsRepository", "Saving migrated rule sets")
+                setRuleSets(migratedRuleSets, notify = false)
+            }
+            repairInvalidEnabledRuleSets()
+        } catch (e: Exception) {
+            Log.e("SettingsRepository", "Error during migration", e)
+        }
+    }
+
+    private fun notifyRestartRequired() {
+        _restartRequiredEvents.tryEmit(Unit)
+    }
+
+    private suspend fun updatePerAppPolicy(
+        update: (AppSettings) -> Pair<AppSettings, Boolean>
+    ): Result<PerAppPolicyUpdateResult> {
+        var outcome = PerAppPolicyUpdateResult(
+            changed = false,
+            runtimeChanged = false,
+            revision = settings.value.perAppPolicyRevision
+        )
+        val persisted = settingsStore.updateSettingsAndWait { current ->
+            val (candidate, runtimeChanged) = update(current)
+            val changed = candidate != current
+            val revision = if (runtimeChanged) {
+                PerAppVpnPolicy.nextRevision(current.perAppPolicyRevision)
+            } else {
+                current.perAppPolicyRevision
+            }
+            outcome = PerAppPolicyUpdateResult(changed, runtimeChanged, revision)
+            if (changed) candidate.copy(perAppPolicyRevision = revision) else current
+        }
+        if (!persisted) {
+            return Result.failure(IllegalStateException("Failed to persist per-app VPN policy"))
+        }
+        if (outcome.runtimeChanged) notifyRestartRequired()
+        return Result.success(outcome)
+    }
+
+    companion object {
+        private const val MIN_PROXY_PORT = 1
+        private const val MAX_PROXY_PORT = 65535
+        private const val MIN_LATENCY_TEST_CONCURRENCY = 1
+        private const val MAX_LATENCY_TEST_CONCURRENCY = 20
+
+        private val _restartRequiredEvents = MutableSharedFlow<Unit>(extraBufferCapacity = 1)
+        val restartRequiredEvents: SharedFlow<Unit> = _restartRequiredEvents.asSharedFlow()
+
+        @Volatile
+        private var INSTANCE: SettingsRepository? = null
+
+        fun getInstance(context: Context): SettingsRepository {
+            return INSTANCE ?: synchronized(this) {
+                INSTANCE ?: SettingsRepository(context.applicationContext).also { INSTANCE = it }
+            }
+        }
+
+        internal fun buildImportedSettings(
+            current: AppSettings,
+            imported: AppSettings,
+            importRules: Boolean
+        ): AppSettings {
+            val normalizedRuleSetAutoUpdateInterval =
+                com.mubox.app.service.RuleSetAutoUpdateWorker.normalizeIntervalMinutes(
+                    imported.ruleSetAutoUpdateInterval
+                )
+            val normalized = imported.copy(
+                trafficCaptureMode = imported.resolvedTrafficCaptureMode(),
+                tunEnabled = imported.resolvedTrafficCaptureMode() == TrafficCaptureMode.VPN,
+                appThemeStyle = normalizeAppThemeStyle(imported),
+                fakeIpRange = normalizeFakeIpRange(imported),
+                proxyPort = sanitizeProxyPort(imported.proxyPort),
+                latencyTestUrl = AppSettings.validateLatencyTestUrl(imported.latencyTestUrl)
+                    ?: current.latencyTestUrl,
+                latencyTestConcurrency = sanitizeLatencyTestConcurrency(imported.latencyTestConcurrency),
+                ruleSetAutoUpdateInterval = normalizedRuleSetAutoUpdateInterval,
+                perAppPolicyRevision = if (
+                    imported.vpnAppMode != current.vpnAppMode ||
+                    PerAppVpnPolicy.parsePackageNames(imported.vpnAllowlist) !=
+                    PerAppVpnPolicy.parsePackageNames(current.vpnAllowlist) ||
+                    PerAppVpnPolicy.parsePackageNames(imported.vpnBlocklist) !=
+                    PerAppVpnPolicy.parsePackageNames(current.vpnBlocklist)
+                ) {
+                    PerAppVpnPolicy.nextRevision(current.perAppPolicyRevision)
+                } else {
+                    current.perAppPolicyRevision
+                }
+            )
+
+            return if (importRules) {
+                normalized
+            } else {
+                normalized.copy(
+                    customRules = current.customRules,
+                    ruleSets = current.ruleSets,
+                    appRules = current.appRules,
+                    appGroups = current.appGroups,
+                    perAppPolicyRevision = current.perAppPolicyRevision,
+                    ruleSetAutoUpdateEnabled = current.ruleSetAutoUpdateEnabled,
+                    ruleSetAutoUpdateInterval = current.ruleSetAutoUpdateInterval
+                )
+            }
+        }
+
+        private fun normalizeFakeIpRange(settings: AppSettings): String {
+            val fakeIpRange: String? = runCatching { settings.fakeIpRange }.getOrNull()
+            return fakeIpRange?.takeIf { it.isNotBlank() } ?: AppSettings.DEFAULT_FAKE_IP_RANGE
+        }
+
+        private fun normalizeAppThemeStyle(settings: AppSettings): AppThemeStyle {
+            return runCatching { settings.appThemeStyle }.getOrNull() ?: AppThemeStyle.DEFAULT
+        }
+
+        internal fun sanitizeProxyPort(value: Int): Int {
+            return value.coerceIn(MIN_PROXY_PORT, MAX_PROXY_PORT)
+        }
+
+        internal fun sanitizeLatencyTestConcurrency(value: Int): Int {
+            return value.coerceIn(MIN_LATENCY_TEST_CONCURRENCY, MAX_LATENCY_TEST_CONCURRENCY)
+        }
+    }
+}
+

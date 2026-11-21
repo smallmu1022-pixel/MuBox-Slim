@@ -1,0 +1,137 @@
+package com.mubox.app
+
+import android.app.ActivityManager
+import android.app.Application
+import android.content.Intent
+import android.content.IntentFilter
+import android.net.ConnectivityManager
+import android.os.Process
+import androidx.core.content.ContextCompat
+import androidx.work.Configuration
+import com.mubox.app.lifecycle.AppLifecycleObserver
+import com.mubox.app.receiver.PackageRemovedReceiver
+import com.mubox.app.repository.LogRepository
+import com.mubox.app.repository.SettingsRepository
+import com.mubox.app.service.RuleSetAutoUpdateWorker
+import com.mubox.app.service.SubscriptionAutoUpdateWorker
+import com.mubox.app.service.VpnKeepaliveWorker
+import com.mubox.app.service.manager.NetworkAutoSwitchManager
+import com.mubox.app.utils.DefaultNetworkListener
+import com.mubox.app.utils.LocaleHelper
+import com.tencent.mmkv.MMKV
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.SupervisorJob
+import kotlinx.coroutines.flow.collect
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
+
+class SingBoxApplication : Application(), Configuration.Provider {
+
+    private val applicationScope = CoroutineScope(SupervisorJob() + Dispatchers.Main)
+
+    override val workManagerConfiguration: Configuration
+        get() = Configuration.Builder()
+            .setDefaultProcessName(packageName)
+            .setMinimumLoggingLevel(android.util.Log.INFO)
+            .build()
+
+    override fun attachBaseContext(newBase: android.content.Context) {
+        super.attachBaseContext(LocaleHelper.wrapFromCache(newBase))
+    }
+
+    override fun onCreate() {
+        super.onCreate()
+
+        MMKV.initialize(this)
+
+        LogRepository.init(this)
+        applicationScope.launch {
+            val settingsRepository = withContext(Dispatchers.IO) {
+                SettingsRepository.getInstance(this@SingBoxApplication)
+            }
+            val logRepository = LogRepository.getInstance()
+            withContext(Dispatchers.IO) {
+                logRepository.setEnabled(settingsRepository.settings.value.debugLoggingEnabled)
+            }
+            launch(Dispatchers.IO) {
+                settingsRepository.settings.collect { settings ->
+                    logRepository.setEnabled(settings.debugLoggingEnabled)
+                }
+            }
+
+            if (isMainProcess()) {
+                AppLifecycleObserver.register(this@SingBoxApplication)
+                try {
+                    val settings = settingsRepository.settings.value
+                    AppLifecycleObserver.setBackgroundTimeout(settings.backgroundPowerSavingDelay.delayMs)
+                } catch (e: Exception) {
+                    android.util.Log.w("SingBoxApp", "Failed to read power saving setting", e)
+                }
+
+                val cm = getSystemService(CONNECTIVITY_SERVICE) as? ConnectivityManager
+                if (cm != null) {
+                    DefaultNetworkListener.start(cm, this@SingBoxApplication) { network ->
+                        android.util.Log.d("SingBoxApp", "Underlying network updated: $network")
+                    }
+                }
+                NetworkAutoSwitchManager.start(this@SingBoxApplication)
+
+                // PACKAGE_ADDED/REMOVED 是隐式广播，targetSdk>=26 时 Manifest 静态注册收不到，必须动态注册。
+                // ponytail: 只在主进程存活时同步（与原 Manifest receiver 同进程，避免 :bg 跨进程写设置）。
+                // 主进程被省电策略杀掉期间的卸载由 InstalledAppsRepository 加载时对账清理；新装应用自动加入会漏掉，
+                // 需要时用 PackageManager.getChangedPackages 做启动补偿。
+                ContextCompat.registerReceiver(
+                    this@SingBoxApplication,
+                    PackageRemovedReceiver(),
+                    IntentFilter().apply {
+                        addAction(Intent.ACTION_PACKAGE_ADDED)
+                        addAction(Intent.ACTION_PACKAGE_REMOVED)
+                        addDataScheme("package")
+                    },
+                    ContextCompat.RECEIVER_NOT_EXPORTED
+                )
+
+                SubscriptionAutoUpdateWorker.rescheduleAll(this@SingBoxApplication)
+                RuleSetAutoUpdateWorker.rescheduleAll(this@SingBoxApplication)
+
+                // 历史版本可能已注册周期恢复任务；升级后必须主动取消，禁止进入 App 后自动点火。
+                VpnKeepaliveWorker.cancel(this@SingBoxApplication)
+            }
+        }
+
+        applicationScope.launch(Dispatchers.IO) {
+            cleanupOrphanedTempFiles()
+        }
+    }
+
+    internal fun isMainProcess(): Boolean {
+        val pid = Process.myPid()
+        val activityManager = getSystemService(ACTIVITY_SERVICE) as ActivityManager
+        val processName = activityManager.runningAppProcesses?.find { it.pid == pid }?.processName
+        return processName == packageName
+    }
+
+    private fun cleanupOrphanedTempFiles() {
+        try {
+            val tempDir = java.io.File(cacheDir, "singbox_temp")
+            if (!tempDir.exists() || !tempDir.isDirectory) return
+
+            val cleaned = mutableListOf<String>()
+            tempDir.listFiles()?.forEach { file ->
+
+                if (file.name.startsWith("test_") || file.name.startsWith("batch_test_")) {
+                    if (file.delete()) {
+                        cleaned.add(file.name)
+                    }
+                }
+            }
+
+            if (cleaned.isNotEmpty()) {
+                android.util.Log.i("SingBoxApp", "Cleaned ${cleaned.size} orphaned temp files: ${cleaned.take(5).joinToString()}")
+            }
+        } catch (e: Exception) {
+            android.util.Log.w("SingBoxApp", "Failed to cleanup orphaned temp files", e)
+        }
+    }
+}
