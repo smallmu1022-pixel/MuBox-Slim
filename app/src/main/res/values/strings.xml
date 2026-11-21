@@ -41,6 +41,8 @@
     <string name="common_copy">复制</string>
     <string name="common_latency">延迟</string>
     <string name="common_timeout">超时</string>
+    <string name="common_dns_failed">解析失败</string>
+    <string name="common_refused">连接被拒</string>
     <string name="common_ipv6_only">仅IPv6可用</string>
     <string name="common_unavailable">不可用</string>
     <string name="common_loading">加载中...</string>

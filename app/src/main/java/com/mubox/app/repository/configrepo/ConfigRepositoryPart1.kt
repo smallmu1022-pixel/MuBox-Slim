@@ -664,6 +664,8 @@ internal fun ConfigRepository.normalizeLatencyValue(latency: Long): Long {
         latency > 0L -> latency
         latency == PingResultCode.UNAVAILABLE -> PingResultCode.UNAVAILABLE
         latency == PingResultCode.IPV6_ONLY -> PingResultCode.IPV6_ONLY
+        latency == PingResultCode.DNS_FAILED -> PingResultCode.DNS_FAILED
+        latency == PingResultCode.REFUSED -> PingResultCode.REFUSED
         latency == 0L -> PingResultCode.UNAVAILABLE
         else -> PingResultCode.FAILED_TIMEOUT
     }

@@ -123,22 +123,31 @@ private suspend fun SingBoxCore.testOutboundsLatencyBatchInternal(
     val prepared = prepareLatencyBatchTargets(batchOutbounds, dependencySourceOutbounds, onResult)
         ?: return
 
-    // TCPing never starts a core service: it connects to the server endpoints directly.
+    // TCPing connects to the server endpoints directly and never starts a
+    // core service — except UDP-only outbounds (Hysteria2), which have no TCP
+    // handshake to measure; those fall back to the core urltest path below.
+    var serviceTargets = prepared.targets
     if (settings.latencyTestMethod.normalized() == LatencyTestMethod.TCP_PING) {
-        runTcpingBatch(prepared.targets, timeoutMs, settings, onResult)
-        return
+        val (udpOnly, tcpTargets) = prepared.targets.partition {
+            it.type.equals("hysteria2", ignoreCase = true)
+        }
+        if (tcpTargets.isNotEmpty()) {
+            runTcpingBatch(tcpTargets, timeoutMs, settings, onResult)
+        }
+        if (udpOnly.isEmpty()) return
+        serviceTargets = udpOnly
     }
 
     // One extra port hosts the temporary service's Clash API (core urltest entry point).
-    val ports = allocateLatencyBatchPorts(prepared.targets.size + 1, batchOutbounds, onResult)
+    val ports = allocateLatencyBatchPorts(serviceTargets.size + 1, batchOutbounds, onResult)
         ?: return
     val clashPort = ports.last()
     val probePorts = ports.dropLast(1)
     val clashSecret = UUID.randomUUID().toString()
 
-    val portToTagMap = probePorts.zip(prepared.targets.map { it.tag }).toMap()
+    val portToTagMap = probePorts.zip(serviceTargets.map { it.tag }).toMap()
     val config = buildBatchTestConfig(
-        prepared.targets,
+        serviceTargets,
         probePorts,
         settings,
         dnsConfig,
@@ -413,7 +422,7 @@ private suspend fun SingBoxCore.runTcpingBatch(
         val jobs = targets.map { target ->
             async {
                 semaphore.withPermit {
-                    val latency = LatencyProbe.tcpPing(target.server, target.serverPort, timeoutMs)
+                    val latency = LatencyProbe.tcpPing(context, target.server, target.serverPort, timeoutMs)
                     onResult(target.tag, latency)
                 }
             }

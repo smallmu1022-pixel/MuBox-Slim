@@ -5,4 +5,6 @@ object PingResultCode {
     const val UNAVAILABLE = -2L
     const val IPV6_ONLY = -3L
     const val METERED_SELECTION_REQUIRED = -4L
+    const val DNS_FAILED = -5L
+    const val REFUSED = -6L
 }

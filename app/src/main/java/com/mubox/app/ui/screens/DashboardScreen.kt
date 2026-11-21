@@ -441,7 +441,9 @@ fun DashboardScreen(
                     displayPing = displayPing,
                     timeoutText = timeoutMsg,
                     unavailableText = unavailableMsg,
-                    ipv6OnlyText = ipv6OnlyMsg
+                    ipv6OnlyText = ipv6OnlyMsg,
+                    dnsFailedText = stringResource(R.string.common_dns_failed),
+                    refusedText = stringResource(R.string.common_refused)
                 )
                 InfoCard(
                     uploadSpeed = if (isConnected) "${formatBytes(stats.uploadSpeed)}/s" else "-/s",

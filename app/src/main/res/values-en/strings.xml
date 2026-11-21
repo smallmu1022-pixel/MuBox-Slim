@@ -41,6 +41,8 @@
     <string name="common_copy">Copy</string>
     <string name="common_latency">Latency</string>
     <string name="common_timeout">Timeout</string>
+    <string name="common_dns_failed">DNS failed</string>
+    <string name="common_refused">Refused</string>
     <string name="common_ipv6_only">IPv6 only</string>
     <string name="common_unavailable">Unavailable</string>
     <string name="common_loading">Loading...</string>

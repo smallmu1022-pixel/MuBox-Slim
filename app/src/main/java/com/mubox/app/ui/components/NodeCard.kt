@@ -175,11 +175,15 @@ fun NodeCard(
                             }
                             val timeoutText = stringResource(R.string.common_timeout)
                             val ipv6OnlyText = stringResource(R.string.common_ipv6_only)
-                            val latencyText = remember(showLatency, latency, timeoutText, ipv6OnlyText) {
+                            val dnsFailedText = stringResource(R.string.common_dns_failed)
+                            val refusedText = stringResource(R.string.common_refused)
+                            val latencyText = remember(showLatency, latency, timeoutText, ipv6OnlyText, dnsFailedText, refusedText) {
                                 when {
                                     !showLatency -> ""
                                     latency == null -> "---"
                                     latency == com.mubox.app.model.PingResultCode.IPV6_ONLY -> ipv6OnlyText
+                                    latency == com.mubox.app.model.PingResultCode.DNS_FAILED -> dnsFailedText
+                                    latency == com.mubox.app.model.PingResultCode.REFUSED -> refusedText
                                     latency < 0 -> timeoutText
                                     else -> "${latency}ms"
                                 }

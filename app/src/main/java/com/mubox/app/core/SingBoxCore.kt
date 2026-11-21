@@ -395,10 +395,14 @@ class SingBoxCore private constructor(internal val context: Context) {
         val url = AppSettings.requireLatencyTestUrl(finalSettings.latencyTestUrl)
         val timeoutMs = finalSettings.latencyTestTimeout
 
-        // TCPing never starts a core service: it connects to the server endpoint directly.
-        if (finalSettings.latencyTestMethod.normalized() == LatencyTestMethod.TCP_PING) {
+        // TCPing never starts a core service: it connects to the server endpoint
+        // directly. UDP-only outbounds (Hysteria2) have no TCP handshake to
+        // measure and fall through to the core urltest path below.
+        if (finalSettings.latencyTestMethod.normalized() == LatencyTestMethod.TCP_PING &&
+            !outbound.type.equals("hysteria2", ignoreCase = true)
+        ) {
             val prepared = prepareLatencyProbeTarget(outbound) ?: return@withContext -1L
-            return@withContext LatencyProbe.tcpPing(prepared.server, prepared.serverPort, timeoutMs)
+            return@withContext LatencyProbe.tcpPing(context, prepared.server, prepared.serverPort, timeoutMs)
         }
 
         return@withContext try {
