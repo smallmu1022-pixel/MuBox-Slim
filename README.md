@@ -1,417 +1,89 @@
 <div align="center">
 
-# MuBox for Android
+# MuBox Slim for Android
 
-[![Kotlin](https://img.shields.io/badge/Kotlin-1.9.0-purple.svg?style=flat&logo=kotlin)](https://kotlinlang.org)
-[![Compose](https://img.shields.io/badge/Jetpack%20Compose-Material3-4285F4.svg?style=flat&logo=android)](https://developer.android.com/jetpack/compose)
-[![Sing-box](https://img.shields.io/badge/Core-Sing--box-success.svg?style=flat)](https://github.com/SagerNet/sing-box)
-[![License](https://img.shields.io/badge/License-MIT-yellow.svg?style=flat)](LICENSE)
-[![Telegram](https://img.shields.io/badge/Telegram-Chat-blue?style=flat&logo=telegram)](https://t.me/+EKxpszVkOBc1MGJl)
-[![Downloads](https://img.shields.io/github/downloads/smallmu1022-pixel/MuBox/total.svg?style=flat&logo=github)](https://github.com/smallmu1022-pixel/MuBox/releases)
-
-> **OLED Hyper-Minimalist**
+> **The slim edition of MuBox: only the protocols you actually use, one third smaller.**
 >
-> A next-generation Android proxy client designed for those who pursue ultimate performance and visual purity.
-> <br/>Cut the clutter, return to the essence of networking.
+> A custom-trimmed sing-box kernel with matching app-layer cuts,
+> keeping just six protocols: VLESS, Hysteria2, Trojan, AnyTLS, SOCKS and HTTP.
 
-[Download](#-download-and-installation) • [Features](#-core-features) • [Protocols](#-protocol-matrix) • [Architecture](#-project-structure) • [Quick Start](#-build-guide) • [Community](https://t.me/+EKxpszVkOBc1MGJl)
+[Download](#-download-and-installation) • [Protocols](#-protocol-support) • [What was trimmed](#-what-was-trimmed) • [Build](#-build-guide)
 
 **[中文文档](README_CN.md)**
 
 </div>
 
-> 基于 KunBox v2.24.3 (roseforljh/KunBox)
-
-
----
-
-## 💖 Sponsorship
-
-Thanks to the following users for their generous support:
-
-Thanks to [ForZTN](https://sponsorship.forzth.com/github/smallmu1022-pixel/MuBox) for supporting MuBox.
-
-| Sponsor | Amount |
-|:---|:---|
-| [@WestWood](https://github.com/yuedaochangmendian) | ¥30 |
-
-> Your support is our motivation for continuous development! If you wish to sponsor, please contact us via [Telegram](https://t.me/+EKxpszVkOBc1MGJl).
+> Based on MuBox (derived from KunBox v2.24.3, roseforljh/KunBox)
 
 ---
 
 ## 📥 Download and Installation
 
-### Download from GitHub Releases
+Get the latest APK from the [Releases page](https://github.com/smallmu1022-pixel/MuBox-Slim/releases).
 
-Visit the [Releases page](https://github.com/smallmu1022-pixel/MuBox/releases) to download the latest APK file.
+> **Note**: Release assets include `arm64-v8a` and `armeabi-v7a` builds; most phones want `arm64-v8a`.
 
-> **Note**: Release assets include `arm64-v8a` and `armeabi-v7a` builds.
-
-### System Requirements
-
-| Item | Minimum Requirement |
+| Item | Requirement |
 |:---|:---|
-| Android Version | Android 7.0 (API 24) |
-| Architecture | arm64-v8a / armeabi-v7a |
-| Storage | ~15MB |
+| Android | Android 7.0 (API 24) or later; targets Android 17 (API 37) |
+| Package | `com.mubox.slim` (can coexist with MuBox) |
+| Size | ~18 MB for the arm64 APK (MuBox is ~27 MB) |
 
-### Installation Methods
-
-1. **Direct Install**: Download APK and tap to install (requires permission to install from unknown sources)
-2. **ADB Install**: `adb install MuBox-x.x.x.apk`
+Install by opening the downloaded APK (you may need to allow installs from unknown sources).
 
 ---
 
-## ✨ Core Features
+## 🌐 Protocol Support
 
-### 🎨 OLED Pure Black Aesthetics (Hyper-Minimalist UI)
-Unlike traditional Material Design, we've adopted a deeply customized **True Black** interface. Not only does it achieve pixel-level power saving on OLED screens, but it also brings a deep, immersive visual experience. The distraction-free UI design makes key information (latency, traffic, nodes) clear at a glance.
+**Kept (6):**
 
-- **Gengar Dynamic Effect**: Unique Gengar character on the home page switches with VPN status
-- **Smooth Animations**: Silky transition animations based on Jetpack Compose
-- **Adaptive Icons**: Support for Android 13+ themed adaptive icons
-
-### 🚀 High-Performance Core
-Based on the **Sing-box (libbox)** next-generation universal proxy core written in Golang.
-- **Memory Usage**: 30%+ lower than traditional cores
-- **Startup Speed**: Millisecond-level cold start
-- **Connection Stability**: Excellent connection reuse and keepalive mechanisms
-- **Hot Reload Support**: Configuration changes without restarting VPN service
-
-### 🛡️ Smart Routing & RuleSet Hub
-Built-in powerful routing engine supporting complex rule set matching.
-- **RuleSet Hub**: Online download and management of massive rule sets (GeoSite/GeoIP/AdGuard, etc.), supporting both Source and Binary formats.
-- **Precise App Routing**: Uses `UID` + `Package Name` dual matching mechanism, effectively solving app routing issues in some system environments.
-- **Flexible Policies**: Supports GeoSite, GeoIP, domain suffix, keyword, process name, and other matching dimensions.
-- **Auto Update**: Rule sets support scheduled automatic updates
-
-### ⚡ Quick Actions
-- **Quick Settings Tile**: Support system dropdown quick toggle, no need to enter the app to start/stop VPN.
-- **Desktop Shortcuts**: Support node selection and VPN toggle shortcuts
-- **Real Latency Test**: URL-Test based real connection testing, accurately reflecting actual loading speed of YouTube/Google and other target websites.
-- **Real-time Traffic Monitoring**: Notification bar displays real-time upload/download speed
-
-### 🔄 Background Keepalive & Power Saving
-- **Smart Keepalive**: Multi-level screen-off keepalive mechanism
-- **Background Power Saving**: Configurable auto-sleep in background, balancing battery life and availability
-- **Quick Recovery**: Optimized reconnection speed when returning from background
-
----
-
-## 🌐 Protocol Matrix
-
-We've built a comprehensive protocol support network, compatible with most proxy protocols and advanced features on the market.
-
-### Core Proxy Protocols
-
-| Protocol | Identifier | Link Format | Core Feature Support |
-|:---|:---|:---|:---|
-| **Shadowsocks** | `SS` | `ss://` | SIP002, SIP008, AEAD (AES-128/256-GCM, Chacha20-Poly1305) |
-| **VMess** | `VMess` | `vmess://` | WS, gRPC, HTTP/2, Auto Secure, Packet Encoding |
-| **VLESS** | `VLESS` | `vless://` | **Reality**, **Vision**, XTLS Flow, uTLS |
-| **Trojan** | `Trojan` | `trojan://` | Trojan-Go compatible, Mux |
-| **Hysteria 2** | `Hy2` | `hysteria2://` | Latest QUIC protocol, Port Hopping, Congestion Control |
-| **TUIC v5** | `TUIC` | `tuic://` | 0-RTT, BBR congestion control, QUIC transport |
-| **WireGuard** | `WG` | `wireguard://` | Kernel-level VPN tunnel, Pre-shared Key (PSK) |
-| **SSH** | `SSH` | `ssh://` | Secure tunnel proxy, Private Key authentication |
-| **HTTP(S)** | `HTTP(S)` | `http(s)://` | HTTP/HTTPS proxy support |
-| **SOCKS5** | `SOCKS5` | `socks5://` | SOCKS5 proxy support |
-| **AnyTLS** | `AnyTLS` | `anytls://` | Universal TLS wrapper, Traffic obfuscation |
-| **Naive** | `Naive` | `naive+https://` | Native sing-box Naive protocol support |
-
-### Subscription Ecosystem Support
-- **Sing-box JSON**: Native support with full features.
-- **Clash YAML**: Perfect compatibility with Clash / Clash Meta (Mihomo) configurations, automatic policy group conversion.
-- **Standard Base64**: Compatible with V2RayN / Shadowrocket subscription formats.
-- **Import Methods**: Supports clipboard import, URL subscription import, QR code scanning, local file import.
-
----
-
-## 🏗️ Project Structure
-
-This project follows best practices of modern Android architecture, adopting MVVM pattern and Clean Architecture design principles.
-
-```
-MuBox-Android/
-├── app/src/main/java/com/mubox/app/
-│   ├── core/              # libbox JNI wrapper (BoxWrapperManager, SingBoxCore)
-│   ├── database/          # Room database (dao/, entity/)
-│   ├── ipc/               # VPN inter-process communication (SingBoxIpcHub, VpnStateStore)
-│   ├── model/             # Data models (SingBoxConfig, RoutingModels, Settings)
-│   ├── repository/        # Data repository layer
-│   │   ├── config/        # Configuration builders (InboundBuilder, OutboundFixer)
-│   │   ├── store/         # Settings storage
-│   │   └── subscription/  # Subscription fetcher
-│   ├── service/           # Android services
-│   │   ├── manager/       # VPN lifecycle management (CoreManager, ConnectManager)
-│   │   ├── network/       # Network monitoring
-│   │   └── tun/           # TUN device management
-│   ├── ui/                # Jetpack Compose UI
-│   │   ├── components/    # Reusable components
-│   │   ├── screens/       # Screen-level Composables
-│   │   └── navigation/    # Navigation configuration
-│   ├── utils/parser/      # Protocol parsers (NodeLinkParser, ClashYamlParser)
-│   └── viewmodel/         # ViewModel layer
-│
-├── .kernel-sync-local/    # Local-only sing-box sync workspace and one-click script
-│   ├── sync-kernel.ps1    # Re-sync the latest official stable upstream, build and replace libbox.aar
-│   └── patches/           # Exact-version minimal MuBox patches
-│
-└── config/detekt/         # Code quality check configuration
-```
-
-### Architecture Highlights
-
-#### Multi-process Architecture
-- VPN service runs in a separate process (`:vpn_service`)
-- UI communicates across processes via `SingBoxIpcHub`
-- Uses `VpnStateStore` (MMKV) for cross-process state synchronization
-
-#### VPN Data Flow
-```
-SingBoxService -> CoreManager -> BoxWrapperManager -> libbox.aar
-```
-
----
-
-## 🛠️ Tech Stack Details
-
-| Dimension | Technology | Description |
+| Protocol | Link format | Notes |
 |:---|:---|:---|
-| **Language** | Kotlin 1.9 | 100% pure Kotlin code, using Coroutines and Flow for async streams |
-| **UI Framework** | Jetpack Compose | Declarative UI, Material 3 design specification |
-| **Architecture** | MVVM | Separation of concerns with ViewModel and Repository |
-| **Core Engine** | Sing-box (Go) | Communicates with Go core library via JNI |
-| **Database** | Room | Local data persistence |
-| **KV Storage** | MMKV | High-performance cross-process key-value storage |
-| **Network** | OkHttp 4 | For subscription updates, latency tests, and other network requests |
-| **Serialization** | Gson & SnakeYAML | High-performance JSON and YAML parsing |
-| **Build System** | Gradle 8.x | Hybrid build system support |
-| **Code Quality** | Detekt | Static code analysis and formatting |
+| **VLESS** | `vless://` | REALITY / Vision / uTLS |
+| **Hysteria2** | `hysteria2://` / `hy2://` | QUIC, port hopping |
+| **Trojan** | `trojan://` | |
+| **AnyTLS** | `anytls://` | |
+| **SOCKS** | `socks://` | SOCKS5 |
+| **HTTP** | `http://` | HTTP/HTTPS proxy |
+
+**Removed:** VMess, Shadowsocks, Hysteria (v1), TUIC, WireGuard, SSH, Naive, Snell, Tor, ShadowTLS, and more.
+
+Nodes of removed protocols inside a subscription or backup are silently skipped (and counted) instead of failing the whole import; pasting a removed protocol link by hand shows a clear "removed in the slim edition" notice.
 
 ---
 
-## 🚀 Build Guide
+## ✂️ What Was Trimmed
 
-### Environment Requirements
+| | MuBox | MuBox Slim |
+|:---|:---|:---|
+| arm64 APK | ~27.3 MB | ~18.4 MB (−32%) |
+| Kernel libbox.so | 67.5 MB | 45.2 MB (−33%) |
+| Kernel dependency packages | 1112 | 739 (−33.5%) |
 
-- **JDK**: 17 or higher
-- **Android Studio**: Hedgehog (2023.1.1) or higher
-- **Go**: 1.24+ (only needed when compiling libbox core)
-- **NDK**: r29 or higher
-
-### Clone Project
-
-```bash
-git clone https://github.com/smallmu1022-pixel/MuBox.git
-cd MuBox
-```
-
-### Build Debug APK
-
-```powershell
-# Windows
-.\gradlew assembleDebug
-
-# macOS/Linux
-./gradlew assembleDebug
-```
-
-### Build Release APK
-
-Release builds require signing configuration. Create a `signing.properties` file:
-
-```properties
-STORE_FILE=release.keystore
-KEYSTORE_PASSWORD=your_keystore_password
-KEY_ALIAS=your_key_alias
-KEY_PASSWORD=your_key_password
-```
-
-Then execute:
-
-```powershell
-.\gradlew assembleRelease
-```
-
-### Sync libbox Core (Local-only)
-
-MuBox uses the local workspace `.kernel-sync-local/` for kernel sync. This directory is **not committed to git**. By default, the script resolves the latest official stable `SagerNet/sing-box` tag and skips GitHub prerelease entries plus tags with `alpha`, `beta`, or `rc` suffixes.
-
-Each sync shallow-clones the exact official tag into a controlled temporary directory. Patched sources and build artifacts are never reused from an old upstream worktree. The script removes only its own temporary directory when it exits and keeps the newest 3 `libbox.aar.backup-before-replace.*` files.
-
-Run the one-click script from the repository root:
-
-```powershell
-.\.kernel-sync-local\sync-kernel.ps1
-```
-
-If you need to pin a specific official tag manually, pass it explicitly:
-
-```powershell
-.\.kernel-sync-local\sync-kernel.ps1 -Tag v1.13.14
-```
-
-At the time of writing, the latest official stable release is `v1.13.14`; the script still trusts the live official release API by default.
-
-The script performs these stages in order:
-
-1. Check Git, Go, Java 17, Android SDK, Android NDK, `gomobile`, and `gobind`, then resolve the target official tag
-2. Shallow-clone that exact tag into the controlled temporary directory and verify its origin, HEAD tag, and clean state
-3. Build the untouched official AAR as the API and ABI baseline
-4. Apply only `patches/mubox-<tag>.patch`, then run `go test`, race tests, and `go vet` for the affected VLESS package
-5. Build the patched AAR
-6. Compare the official and patched Java class sets, public APIs, and non-empty JNI entry sets; require the public API to match official sing-box exactly and reject the six removed private recovery methods
-7. Backup and replace `app/libs/libbox.aar`
-8. Run `assembleDebug`, `testDebugUnitTest`, and `detekt`; restore the backup on failure and keep only the newest 3 backups on success
-
-The script removes only `.kernel-sync-local/tmp-sync-kernel-current`, so unrelated local kernel worktrees are never deleted.
-
-The script stops when it cannot resolve a stable tag, the exact-version patch is missing, the fresh official tree becomes dirty, or `git apply --check`, Go tests, AAR method validation, or Gradle validation fails. Fix the reported version coupling and rerun it.
-
-### Run Tests
-
-```powershell
-# Run all unit tests
-.\gradlew testDebugUnitTest
-
-# Run specific test class
-.\gradlew testDebugUnitTest --tests "com.mubox.app.utils.parser.NodeLinkParserTest"
-
-# Run specific test method
-.\gradlew testDebugUnitTest --tests "com.mubox.app.utils.parser.NodeLinkParserTest.testVmessLink"
-
-# Run Detekt code check
-.\gradlew detekt
-```
-
-### Clean Build
-
-```powershell
-.\gradlew clean
-```
+- The kernel is a self-built trim of sing-box v1.14.2: removed protocols are unregistered and fully out of the dependency graph (Naive's Cronet library, OpenVPN, OpenConnect, WireGuard, the Tailscale module, …), with a CI dependency-graph guard that fails the build if a cut package creeps back
+- The app layer drops parsing, editing and config generation for the removed protocols
+- Same signing key as MuBox and a fully compatible backup format: a MuBox `mubox_backup` file imports straight into Slim
 
 ---
 
-## 📝 URL Scheme Support
+## ✨ Retained Features
 
-MuBox supports quick configuration import via URL Scheme:
-
-```
-mubox://import?url=<subscription_url>
-```
-
-Example:
-```
-mubox://import?url=https%3A%2F%2Fexample.com%2Fsubscription
-```
+- Rule mode / global mode, rule-set hub (online download, auto-update)
+- Subscription import and auto-update; clipboard / QR code / file node import
+- Batch latency testing, connection inspector
+- LAN sharing (SOCKS/HTTP inbound)
+- VPN mode / proxy-only mode / root transparent proxy mode
 
 ---
 
-## 🧪 Testing
+## 🔧 Build Guide
 
-The project includes complete unit test coverage:
+Releases are built by GitHub Actions (triggered by a `v*` tag): check out sing-box v1.14.2 → apply the kernel trim patch → verify the dependency graph → build libbox.aar with gomobile → package both ABI APKs onto the release.
 
-| Test Class | Description |
-|:---|:---|
-| `NodeLinkParserTest` | Protocol link parsing tests |
-| `ClashConfigParserTest` | Clash configuration parsing tests |
-| `ConfigRepositoryTest` | Configuration generation tests |
-| `ModelSerializationTest` | Model serialization tests |
-| `VpnStateStoreTest` | IPC state storage tests |
-
-Before running tests, ensure:
-1. Android SDK is configured
-2. NDK is installed
-3. Test database directory is writable
+Local builds need JDK 17, the Android SDK/NDK and Go 1.26.5; see `.github/workflows/` for details.
 
 ---
 
-## 🤝 Contributing Guide
+## 📄 License
 
-We welcome all forms of contributions!
-
-### Submit Issues
-
-- Use a clear title to describe the problem
-- Provide device model, Android version, app version
-- Include reproduction steps and relevant logs
-
-### Submit PRs
-
-1. Fork this repository
-2. Create a feature branch (`git checkout -b feature/amazing-feature`)
-3. Commit changes (`git commit -m 'Add amazing feature'`)
-4. Push branch (`git push origin feature/amazing-feature`)
-5. Create a Pull Request
-
-### Code Standards
-
-- Use 4-space indentation (no tabs)
-- Maximum line length 120 characters
-- Class names use PascalCase, functions and variables use camelCase
-- Run `./gradlew detekt` before committing to ensure code check passes
-- No empty catch blocks, use `Log.e()` instead of `printStackTrace()`
-
----
-
-## 📋 FAQ
-
-### Q: Why can't I connect after installation?
-A: Please check:
-1. Whether VPN permission is granted
-2. Whether node configuration is correct
-3. Try switching different DNS settings
-
-### Q: How to import subscriptions?
-A: Multiple methods supported:
-1. Click "+" in the top right corner and select "Import from Clipboard"
-2. Long press subscription link and select "Open with MuBox"
-3. Use URL Scheme: `mubox://import?url=<url>`
-
-### Q: What to do about high battery usage?
-A: Suggestions:
-1. Enable "Background Power Saving" feature
-2. Reduce unnecessary rule sets
-3. Turn off unused features (like detailed logs)
-
-### Q: Which Android versions are supported?
-A: Minimum support is Android 7.0 (API 24), Android 10+ recommended for best experience.
-
-## ❤️ Acknowledgments
-
-This project stands on the shoulders of giants, special thanks to the following open source projects:
-
-* **[SagerNet/sing-box](https://github.com/SagerNet/sing-box)**: Next-generation universal proxy platform core
-* **[MatsuriDayo/NekoBoxForAndroid](https://github.com/MatsuriDayo/NekoBoxForAndroid)**: Excellent Android proxy client reference
-* **[v2ray/v2ray-core](https://github.com/v2ray/v2ray-core)**: V2Ray team's pioneering contribution to the proxy ecosystem
-* **[Jetpack Compose](https://developer.android.com/jetpack/compose)**: Modern Android UI toolkit
-
----
-
-## 📝 License
-
-```
-Copyright © 2024-2025 Mu.
-
-Licensed under the MIT License.
-You may obtain a copy of the License at
-
-    https://opensource.org/licenses/MIT
-
-Unless required by applicable law or agreed to in writing, software
-distributed under the License is distributed on an "AS IS" BASIS,
-WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-See the License for the specific language governing permissions and
-limitations under the License.
-```
-
----
-
-<div align="center">
-
-**[⬆ Back to Top](#mubox-for-android)**
-
-<sub>This project is for learning and researching network technology only. Please comply with local laws and regulations.</sub>
-
-</div>
+See [LICENSE](LICENSE).
