@@ -114,13 +114,14 @@ fun RoutingSettingsScreen(
     var showSubscriptionTimeoutDialog by remember { mutableStateOf(false) }
 
     if (showLatencyMethodDialog) {
-        val options = LatencyTestMethod.entries.map { stringResource(it.displayNameRes) }
+        val selectableMethods = LatencyTestMethod.selectable
+        val options = selectableMethods.map { stringResource(it.displayNameRes) }
         SingleSelectDialog(
             title = stringResource(R.string.routing_settings_latency_test_method),
             options = options,
-            selectedIndex = LatencyTestMethod.entries.indexOf(settings.latencyTestMethod).coerceAtLeast(0),
+            selectedIndex = selectableMethods.indexOf(settings.latencyTestMethod.normalized()).coerceAtLeast(0),
             onSelect = { index ->
-                settingsViewModel.setLatencyTestMethod(LatencyTestMethod.entries[index])
+                settingsViewModel.setLatencyTestMethod(selectableMethods[index])
                 showLatencyMethodDialog = false
             },
             onDismiss = { showLatencyMethodDialog = false }
@@ -225,7 +226,7 @@ fun RoutingSettingsScreen(
                 StandardCard {
                     SettingItem(title = stringResource(R.string.routing_settings_mode), value = stringResource(settings.routingMode.displayNameRes), onClick = { showModeDialog = true })
                     SettingItem(title = stringResource(R.string.routing_settings_default_rule), value = stringResource(settings.defaultRule.displayNameRes), onClick = { showDefaultRuleDialog = true })
-                    SettingItem(title = stringResource(R.string.routing_settings_latency_test_method), value = stringResource(settings.latencyTestMethod.displayNameRes), onClick = { showLatencyMethodDialog = true })
+                    SettingItem(title = stringResource(R.string.routing_settings_latency_test_method), value = stringResource(settings.latencyTestMethod.normalized().displayNameRes), onClick = { showLatencyMethodDialog = true })
                     SettingItem(
                         title = stringResource(R.string.routing_settings_latency_test_url),
                         onClick = { showLatencyUrlDialog = true },

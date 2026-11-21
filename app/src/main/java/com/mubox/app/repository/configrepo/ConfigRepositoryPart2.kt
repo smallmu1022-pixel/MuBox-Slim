@@ -553,6 +553,82 @@ internal fun ConfigRepository.executeSubscriptionAttempt(
     }
 }
 
+/**
+ * 方向 2b：IP 字面量局域网 http 订阅走裸 Socket 拉取器（NSC 覆盖不到 IP 字面量网段，
+ * 而 java.net.Socket 本就不在 NSC 约束范围内）。响应消费方式与 [executeSubscriptionAttempt]
+ * 逐项对齐：非 2xx 走同一 handleUnsuccessfulSubscriptionResponse、空 body 同一报错、
+ * 解析与订阅名提取复用同一批函数；重定向目标离开局域网段时交回 OkHttp 路径处理。
+ */
+internal fun ConfigRepository.executeLanSubscriptionAttempt(
+    client: OkHttpClient,
+    url: String,
+    timeoutBudget: SubscriptionAttemptTimeoutBudget,
+    context: ConfigRepositorySubscriptionAttemptContext,
+    onProgress: (String) -> Unit,
+    onStageChanged: (SubscriptionUpdateStage) -> Unit
+): ConfigRepositorySubscriptionAttemptResult {
+    val startedAt = System.currentTimeMillis()
+    return when (val outcome = LanSubscriptionHttpFetcher.fetch(url, context.userAgent, timeoutBudget)) {
+        is LanSubscriptionHttpFetcher.FetchOutcome.HandBackToOkHttp ->
+            executeSubscriptionAttempt(
+                client = client,
+                url = outcome.url,
+                context = context,
+                onProgress = onProgress,
+                onStageChanged = onStageChanged
+            )
+        is LanSubscriptionHttpFetcher.FetchOutcome.Completed -> {
+            val response = outcome.response
+            val costMs = System.currentTimeMillis() - startedAt
+            if (response.code !in 200..299) {
+                return handleUnsuccessfulSubscriptionResponse(
+                    responseCode = response.code,
+                    responseMessage = response.message,
+                    context = context,
+                    costMs = costMs
+                )
+            }
+
+            val responseBody = response.body
+            if (responseBody.isBlank()) {
+                logSubscriptionAttempt(
+                    level = Log.WARN,
+                    message = "Empty subscription response",
+                    context = context,
+                    costMs = costMs
+                )
+                throw IllegalStateException(
+                    this@executeLanSubscriptionAttempt.context.getString(R.string.subscription_import_empty_response)
+                )
+            }
+
+            onStageChanged(SubscriptionUpdateStage.Parsing)
+            onProgress(this@executeLanSubscriptionAttempt.context.getString(R.string.subscription_import_parsing))
+
+            val contentType = response.header("Content-Type")
+            val attemptResult = parseSubscriptionResponse(
+                userAgent = context.userAgent,
+                contentType = contentType,
+                responseBody = responseBody,
+                subscriptionUserInfoHeader = response.header("Subscription-Userinfo")
+            )
+            val profileTitle = response.header("profile-title")
+            val contentDisposition = response.header("Content-Disposition")
+            val subName = SubscriptionManager.parseSubscriptionNameFromHeader(profileTitle, contentDisposition)
+
+            val finalAttemptResult = if (subName != null && attemptResult.fetchResult != null) {
+                attemptResult.copy(
+                    fetchResult = attemptResult.fetchResult.copy(subscriptionName = subName)
+                )
+            } else {
+                attemptResult
+            }
+            logSubscriptionParseResult(finalAttemptResult, contentType, context, costMs)
+            finalAttemptResult
+        }
+    }
+}
+
 @Suppress("LongMethod", "CyclomaticComplexMethod", "CognitiveComplexMethod", "LoopWithTooManyJumpStatements")
 internal fun ConfigRepository.fetchAndParseSubscription(
     url: String,
@@ -593,13 +669,25 @@ internal fun ConfigRepository.fetchAndParseSubscription(
                 userAgent = userAgent,
                 isRemembered = rememberedUserAgent.equals(userAgent, ignoreCase = true)
             )
-            val attemptResult = executeSubscriptionAttempt(
-                client = getSubscriptionProxyClient(timeoutBudget) ?: getSubscriptionClient(timeoutBudget),
-                url = url,
-                context = attemptContext,
-                onProgress = onProgress,
-                onStageChanged = onStageChanged
-            )
+            val client = getSubscriptionProxyClient(timeoutBudget) ?: getSubscriptionClient(timeoutBudget)
+            val attemptResult = if (LanSubscriptionHttpFetcher.isEligible(url)) {
+                executeLanSubscriptionAttempt(
+                    client = client,
+                    url = url,
+                    timeoutBudget = timeoutBudget,
+                    context = attemptContext,
+                    onProgress = onProgress,
+                    onStageChanged = onStageChanged
+                )
+            } else {
+                executeSubscriptionAttempt(
+                    client = client,
+                    url = url,
+                    context = attemptContext,
+                    onProgress = onProgress,
+                    onStageChanged = onStageChanged
+                )
+            }
             val fetchResult = attemptResult.fetchResult
             if (fetchResult != null) {
                 rememberSuccessfulSubscriptionUserAgent(url, userAgent)

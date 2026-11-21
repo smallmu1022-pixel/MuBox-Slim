@@ -5,6 +5,7 @@ package com.mubox.app.core
 import android.util.Log
 import com.mubox.app.model.AppSettings
 import com.mubox.app.model.DnsConfig
+import com.mubox.app.model.LatencyTestMethod
 import com.mubox.app.model.DomainResolveConfig
 import com.mubox.app.model.Outbound
 import com.mubox.app.model.SingBoxConfig
@@ -24,7 +25,6 @@ import java.io.File
 import java.net.ServerSocket
 import java.net.InetSocketAddress
 import java.net.Socket
-import com.mubox.app.utils.PreciseLatencyTester
 import java.util.UUID
 
 /** 非 WireGuard 走 OutboundFixer；WireGuard 保留逻辑 outbound 供路由 tag / endpoint 转换。 */
@@ -122,16 +122,29 @@ private suspend fun SingBoxCore.testOutboundsLatencyBatchInternal(
 
     val prepared = prepareLatencyBatchTargets(batchOutbounds, dependencySourceOutbounds, onResult)
         ?: return
-    val ports = allocateLatencyBatchPorts(prepared.targets.size, batchOutbounds, onResult)
-        ?: return
 
-    val portToTagMap = ports.zip(prepared.targets.map { it.tag }).toMap()
+    // TCPing never starts a core service: it connects to the server endpoints directly.
+    if (settings.latencyTestMethod.normalized() == LatencyTestMethod.TCP_PING) {
+        runTcpingBatch(prepared.targets, timeoutMs, settings, onResult)
+        return
+    }
+
+    // One extra port hosts the temporary service's Clash API (core urltest entry point).
+    val ports = allocateLatencyBatchPorts(prepared.targets.size + 1, batchOutbounds, onResult)
+        ?: return
+    val clashPort = ports.last()
+    val probePorts = ports.dropLast(1)
+    val clashSecret = UUID.randomUUID().toString()
+
+    val portToTagMap = probePorts.zip(prepared.targets.map { it.tag }).toMap()
     val config = buildBatchTestConfig(
         prepared.targets,
-        ports,
+        probePorts,
         settings,
         dnsConfig,
-        prepared.dependencySources
+        prepared.dependencySources,
+        clashPort,
+        clashSecret
     )
     if (config == null) {
         batchOutbounds.forEach { onResult(it.tag, -1L) }
@@ -140,7 +153,7 @@ private suspend fun SingBoxCore.testOutboundsLatencyBatchInternal(
     libboxMutex.withLock {
         runLatencyBatchService(
             config = config,
-            ports = ports,
+            ports = probePorts,
             portToTagMap = portToTagMap,
             targetUrl = targetUrl,
             timeoutMs = timeoutMs,
@@ -148,6 +161,8 @@ private suspend fun SingBoxCore.testOutboundsLatencyBatchInternal(
             portReadyTimeoutMs = portReadyTimeoutMs,
             batchOutbounds = batchOutbounds,
             trafficKind = trafficKind,
+            clashPort = clashPort,
+            clashSecret = clashSecret,
             onResult = onResult
         )
     }
@@ -202,6 +217,8 @@ private suspend fun SingBoxCore.runLatencyBatchService(
     portReadyTimeoutMs: Long,
     batchOutbounds: List<Outbound>,
     trafficKind: LatencyProbeTrafficKind,
+    clashPort: Int,
+    clashSecret: String,
     onResult: (tag: String, latency: Long) -> Unit
 ) {
     val configJson = gson.toJson(stripLatencyRuntimeMetadata(config))
@@ -219,13 +236,13 @@ private suspend fun SingBoxCore.runLatencyBatchService(
         }
         commandServer.startOrReloadService(configJson, overrideOptions)
         trafficRecorder = TemporaryProbeTrafficRecorder(context, trafficKind).also { it.start() }
-        val portsReady = waitForPortsReady(ports, portReadyTimeoutMs)
+        val portsReady = waitForPortsReady(ports + clashPort, portReadyTimeoutMs)
         if (!portsReady) {
             Log.e(SingBoxCore.TAG, "Batch test: ports not ready")
             batchOutbounds.forEach { onResult(it.tag, -1L) }
             return
         }
-        runPreciseLatencyTests(portToTagMap, targetUrl, timeoutMs, settings, onResult)
+        runCoreUrlTests(portToTagMap.values, clashPort, clashSecret, targetUrl, timeoutMs, settings, onResult)
     } catch (e: Exception) {
         Log.e(SingBoxCore.TAG, "Batch test failed", e)
         batchOutbounds.forEach { onResult(it.tag, -1L) }
@@ -246,7 +263,9 @@ private fun SingBoxCore.buildBatchTestConfig(
     ports: List<Int>,
     settings: AppSettings,
     dnsConfig: DnsConfig? = null,
-    dependencySourceOutbounds: List<Outbound> = batchOutbounds
+    dependencySourceOutbounds: List<Outbound> = batchOutbounds,
+    clashPort: Int,
+    clashSecret: String
 ): SingBoxConfig? {
     val probeParts = assembleLatencyProbeParts(batchOutbounds, dependencySourceOutbounds)
         ?: return null
@@ -298,6 +317,10 @@ private fun SingBoxCore.buildBatchTestConfig(
                 enabled = false,
                 path = batchTestDbPath,
                 storeFakeip = false
+            ),
+            clashApi = com.mubox.app.model.ClashApiConfig(
+                externalController = "127.0.0.1:$clashPort",
+                secret = clashSecret
             )
         )
     )
@@ -350,32 +373,48 @@ private fun SingBoxCore.isLocalPortReady(port: Int): Boolean {
     }
 }
 
-private suspend fun SingBoxCore.runPreciseLatencyTests(
-    portToTagMap: Map<Int, String>,
+private suspend fun SingBoxCore.runCoreUrlTests(
+    tags: Collection<String>,
+    clashPort: Int,
+    clashSecret: String,
     targetUrl: String,
     timeoutMs: Int,
     settings: AppSettings,
     onResult: (tag: String, latency: Long) -> Unit
 ) {
     val semaphore = Semaphore(settings.latencyTestConcurrency)
-    val standard = latencyStandardForMethod(settings.latencyTestMethod)
     coroutineScope {
-        val jobs = portToTagMap.map { (port, originalTag) ->
+        val jobs = tags.map { tag ->
             async {
                 semaphore.withPermit {
-                    val result = PreciseLatencyTester.test(
-                        proxyPort = port,
-                        url = targetUrl,
-                        timeoutMs = timeoutMs,
-                        standard = standard,
-                        warmup = false
+                    val latency = LatencyProbe.urlTestViaCore(
+                        clashPort = clashPort,
+                        clashSecret = clashSecret,
+                        outboundTag = tag,
+                        targetUrl = targetUrl,
+                        timeoutMs = timeoutMs
                     )
-                    val latency = if (result.isSuccess && result.latencyMs <= timeoutMs) {
-                        result.latencyMs
-                    } else {
-                        -1L
-                    }
-                    onResult(originalTag, latency)
+                    onResult(tag, latency)
+                }
+            }
+        }
+        jobs.awaitAll()
+    }
+}
+
+private suspend fun SingBoxCore.runTcpingBatch(
+    targets: List<Outbound>,
+    timeoutMs: Int,
+    settings: AppSettings,
+    onResult: (tag: String, latency: Long) -> Unit
+) {
+    val semaphore = Semaphore(settings.latencyTestConcurrency)
+    coroutineScope {
+        val jobs = targets.map { target ->
+            async {
+                semaphore.withPermit {
+                    val latency = LatencyProbe.tcpPing(target.server, target.serverPort, timeoutMs)
+                    onResult(target.tag, latency)
                 }
             }
         }

@@ -97,6 +97,10 @@
     <string name="settings_app_language">Language</string>
     <string name="settings_connection_startup">Connection &amp; Startup</string>
     <string name="settings_connection_startup_subtitle">Auto connect, reconnect</string>
+    <string name="settings_battery_exemption">Battery Optimization Exemption</string>
+    <string name="settings_battery_exemption_subtitle">More stable background keep-alive and subscription auto-update</string>
+    <string name="settings_battery_exempted">Exempted</string>
+    <string name="settings_battery_not_exempted">Not exempted</string>
     <string name="settings_routing">Routing Settings</string>
     <string name="settings_routing_subtitle">Mode, rule sets, default rule</string>
     <string name="settings_dns">DNS Settings</string>
@@ -716,6 +720,8 @@
     <string name="latency_test_rtt">Real RTT</string>
     <string name="latency_test_handshake">HTTP Handshake</string>
     <string name="latency_test_url_test">URL Test</string>
+    <string name="latency_test_url_direct">URL Test (Core)</string>
+    <string name="latency_test_tcping">TCPing</string>
 
     <!-- Enum: GhProxyMirror -->
     <string name="gh_mirror_sagernet">SagerNet (Official)</string>

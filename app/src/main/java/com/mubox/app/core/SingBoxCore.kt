@@ -32,10 +32,8 @@ import kotlinx.coroutines.withContext
 import kotlinx.coroutines.withTimeoutOrNull
 import java.io.File
 import java.net.ServerSocket
-import java.net.URI
 import java.net.InetSocketAddress
 import java.net.Socket
-import com.mubox.app.utils.PreciseLatencyTester
 import java.util.UUID
 import java.util.concurrent.atomic.AtomicBoolean
 import java.util.concurrent.atomic.AtomicLong
@@ -394,11 +392,14 @@ class SingBoxCore private constructor(internal val context: Context) {
         if (!libboxAvailable) return@withContext -1L
 
         val finalSettings = settings ?: SettingsRepository.getInstance(context).settings.first()
-        val url = adjustUrlForMode(
-            AppSettings.requireLatencyTestUrl(finalSettings.latencyTestUrl),
-            finalSettings.latencyTestMethod
-        )
+        val url = AppSettings.requireLatencyTestUrl(finalSettings.latencyTestUrl)
         val timeoutMs = finalSettings.latencyTestTimeout
+
+        // TCPing never starts a core service: it connects to the server endpoint directly.
+        if (finalSettings.latencyTestMethod.normalized() == LatencyTestMethod.TCP_PING) {
+            val prepared = prepareLatencyProbeTarget(outbound) ?: return@withContext -1L
+            return@withContext LatencyProbe.tcpPing(prepared.server, prepared.serverPort, timeoutMs)
+        }
 
         return@withContext try {
             testWithLocalHttpProxy(
@@ -440,34 +441,6 @@ class SingBoxCore private constructor(internal val context: Context) {
         return dependencies
     }
 
-    internal fun adjustUrlForMode(original: String, method: LatencyTestMethod): String {
-        return try {
-            val u = URI(original)
-            val host = u.host ?: return original
-            val path = if ((u.path ?: "").isNotEmpty()) u.path else "/"
-            val query = u.query
-            val fragment = u.fragment
-            val userInfo = u.userInfo
-            val port = u.port
-            when (method) {
-                LatencyTestMethod.TCP -> URI("http", userInfo, host, if (port == -1) -1 else port, path, query, fragment).toString()
-                LatencyTestMethod.HANDSHAKE -> URI("https", userInfo, host, if (port == -1) -1 else port, path, query, fragment).toString()
-                else -> original
-            }
-        } catch (_: Exception) {
-            original
-        }
-    }
-
-    internal fun latencyStandardForMethod(method: LatencyTestMethod): PreciseLatencyTester.Standard {
-        return when (method) {
-            LatencyTestMethod.HANDSHAKE -> PreciseLatencyTester.Standard.HANDSHAKE
-            LatencyTestMethod.URL_TEST -> PreciseLatencyTester.Standard.TOTAL
-            LatencyTestMethod.TCP,
-            LatencyTestMethod.REAL_RTT -> PreciseLatencyTester.Standard.RTT
-        }
-    }
-
     private suspend fun testWithLocalHttpProxy(
         outbound: Outbound,
         targetUrl: String,
@@ -505,6 +478,8 @@ class SingBoxCore private constructor(internal val context: Context) {
     ): Long {
 
         val port = allocateLocalPort()
+        val clashPort = allocateLocalPort()
+        val clashSecret = UUID.randomUUID().toString()
         val inbound = com.mubox.app.model.Inbound(
             type = "mixed",
             tag = "test-in",
@@ -547,6 +522,10 @@ class SingBoxCore private constructor(internal val context: Context) {
                         enabled = false,
                         path = testDbPath,
                         storeFakeip = false
+                    ),
+                    clashApi = com.mubox.app.model.ClashApiConfig(
+                        externalController = "127.0.0.1:$clashPort",
+                        secret = clashSecret
                     )
                 )
             )
@@ -567,30 +546,32 @@ class SingBoxCore private constructor(internal val context: Context) {
                 commandServer.startOrReloadService(configJson, overrideOptions)
                 trafficRecorder = TemporaryProbeTrafficRecorder(context, trafficKind).also { it.start() }
 
-                val deadline = System.currentTimeMillis() + 500L
+                val deadline = System.currentTimeMillis() + 5_000L
+                var clashReady = false
                 while (System.currentTimeMillis() < deadline) {
                     try {
                         Socket().use { s ->
                             s.soTimeout = 50
-                            s.connect(InetSocketAddress("127.0.0.1", port), 50)
+                            s.connect(InetSocketAddress("127.0.0.1", clashPort), 50)
                         }
+                        clashReady = true
                         break
                     } catch (_: Exception) {
                         delay(20)
                     }
                 }
 
-                val result = PreciseLatencyTester.test(
-                    proxyPort = port,
-                    url = targetUrl,
-                    timeoutMs = timeoutMs,
-                    standard = latencyStandardForMethod(settings.latencyTestMethod),
-                    warmup = false
-                )
-                if (result.isSuccess && result.latencyMs <= timeoutMs) {
-                    result.latencyMs
-                } else {
+                if (!clashReady) {
+                    Log.e(TAG, "Single test: clash api port not ready")
                     -1L
+                } else {
+                    LatencyProbe.urlTestViaCore(
+                        clashPort = clashPort,
+                        clashSecret = clashSecret,
+                        outboundTag = preparedTarget.tag,
+                        targetUrl = targetUrl,
+                        timeoutMs = timeoutMs
+                    )
                 }
             } finally {
                 trafficRecorder?.stopAndRecord()
@@ -663,10 +644,7 @@ class SingBoxCore private constructor(internal val context: Context) {
                     latencyTestConcurrency = concurrency
                 )
             }
-        val url = adjustUrlForMode(
-            AppSettings.requireLatencyTestUrl(settings.latencyTestUrl),
-            settings.latencyTestMethod
-        )
+        val url = AppSettings.requireLatencyTestUrl(settings.latencyTestUrl)
         val timeoutMs = settings.latencyTestTimeout
         val portReadyTimeoutMs = portReadyTimeoutOverrideMs?.takeIf { it > 0L } ?: DEFAULT_PORT_READY_TIMEOUT_MS
         testOutboundsLatencyOfflineWithTemporaryService(

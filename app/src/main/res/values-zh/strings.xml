@@ -97,6 +97,10 @@
     <string name="settings_app_language">应用语言</string>
     <string name="settings_connection_startup">连接与启动</string>
     <string name="settings_connection_startup_subtitle">自动连接、断线重连</string>
+    <string name="settings_battery_exemption">电池优化豁免</string>
+    <string name="settings_battery_exemption_subtitle">豁免后后台保活与订阅自动更新更稳定</string>
+    <string name="settings_battery_exempted">已豁免</string>
+    <string name="settings_battery_not_exempted">未豁免</string>
     <string name="settings_routing">路由设置</string>
     <string name="settings_routing_subtitle">模式、规则集、默认规则</string>
     <string name="settings_dns">DNS 设置</string>
@@ -716,6 +720,8 @@
     <string name="latency_test_rtt">真实延迟 (RTT)</string>
     <string name="latency_test_handshake">HTTP 握手延迟</string>
     <string name="latency_test_url_test">URL Test</string>
+    <string name="latency_test_url_direct">URL 直测</string>
+    <string name="latency_test_tcping">TCPing</string>
 
     <!-- Enum: GhProxyMirror -->
     <string name="gh_mirror_sagernet">SagerNet (官方)</string>

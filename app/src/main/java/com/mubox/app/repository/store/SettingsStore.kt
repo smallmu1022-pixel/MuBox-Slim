@@ -10,6 +10,7 @@ import com.mubox.app.model.AppGroup
 import com.mubox.app.model.AppInfo
 import com.mubox.app.model.AppSettings
 import com.mubox.app.model.AppThemeStyle
+import com.mubox.app.model.LatencyTestMethod
 import com.mubox.app.model.RuleSetOutboundMode
 import com.mubox.app.model.TrafficCaptureMode
 import com.mubox.app.repository.normalizeExclusiveAppAssignments
@@ -54,6 +55,7 @@ class SettingsStore private constructor(context: Context) {
             result = migrateAppThemeStyle(version, result)
             result = migrateLocalDnsIpDoh(version, result)
             result = recoverLatencyTestUrl(result)
+            result = normalizeLatencyTestMethod(result)
             result = migrateTrafficCaptureMode(version, result)
             val perAppPolicyRevision: Long? = runCatching { result.perAppPolicyRevision }.getOrNull()
             result = result.copy(perAppPolicyRevision = perAppPolicyRevision?.coerceAtLeast(0L) ?: 0L)
@@ -182,6 +184,18 @@ class SettingsStore private constructor(context: Context) {
 
             Log.i(TAG, "Migrated ${settings.appRules.size} legacy app rules into app groups")
             return settings.copy(appRules = emptyList(), appGroups = migratedGroups + settings.appGroups)
+        }
+
+        private fun normalizeLatencyTestMethod(settings: AppSettings): AppSettings {
+            val current: LatencyTestMethod? = settings.latencyTestMethod
+            if (current == null) {
+                Log.w(TAG, "Recovering missing latency test method to URL_TEST")
+                return settings.copy(latencyTestMethod = LatencyTestMethod.URL_TEST)
+            }
+            val normalized = current.normalized()
+            if (normalized == current) return settings
+            Log.i(TAG, "Normalized legacy latency test method $current -> $normalized")
+            return settings.copy(latencyTestMethod = normalized)
         }
 
         private fun recoverLatencyTestUrl(settings: AppSettings): AppSettings {

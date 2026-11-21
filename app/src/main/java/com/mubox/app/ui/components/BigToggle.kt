@@ -33,6 +33,8 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.scale
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.ColorFilter
+import androidx.compose.ui.graphics.ColorMatrix
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
@@ -151,6 +153,11 @@ fun BigToggle(
 
     // Color animations
 
+    // MuBox Slim C 案：已连接态的静态提亮（蓝通道权重最高，光晕盘与弧线更亮），无动画循环
+    val connectedLift = remember {
+        ColorMatrix().apply { setToScale(1.05f, 1.07f, 1.15f, 1f) }
+    }
+
     val touchSurfaceModifier = Modifier
         .size(200.dp)
         .clip(CircleShape)
@@ -184,15 +191,14 @@ fun BigToggle(
                     },
                     label = "IconCrossfade"
                 ) { running ->
-                    val res = if (running) R.drawable.gengar_awake else R.drawable.gengar_sleep
-                    val imageScale = if (running) 0.75f else 0.75f
-
+                    // 两态共用同一张定版光晕睡猫图（R.drawable.halo_cat），
+                    // 已连接仅以静态色彩矩阵提亮区分，不新增持续动画
                     Image(
-                        painter = painterResource(id = res),
+                        painter = painterResource(id = R.drawable.halo_cat),
                         contentDescription = if (running) "Running" else "Idle",
+                        colorFilter = if (running) ColorFilter.colorMatrix(connectedLift) else null,
                         modifier = Modifier
-                            .scale(imageScale)
-                            .offset(x = 0.dp, y = 32.dp)
+                            .size(270.dp)
                             .graphicsLayer {
                                 rotationZ = rotation.value
                             }
