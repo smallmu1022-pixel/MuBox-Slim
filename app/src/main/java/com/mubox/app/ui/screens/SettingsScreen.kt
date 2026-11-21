@@ -1,5 +1,9 @@
 package com.mubox.app.ui.screens
 
+import android.content.Context
+import android.content.Intent
+import android.net.Uri
+import android.os.PowerManager
 import com.mubox.app.R
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
@@ -14,6 +18,7 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.rounded.Analytics
+import androidx.compose.material.icons.rounded.BatterySaver
 import androidx.compose.material.icons.rounded.BugReport
 import androidx.compose.material.icons.rounded.Dns
 import androidx.compose.material.icons.rounded.Download
@@ -35,6 +40,8 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.ui.res.stringResource
 import androidx.compose.runtime.Composable
+import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.compose.LifecycleEventEffect
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
@@ -98,6 +105,13 @@ fun SettingsScreen(
     var showLanguageDialog by remember { mutableStateOf(false) }
     var isUpdatingRuleSets by remember { mutableStateOf(false) }
     var updateMessage by remember { mutableStateOf("") }
+    val powerManager = remember { context.getSystemService(Context.POWER_SERVICE) as PowerManager }
+    var isIgnoringBatteryOptimizations by remember {
+        mutableStateOf(powerManager.isIgnoringBatteryOptimizations(context.packageName))
+    }
+    LifecycleEventEffect(Lifecycle.Event.ON_RESUME) {
+        isIgnoringBatteryOptimizations = powerManager.isIgnoringBatteryOptimizations(context.packageName)
+    }
     val exportLauncher = rememberLauncherForActivityResult(
         contract = ActivityResultContracts.CreateDocument("application/json")
     ) { uri ->
@@ -235,6 +249,26 @@ fun SettingsScreen(
                     subtitle = stringResource(R.string.settings_connection_startup_subtitle),
                     icon = Icons.Rounded.PowerSettingsNew,
                     onClick = { navController.navigate(Screen.ConnectionSettings.route) }
+                )
+                SettingItem(
+                    title = stringResource(R.string.settings_battery_exemption),
+                    subtitle = stringResource(R.string.settings_battery_exemption_subtitle),
+                    value = if (isIgnoringBatteryOptimizations) {
+                        stringResource(R.string.settings_battery_exempted)
+                    } else {
+                        stringResource(R.string.settings_battery_not_exempted)
+                    },
+                    icon = Icons.Rounded.BatterySaver,
+                    onClick = {
+                        if (!isIgnoringBatteryOptimizations) {
+                            val intent = Intent(
+                                android.provider.Settings.ACTION_REQUEST_IGNORE_BATTERY_OPTIMIZATIONS
+                            ).apply {
+                                data = Uri.parse("package:${context.packageName}")
+                            }
+                            runCatching { context.startActivity(intent) }
+                        }
+                    }
                 )
             }
 
