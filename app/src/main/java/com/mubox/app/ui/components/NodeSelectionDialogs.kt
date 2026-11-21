@@ -87,7 +87,7 @@ private fun Modifier.nodeFilterModePanel(isSelected: Boolean): Modifier {
 @Composable
 fun AboutDialog(onDismiss: () -> Unit) {
     val context = LocalContext.current
-    val githubUrl = "https://github.com/smallmu1022-pixel/singboxforandriod.git"
+    val githubUrl = "https://github.com/smallmu1022-pixel/MuBox-Slim"
     val linkColor = MaterialTheme.colorScheme.primary
 
     val appVersion = remember { com.mubox.app.utils.VersionInfo.getAppVersionName(context) }
