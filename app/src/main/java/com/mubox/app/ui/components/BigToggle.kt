@@ -15,11 +15,13 @@ import androidx.compose.animation.fadeOut
 import androidx.compose.animation.togetherWith
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.interaction.collectIsPressedAsState
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.offset
+import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.runtime.Composable
@@ -32,6 +34,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.scale
+import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.graphics.ColorMatrix
@@ -151,11 +154,28 @@ fun BigToggle(
         }
     }
 
-    // Color animations
-
-    // MuBox Slim C 案：已连接态的静态提亮（蓝通道权重最高，光晕盘与弧线更亮），无动画循环
+    // 两态区分（2026-11-22 改版，用户定版对比图）：仍共用同一张光晕睡猫原图，
+    // 纯代码效果拉开差距——未连接压暗去饱和，已连接高饱和提亮（蓝通道最高）
+    // 并叠外发光与绿点。矩阵为「饱和度 × 通道缩放」的合成结果（手算展开）。
     val connectedLift = remember {
-        ColorMatrix().apply { setToScale(1.05f, 1.07f, 1.15f, 1f) }
+        ColorMatrix(
+            floatArrayOf(
+                1.185f, -0.113f, -0.012f, 0f, 0f,
+                -0.035f, 1.126f, -0.012f, 0f, 0f,
+                -0.037f, -0.124f, 1.321f, 0f, 0f,
+                0f, 0f, 0f, 1f, 0f
+            )
+        )
+    }
+    val disconnectedDim = remember {
+        ColorMatrix(
+            floatArrayOf(
+                0.420f, 0.291f, 0.029f, 0f, 0f,
+                0.087f, 0.624f, 0.029f, 0f, 0f,
+                0.091f, 0.307f, 0.382f, 0f, 0f,
+                0f, 0f, 0f, 1f, 0f
+            )
+        )
     }
 
     val touchSurfaceModifier = Modifier
@@ -191,18 +211,51 @@ fun BigToggle(
                     },
                     label = "IconCrossfade"
                 ) { running ->
-                    // 两态共用同一张定版光晕睡猫图（R.drawable.halo_cat），
-                    // 已连接仅以静态色彩矩阵提亮区分，不新增持续动画
-                    Image(
-                        painter = painterResource(id = R.drawable.halo_cat),
-                        contentDescription = if (running) "Running" else "Idle",
-                        colorFilter = if (running) ColorFilter.colorMatrix(connectedLift) else null,
-                        modifier = Modifier
-                            .size(270.dp)
-                            .graphicsLayer {
-                                rotationZ = rotation.value
-                            }
-                    )
+                    // 两态共用同一张定版光晕睡猫图（R.drawable.halo_cat）；
+                    // 已连接另叠外发光与右下绿点，未连接压暗去饱和，不新增持续动画
+                    Box(
+                        modifier = Modifier.size(270.dp),
+                        contentAlignment = Alignment.Center
+                    ) {
+                        if (running) {
+                            Box(
+                                modifier = Modifier
+                                    .size(296.dp)
+                                    .clip(CircleShape)
+                                    .background(
+                                        Brush.radialGradient(
+                                            colors = listOf(
+                                                Color(0x4D7FB2F0),
+                                                Color(0x007FB2F0)
+                                            )
+                                        )
+                                    )
+                            )
+                        }
+                        Image(
+                            painter = painterResource(id = R.drawable.halo_cat),
+                            contentDescription = if (running) "Running" else "Idle",
+                            colorFilter = ColorFilter.colorMatrix(
+                                if (running) connectedLift else disconnectedDim
+                            ),
+                            modifier = Modifier
+                                .size(270.dp)
+                                .graphicsLayer {
+                                    rotationZ = rotation.value
+                                }
+                        )
+                        if (running) {
+                            Box(
+                                modifier = Modifier
+                                    .align(Alignment.BottomEnd)
+                                    .padding(end = 40.dp, bottom = 34.dp)
+                                    .size(26.dp)
+                                    .clip(CircleShape)
+                                    .background(Color(0xFF2FBF71))
+                                    .border(3.dp, Color.White, CircleShape)
+                            )
+                        }
+                    }
                 }
 
                 Box(

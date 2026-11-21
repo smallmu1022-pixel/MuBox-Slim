@@ -830,7 +830,8 @@ internal fun ConfigRepository.buildNodeTestInfos(nodes: List<NodeUi>, settings: 
 internal suspend fun ConfigRepository.testRegularOutboundsLatency(
     infos: List<ConfigRepositoryNodeTestInfo>,
     results: MutableMap<String, SavedNodeLatency>,
-    onNodeComplete: ((nodeId: String, latencyMs: Long) -> Unit)?
+    onNodeComplete: ((nodeId: String, latencyMs: Long) -> Unit)?,
+    methodOverride: LatencyTestMethod? = null
 ) {
     if (infos.isEmpty()) return
 
@@ -841,7 +842,8 @@ internal suspend fun ConfigRepository.testRegularOutboundsLatency(
                 info.outbound.copy(tag = ConfigRepository.buildLatencyProbeTag(info.nodeId))
             },
             allOutbounds = runtime.second,
-            dnsConfig = runtime.first
+            dnsConfig = runtime.first,
+            methodOverride = methodOverride
         ) { tag, latency ->
             val info = infoByTag[tag] ?: return@testOutboundsLatency
             recordLatencyResult(info, latency, results, onNodeComplete)

@@ -114,12 +114,14 @@ internal fun DashboardViewModel.updateAllSubscriptionsRuntime() {
     }
 }
 
-internal fun DashboardViewModel.testAllNodesLatencyRuntime() {
+internal fun DashboardViewModel.testAllNodesLatencyRuntime(
+    methodOverride: com.mubox.app.model.LatencyTestMethod? = null
+) {
     viewModelScope.launch {
         val targetNodeIds = configRepository.nodes.value.map { it.id }
         if (targetNodeIds.isEmpty()) return@launch
         emitToast(getApplication<Application>().getString(R.string.common_loading))
-        configRepository.testAllNodesLatency(targetNodeIds = targetNodeIds)
+        configRepository.testAllNodesLatency(targetNodeIds = targetNodeIds, methodOverride = methodOverride)
         emitToast(getApplication<Application>().getString(R.string.dashboard_test_complete))
     }
 }

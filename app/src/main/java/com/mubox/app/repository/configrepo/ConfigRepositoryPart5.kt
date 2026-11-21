@@ -300,6 +300,7 @@ internal suspend fun ConfigRepository.clearAllNodesLatency() = withContext(Dispa
 internal suspend fun ConfigRepository.testAllNodesLatency(
     targetNodeIds: List<String>? = null,
     useAllNodes: Boolean = false,
+    methodOverride: LatencyTestMethod? = null,
     onNodeComplete: ((nodeId: String, latencyMs: Long) -> Unit)? = null) = withContext(Dispatchers.IO) {
     val sourceNodes = if (useAllNodes) _allNodes.value else _nodes.value
     val selectedNodes = if (targetNodeIds != null) {
@@ -320,7 +321,7 @@ internal suspend fun ConfigRepository.testAllNodesLatency(
     val results = ConcurrentHashMap<String, SavedNodeLatency>()
     runLatencyBatchAndApply(
         runBatch = {
-            testRegularOutboundsLatency(testInfoList, results, onNodeComplete)
+            testRegularOutboundsLatency(testInfoList, results, onNodeComplete, methodOverride)
         },
         applyResults = {
             applyLatencyResults(results)

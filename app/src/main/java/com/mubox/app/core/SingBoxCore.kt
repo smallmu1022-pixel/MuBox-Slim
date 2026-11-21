@@ -634,6 +634,7 @@ class SingBoxCore private constructor(internal val context: Context) {
         concurrencyOverride: Int? = null,
         portReadyTimeoutOverrideMs: Long? = null,
         trafficKind: LatencyProbeTrafficKind = LatencyProbeTrafficKind.BACKGROUND_PROBE,
+        methodOverride: LatencyTestMethod? = null,
         onResult: (tag: String, latency: Long) -> Unit
     ) = withContext(Dispatchers.IO) {
         val settings = SettingsRepository.getInstance(context).settings.first()
@@ -645,7 +646,9 @@ class SingBoxCore private constructor(internal val context: Context) {
                     ?: currentSettings.latencyTestConcurrency
                 currentSettings.copy(
                     latencyTestTimeout = timeout,
-                    latencyTestConcurrency = concurrency
+                    latencyTestConcurrency = concurrency,
+                    // 主界面延迟测试菜单的本次模式覆盖；不传时用设置里的默认方式
+                    latencyTestMethod = methodOverride ?: currentSettings.latencyTestMethod
                 )
             }
         val url = AppSettings.requireLatencyTestUrl(settings.latencyTestUrl)

@@ -19,9 +19,9 @@ import androidx.compose.foundation.layout.statusBars
 import androidx.compose.foundation.layout.width
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.rounded.Bolt
-import androidx.compose.material.icons.rounded.BugReport
-import androidx.compose.material.icons.rounded.Terminal
 import androidx.compose.material.icons.rounded.Refresh
+import androidx.compose.material3.DropdownMenu
+import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.Icon
 import androidx.compose.foundation.layout.size
 import androidx.compose.material3.IconButton
@@ -137,7 +137,7 @@ fun DashboardScreen(
     var showModeDialog by remember { mutableStateOf(false) }
     val currentMode = stringResource(settings.routingMode.displayNameRes)
     var showUpdateDialog by remember { mutableStateOf(false) }
-    var showTestDialog by remember { mutableStateOf(false) }
+    var showTestMenu by remember { mutableStateOf(false) }
     var showProfileDialog by remember { mutableStateOf(false) }
     var showNodeDialog by remember { mutableStateOf(false) }
     var lastConnectionState by remember { mutableStateOf<ConnectionState?>(null) }
@@ -205,19 +205,6 @@ fun DashboardScreen(
                 showUpdateDialog = false
             },
             onDismiss = { showUpdateDialog = false }
-        )
-    }
-
-    if (showTestDialog) {
-        ConfirmDialog(
-            title = stringResource(R.string.dashboard_latency_test),
-            message = stringResource(R.string.dashboard_latency_test_confirm),
-            confirmText = stringResource(R.string.dashboard_start_test),
-            onConfirm = {
-                viewModel.testAllNodesLatency()
-                showTestDialog = false
-            },
-            onDismiss = { showTestDialog = false }
         )
     }
 
@@ -458,13 +445,14 @@ fun DashboardScreen(
                 )
                 Spacer(modifier = Modifier.height(16.dp))
 
-                // Quick Actions Card
+                // Quick Actions Card（2026-11-22 改版：只留两个按钮，
+                // 更新订阅靠左下、延迟测试靠右下；运行日志/网络诊断只在设置页进入）
                 StandardCard(modifier = Modifier.fillMaxWidth(), border = null) {
                     Row(
                         modifier = Modifier
                             .fillMaxWidth()
-                            .padding(vertical = 8.dp, horizontal = 8.dp),
-                        horizontalArrangement = Arrangement.SpaceEvenly,
+                            .padding(vertical = 8.dp, horizontal = 20.dp),
+                        horizontalArrangement = Arrangement.SpaceBetween,
                         verticalAlignment = Alignment.CenterVertically
                     ) {
                         QuickActionButton(
@@ -473,23 +461,61 @@ fun DashboardScreen(
                         ) {
                             showUpdateDialog = true
                         }
-                        QuickActionButton(
-                            Icons.Rounded.Bolt,
-                            stringResource(R.string.dashboard_latency_test)
-                        ) {
-                            showTestDialog = true
-                        }
-                        QuickActionButton(
-                            Icons.Rounded.Terminal,
-                            stringResource(R.string.dashboard_logs)
-                        ) {
-                            navController.navigate(AppScreen.Logs.route)
-                        }
-                        QuickActionButton(
-                            Icons.Rounded.BugReport,
-                            stringResource(R.string.dashboard_diagnostics)
-                        ) {
-                            navController.navigate(AppScreen.Diagnostics.route)
+                        Box {
+                            QuickActionButton(
+                                Icons.Rounded.Bolt,
+                                stringResource(R.string.dashboard_latency_test)
+                            ) {
+                                showTestMenu = true
+                            }
+                            DropdownMenu(
+                                expanded = showTestMenu,
+                                onDismissRequest = { showTestMenu = false }
+                            ) {
+                                DropdownMenuItem(
+                                    text = {
+                                        Text(
+                                            text = "选择测速方式（本次）",
+                                            style = MaterialTheme.typography.bodySmall,
+                                            color = MaterialTheme.colorScheme.onSurfaceVariant
+                                        )
+                                    },
+                                    enabled = false,
+                                    onClick = {}
+                                )
+                                DropdownMenuItem(
+                                    text = {
+                                        Column {
+                                            Text(stringResource(com.mubox.app.model.LatencyTestMethod.URL_TEST.displayNameRes))
+                                            Text(
+                                                text = "经节点发真实请求，结果最准",
+                                                style = MaterialTheme.typography.bodySmall,
+                                                color = MaterialTheme.colorScheme.onSurfaceVariant
+                                            )
+                                        }
+                                    },
+                                    onClick = {
+                                        showTestMenu = false
+                                        viewModel.testAllNodesLatency(com.mubox.app.model.LatencyTestMethod.URL_TEST)
+                                    }
+                                )
+                                DropdownMenuItem(
+                                    text = {
+                                        Column {
+                                            Text(stringResource(com.mubox.app.model.LatencyTestMethod.TCP_PING.displayNameRes))
+                                            Text(
+                                                text = "直连握手，快；UDP 节点自动改走 URL",
+                                                style = MaterialTheme.typography.bodySmall,
+                                                color = MaterialTheme.colorScheme.onSurfaceVariant
+                                            )
+                                        }
+                                    },
+                                    onClick = {
+                                        showTestMenu = false
+                                        viewModel.testAllNodesLatency(com.mubox.app.model.LatencyTestMethod.TCP_PING)
+                                    }
+                                )
+                            }
                         }
                     }
                 }

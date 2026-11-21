@@ -995,7 +995,8 @@ class DashboardViewModel(application: Application) : AndroidViewModel(applicatio
 
     fun updateAllSubscriptions() = updateAllSubscriptionsRuntime()
 
-    fun testAllNodesLatency() = testAllNodesLatencyRuntime()
+    fun testAllNodesLatency(methodOverride: com.mubox.app.model.LatencyTestMethod? = null) =
+        testAllNodesLatencyRuntime(methodOverride)
 
     private fun startTrafficMonitor() {
         if (statsUiActive && _connectionState.value == ConnectionState.Connected) {
