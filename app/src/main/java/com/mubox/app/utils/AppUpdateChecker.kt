@@ -38,6 +38,12 @@ object AppUpdateChecker {
     // 使同名热修（versionName 不变、versionCode 递增）也能被检查到。
     private val VERSION_CODE_COMMENT = Regex("""<!--\s*vc:\s*(\d+)\s*-->""")
 
+    // 发布说明中只给发布页看的段落（常驻要求），App 弹窗不显示
+    private val APP_HIDE_BLOCK = Regex(
+        """<!--\s*app-hide-start\s*-->.*?<!--\s*app-hide-end\s*-->""",
+        RegexOption.DOT_MATCHES_ALL
+    )
+
     private val gson = Gson()
 
     data class GitHubRelease(
@@ -156,7 +162,12 @@ object AppUpdateChecker {
 
     private fun cleanReleaseNotes(body: String?): String? {
         if (body.isNullOrEmpty()) return null
-        return body.replace(VERSION_CODE_COMMENT, "").trim().ifEmpty { null }
+        // 发布页正文里的常驻要求段（最低系统、单包说明）用 app-hide 标记包裹：
+        // GitHub 页面上可见，App 弹窗只显示本版变更，剥掉该段与 vc 标记。
+        return body.replace(APP_HIDE_BLOCK, "")
+            .replace(VERSION_CODE_COMMENT, "")
+            .trim()
+            .ifEmpty { null }
     }
 
     /**
