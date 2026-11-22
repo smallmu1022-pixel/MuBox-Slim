@@ -371,6 +371,10 @@ configure<ApplicationExtension> {
         jniLibs {
             useLegacyPackaging = preferCompressedApk
         }
+        // dex 同口径：minSdk>=28 后 AGP 默认不压缩 classes.dex（下载包涨约 3 MB），体积优先策略下改回压缩存放
+        dex {
+            useLegacyPackaging = preferCompressedApk
+        }
     }
     
     // 避免压缩规则集文件，提高读取效率
