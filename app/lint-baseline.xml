@@ -668,7 +668,7 @@
         errorLine2="    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
         <location
             file="src/main/res/values-en/strings.xml"
-            line="761"
+            line="760"
             column="5"/>
     </issue>
 
@@ -679,7 +679,7 @@
         errorLine2="    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
         <location
             file="src/main/res/values-en/strings.xml"
-            line="763"
+            line="762"
             column="5"/>
     </issue>
 
@@ -690,7 +690,7 @@
         errorLine2="    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
         <location
             file="src/main/res/values-en/strings.xml"
-            line="788"
+            line="787"
             column="5"/>
     </issue>
 
@@ -701,7 +701,7 @@
         errorLine2="    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
         <location
             file="src/main/res/values-en/strings.xml"
-            line="789"
+            line="788"
             column="5"/>
     </issue>
 
@@ -712,7 +712,7 @@
         errorLine2="    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
         <location
             file="src/main/res/values-en/strings.xml"
-            line="800"
+            line="799"
             column="5"/>
     </issue>
 
@@ -789,7 +789,7 @@
         errorLine2="               ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
         <location
             file="src/main/java/com/mubox/app/utils/AppUpdater.kt"
-            line="170"
+            line="191"
             column="16"/>
     </issue>
 
@@ -800,7 +800,7 @@
         errorLine2="        ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
         <location
             file="src/main/java/com/mubox/app/repository/configrepo/ConfigRepositoryPart1.kt"
-            line="58"
+            line="60"
             column="9"/>
     </issue>
 
@@ -1394,7 +1394,7 @@
         errorLine2="                    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
         <location
             file="src/main/java/com/mubox/app/service/VpnTileService.kt"
-            line="256"
+            line="260"
             column="21"/>
     </issue>
 
@@ -1405,7 +1405,7 @@
         errorLine2="            ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
         <location
             file="src/main/java/com/mubox/app/service/VpnTileService.kt"
-            line="277"
+            line="281"
             column="13"/>
     </issue>
 
@@ -1973,7 +1973,7 @@
         errorLine2="            ~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
         <location
             file="src/main/res/values/strings.xml"
-            line="724"
+            line="723"
             column="13"/>
     </issue>
 
@@ -1984,7 +1984,7 @@
         errorLine2="            ~~~~~~~~~~~~~~~~~~~~~~~~~">
         <location
             file="src/main/res/values/strings.xml"
-            line="782"
+            line="781"
             column="13"/>
     </issue>
 
@@ -2941,7 +2941,7 @@
         errorLine2="            ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
         <location
             file="src/main/java/com/mubox/app/utils/AppUpdater.kt"
-            line="177"
+            line="198"
             column="13"/>
     </issue>
 
@@ -2996,7 +2996,7 @@
         errorLine2="                                                                    ~~~~~~~~~~~~~~~~~~~~~~~~~~">
         <location
             file="src/main/java/com/mubox/app/ui/components/NodeSelectionDialogs.kt"
-            line="162"
+            line="161"
             column="69"/>
     </issue>
 
