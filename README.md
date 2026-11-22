@@ -2,95 +2,43 @@
 
 # MuBox Slim for Android
 
-> **The slim edition of MuBox: only the protocols you actually use, one third smaller.**
->
-> A custom-trimmed sing-box kernel with matching app-layer cuts,
-> keeping just six protocols: VLESS, Hysteria2, Trojan, AnyTLS, SOCKS and HTTP.
+**MuBox 的精简版：只留你真正用的协议，体积小三分之一。**
 
-[Download](#-download-and-installation) • [Protocols](#-protocol-support) • [What was trimmed](#-what-was-trimmed) • [Build](#-build-guide)
-
-**[中文文档](README_CN.md)**
+[![最新版本](https://img.shields.io/github/v/release/smallmu1022-pixel/MuBox-Slim?label=%E6%9C%80%E6%96%B0%E7%89%88%E6%9C%AC)](https://github.com/smallmu1022-pixel/MuBox-Slim/releases)
+[![总下载](https://img.shields.io/github/downloads/smallmu1022-pixel/MuBox-Slim/total?label=%E6%80%BB%E4%B8%8B%E8%BD%BD)](https://github.com/smallmu1022-pixel/MuBox-Slim/releases)
+[![Android](https://img.shields.io/badge/Android-16%2B-3DDC84?logo=android&logoColor=white)](https://github.com/smallmu1022-pixel/MuBox-Slim/releases)
+[![内核](https://img.shields.io/badge/%E5%86%85%E6%A0%B8-sing--box%201.14.4-blue)](https://github.com/SagerNet/sing-box)
+[![最近更新](https://img.shields.io/github/last-commit/smallmu1022-pixel/MuBox-Slim?label=%E6%9C%80%E8%BF%91%E6%9B%B4%E6%96%B0)](https://github.com/smallmu1022-pixel/MuBox-Slim/commits/main)
+[![许可证](https://img.shields.io/github/license/smallmu1022-pixel/MuBox-Slim?label=%E8%AE%B8%E5%8F%AF%E8%AF%81)](LICENSE)
 
 </div>
 
-> **Fork notice**: MuBox Slim is the slim edition of MuBox; MuBox is a fork of [KunBox](https://github.com/roseforljh/KunBox) v2.24.3 by the original author **roseforljh**, to whom we are grateful. This project is maintained independently; the trimming work is described below.
+自编裁剪的 sing-box 内核 + 应用层同步精简，只保留六个协议：**VLESS、Hysteria2、Trojan、AnyTLS、SOCKS、HTTP**。其余协议（VMess、Shadowsocks、TUIC、WireGuard 等）已彻底移除；订阅中遇到被移除的节点会自动跳过并计数，不影响整表导入。
 
----
+## 下载
 
-## 📥 Download and Installation
+到 [Releases](https://github.com/smallmu1022-pixel/MuBox-Slim/releases) 下载最新 APK；已装用户可在 App 内检查更新直接升级。
 
-Get the latest APK from the [Releases page](https://github.com/smallmu1022-pixel/MuBox-Slim/releases).
-
-> **Note**: Release assets include `arm64-v8a` and `armeabi-v7a` builds; most phones want `arm64-v8a`.
-
-| Item | Requirement |
+| 项目 | 说明 |
 |:---|:---|
-| Android | Android 7.0 (API 24) or later; targets Android 17 (API 37) |
-| Package | `com.mubox.slim` (can coexist with MuBox) |
-| Size | ~18 MB for the arm64 APK (MuBox is ~27 MB) |
+| 系统 | Android 16（API 36）及以上 |
+| 包名 | `com.mubox.slim`（可与 MuBox 共存） |
+| 安装包 | 仅 arm64-v8a，约 18.5 MB |
 
-Install by opening the downloaded APK (you may need to allow installs from unknown sources).
-
----
-
-## 🌐 Protocol Support
-
-**Kept (6):**
-
-| Protocol | Link format | Notes |
-|:---|:---|:---|
-| **VLESS** | `vless://` | REALITY / Vision / uTLS |
-| **Hysteria2** | `hysteria2://` / `hy2://` | QUIC, port hopping |
-| **Trojan** | `trojan://` | |
-| **AnyTLS** | `anytls://` | |
-| **SOCKS** | `socks://` | SOCKS5 |
-| **HTTP** | `http://` | HTTP/HTTPS proxy |
-
-**Removed:** VMess, Shadowsocks, Hysteria (v1), TUIC, WireGuard, SSH, Naive, Snell, Tor, ShadowTLS, and more.
-
-Nodes of removed protocols inside a subscription or backup are silently skipped (and counted) instead of failing the whole import; pasting a removed protocol link by hand shows a clear "removed in the slim edition" notice.
-
----
-
-## ✂️ What Was Trimmed
+## 瘦身对比
 
 | | MuBox | MuBox Slim |
 |:---|:---|:---|
-| arm64 APK | ~27.3 MB | ~18.4 MB (−32%) |
-| Kernel libbox.so | 67.5 MB | 45.2 MB (−33%) |
-| Kernel dependency packages | 1112 | 739 (−33.5%) |
+| arm64 安装包 | 约 27.4 MB | 约 18.5 MB（−32%） |
+| 内核 libbox.so | 67.6 MB | 44.8 MB（−34%） |
+| 内核依赖包 | 1112 | 743（−33%） |
 
-- The kernel is a self-built trim of sing-box v1.14.2: removed protocols are unregistered and fully out of the dependency graph (Naive's Cronet library, OpenVPN, OpenConnect, WireGuard, the Tailscale module, …), with a CI dependency-graph guard that fails the build if a cut package creeps back
-- The app layer drops parsing, editing and config generation for the removed protocols
-- Same signing key as MuBox and a fully compatible backup format: a MuBox `mubox_backup` file imports straight into Slim
+## 保留功能
 
----
+规则 / 全局模式、规则集在线更新、订阅导入与自动更新、批量延迟测试、连接查看、局域网共享、仅代理模式、Root 透明代理；MuBox 的备份文件可直接导入。
 
-## ✨ Retained Features
+## 来源与致谢
 
-- Rule mode / global mode, rule-set hub (online download, auto-update)
-- Subscription import and auto-update; clipboard / QR code / file node import
-- Batch latency testing, connection inspector
-- LAN sharing (SOCKS/HTTP inbound)
-- VPN mode / proxy-only mode / root transparent proxy mode
+MuBox Slim 是 MuBox 的精简版；MuBox 基于 [KunBox](https://github.com/roseforljh/KunBox) v2.24.3（原作者 **roseforljh**）独立维护，在此致谢。代理内核为 [sing-box](https://github.com/SagerNet/sing-box)（SagerNet），本项目使用自编裁剪版 1.14.4。
 
----
-
-## 🔧 Build Guide
-
-Releases are built by GitHub Actions (triggered by a `v*` tag): check out sing-box v1.14.2 → apply the kernel trim patch → verify the dependency graph → build libbox.aar with gomobile → package both ABI APKs onto the release.
-
-Local builds need JDK 17, the Android SDK/NDK and Go 1.26.5; see `.github/workflows/` for details.
-
----
-
-## 🙏 Credits
-
-- **App base**: [KunBox](https://github.com/roseforljh/KunBox) v2.24.3 by the original author **roseforljh**. MuBox is an independently maintained rebrand of it, and MuBox Slim is MuBox's slim edition. The app's features and UI foundation come from the original author's work; the trimming and later changes are this project's own.
-- **Proxy kernel**: [sing-box](https://github.com/SagerNet/sing-box) by SagerNet; this project builds a custom-trimmed v1.14.2.
-
----
-
-## 📄 License
-
-See [LICENSE](LICENSE).
+许可证见 [LICENSE](LICENSE)。
