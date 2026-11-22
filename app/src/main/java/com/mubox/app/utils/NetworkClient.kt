@@ -14,6 +14,7 @@ import okhttp3.Request
 import okhttp3.Response
 import java.io.IOException
 import java.net.InetAddress
+import java.net.InetSocketAddress
 import java.net.Socket
 import java.util.concurrent.TimeUnit
 import javax.net.SocketFactory
@@ -155,7 +156,39 @@ object NetworkClient {
     private class PhysicalNetworkSocketFactory(
         private val connectivityManager: ConnectivityManager
     ) : SocketFactory() {
-        override fun createSocket(): Socket {
+        // javax.net.SocketFactory 除无参 createSocket() 外还有四个抽象的带参重载，
+        // 必须全部实现才能通过编译。OkHttp 实际只调无参版（连接由它自己完成）；
+        // 带参版按同一套路实现：先绑物理网络，再按需绑本地地址（网络绑定已占用
+        // 本地地址时跳过，避免重复 bind 抛异常），最后连接。
+        override fun createSocket(): Socket = createBoundSocket()
+
+        override fun createSocket(host: String, port: Int): Socket =
+            createBoundSocket().apply { connect(InetSocketAddress(host, port)) }
+
+        override fun createSocket(
+            host: String,
+            port: Int,
+            localHost: InetAddress,
+            localPort: Int
+        ): Socket = createBoundSocket().apply {
+            if (!isBound) bind(InetSocketAddress(localHost, localPort))
+            connect(InetSocketAddress(host, port))
+        }
+
+        override fun createSocket(host: InetAddress, port: Int): Socket =
+            createBoundSocket().apply { connect(InetSocketAddress(host, port)) }
+
+        override fun createSocket(
+            address: InetAddress,
+            port: Int,
+            localAddress: InetAddress,
+            localPort: Int
+        ): Socket = createBoundSocket().apply {
+            if (!isBound) bind(InetSocketAddress(localAddress, localPort))
+            connect(InetSocketAddress(address, port))
+        }
+
+        private fun createBoundSocket(): Socket {
             val socket = Socket()
             val network = DefaultNetworkListener.selectBestPhysicalNetwork(connectivityManager)
             if (network != null) {
