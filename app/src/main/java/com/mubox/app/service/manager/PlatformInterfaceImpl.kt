@@ -583,8 +583,6 @@ class PlatformInterfaceImpl(
         }
 
         fun resolveFromConnectivityManager(): ConnectionOwner? {
-            // getConnectionOwnerUid 需要 API 29；低版本直接回落 ProcFS 路径（与 ProxyPlatformInterface 同口径）
-            if (Build.VERSION.SDK_INT < Build.VERSION_CODES.Q) return null
             val cm = callbacks.getConnectivityManager() ?: return null
             return try {
                 val uid = cm.getConnectionOwnerUid(

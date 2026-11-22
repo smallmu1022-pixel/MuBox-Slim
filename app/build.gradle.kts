@@ -261,7 +261,7 @@ configure<ApplicationExtension> {
 
     defaultConfig {
         applicationId = "com.mubox.slim"
-        minSdk = 26
+        minSdk = 36
         targetSdk = 37
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
 
