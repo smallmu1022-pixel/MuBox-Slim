@@ -218,18 +218,25 @@ fun NodeCard(
                 Box(
                     modifier = Modifier
                         .wrapContentSize(Alignment.TopStart)
-                        .then(if (showActions) Modifier else Modifier.size(0.dp))
                 ) {
+                    // showActions=false 的卡片（自动选择等）保留同尺寸的禁用按钮占位：
+                    // 圆圈位置与普通卡片严格一致；不许用 size(0) 隐藏，
+                    // 否则按钮会被最小触控尺寸挤出卡片（曾出现圆圈半挂在卡外）。
                     IconButton(
                         onClick = { showMenu = true },
+                        enabled = showActions,
                         modifier = Modifier
                             .size(32.dp)
                             .liquidGlassIconButtonPanel(shadowElevation = 3.dp)
                     ) {
                         Icon(
                             imageVector = Icons.Rounded.MoreVert,
-                            contentDescription = "More",
-                            tint = MaterialTheme.colorScheme.onSurfaceVariant,
+                            contentDescription = if (showActions) "More" else null,
+                            tint = if (showActions) {
+                                MaterialTheme.colorScheme.onSurfaceVariant
+                            } else {
+                                Color.Transparent
+                            },
                             modifier = Modifier.size(20.dp)
                         )
                     }
