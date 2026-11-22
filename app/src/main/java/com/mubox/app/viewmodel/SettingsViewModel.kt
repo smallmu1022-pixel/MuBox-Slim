@@ -229,6 +229,25 @@ class SettingsViewModel(application: Application) : AndroidViewModel(application
         viewModelScope.launch { repository.setAutoCheckUpdate(value) }
     }
 
+    fun setAcquireWakeLock(value: Boolean) {
+        viewModelScope.launch {
+            repository.setAcquireWakeLock(value)
+
+            if (com.mubox.app.ipc.SingBoxRemote.isRunning.value) {
+                try {
+                    val intent = android.content.Intent(getApplication(), com.mubox.app.service.SingBoxService::class.java).apply {
+                        action = com.mubox.app.service.SingBoxService.ACTION_UPDATE_SETTING
+                        putExtra(com.mubox.app.service.SingBoxService.EXTRA_SETTING_KEY, "acquire_wake_lock")
+                        putExtra(com.mubox.app.service.SingBoxService.EXTRA_SETTING_VALUE_BOOL, value)
+                    }
+                    getApplication<Application>().startService(intent)
+                } catch (e: Exception) {
+                    android.util.Log.e("SettingsViewModel", "Failed to update service setting", e)
+                }
+            }
+        }
+    }
+
     fun setBackgroundPowerSavingDelay(value: BackgroundPowerSavingDelay) {
         viewModelScope.launch {
             repository.setBackgroundPowerSavingDelay(value)

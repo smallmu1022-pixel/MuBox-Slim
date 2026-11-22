@@ -16,6 +16,7 @@ data class AppSettings(
     @SerializedName("appThemeStyle") val appThemeStyle: AppThemeStyle = AppThemeStyle.DEFAULT,
     @SerializedName("appLanguage") val appLanguage: AppLanguage = AppLanguage.SYSTEM,
     @SerializedName("showNotificationSpeed") val showNotificationSpeed: Boolean = true,
+    @SerializedName("acquireWakeLock") val acquireWakeLock: Boolean = false,
 
     @SerializedName("tunEnabled") val tunEnabled: Boolean = true,
     @SerializedName("trafficCaptureMode") val trafficCaptureMode: TrafficCaptureMode? = TrafficCaptureMode.VPN,
@@ -92,7 +93,7 @@ data class AppSettings(
 
     @SerializedName("autoCheckUpdate") val autoCheckUpdate: Boolean = true,
 
-    @SerializedName("backgroundPowerSavingDelay") val backgroundPowerSavingDelay: BackgroundPowerSavingDelay = BackgroundPowerSavingDelay.MINUTES_30,
+    @SerializedName("backgroundPowerSavingDelay") val backgroundPowerSavingDelay: BackgroundPowerSavingDelay = BackgroundPowerSavingDelay.MINUTES_15,
 
     @SerializedName("nodeColumnCount") val nodeColumnCount: Int = 1
 ) {

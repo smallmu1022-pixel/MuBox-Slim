@@ -36,8 +36,12 @@ class CoreManager(
     companion object {
         private const val TAG = "CoreManager"
 
-        internal fun shouldAcquireServiceLock(isHeld: Boolean, locksSuppressed: Boolean): Boolean {
-            return !locksSuppressed && !isHeld
+        internal fun shouldAcquireServiceLock(
+            isHeld: Boolean,
+            locksSuppressed: Boolean,
+            wakeLockEnabled: Boolean
+        ): Boolean {
+            return wakeLockEnabled && !locksSuppressed && !isHeld
         }
 
         internal fun isStartTokenCurrent(
@@ -80,6 +84,9 @@ class CoreManager(
 
     @Volatile
     private var locksSuppressed: Boolean = false
+
+    @Volatile
+    private var wakeLockEnabled: Boolean = false
 
     private var platformInterface: PlatformInterface? = null
     private val lifecycleMutex = Mutex()
@@ -166,6 +173,7 @@ class CoreManager(
             PerfTracer.begin(PerfTracer.Phases.SETTINGS_LOAD)
             val settings = settingsRepository.settings.first()
             currentSettings = settings
+            applyWakeLockSetting(settings.acquireWakeLock, reconcile = false)
             PerfTracer.end(PerfTracer.Phases.SETTINGS_LOAD)
             settings
         }.onFailure {
@@ -175,6 +183,28 @@ class CoreManager(
 
     fun setCurrentSettings(settings: AppSettings) {
         currentSettings = settings
+        applyWakeLockSetting(settings.acquireWakeLock, reconcile = true)
+    }
+
+    /**
+     * 「获取唤醒锁」设置（默认关）：关时连接不持有 WakeLock/WifiLock；
+     * 运行中切换立即生效——关即释放，开且内核在跑时补上（省电抑制中除外）。
+     */
+    fun setWakeLockEnabled(enabled: Boolean) {
+        applyWakeLockSetting(enabled, reconcile = true)
+        Log.i(TAG, "Wake lock setting applied: enabled=$enabled")
+    }
+
+    private fun applyWakeLockSetting(enabled: Boolean, reconcile: Boolean) {
+        wakeLockEnabled = enabled
+        if (!reconcile) return
+        if (!enabled) {
+            releaseWakeLockInternal()
+            releaseWifiLockInternal()
+        } else if (isServiceRunning() && !locksSuppressed) {
+            acquireWakeLock()
+            acquireWifiLockIfAllowed()
+        }
     }
 
     fun acquireLocks(): Result<Unit> {
@@ -186,8 +216,12 @@ class CoreManager(
     }
 
     private fun acquireWakeLock() {
-        if (!shouldAcquireServiceLock(wakeLock?.isHeld == true, locksSuppressed)) {
-            if (locksSuppressed) Log.i(TAG, "WakeLock suppressed (power saving), skip acquire")
+        if (!shouldAcquireServiceLock(wakeLock?.isHeld == true, locksSuppressed, wakeLockEnabled)) {
+            if (!wakeLockEnabled) {
+                Log.i(TAG, "WakeLock not acquired (setting disabled)")
+            } else if (locksSuppressed) {
+                Log.i(TAG, "WakeLock suppressed (power saving), skip acquire")
+            }
             return
         }
 
@@ -198,8 +232,12 @@ class CoreManager(
     }
 
     private fun acquireWifiLockIfAllowed() {
-        if (!shouldAcquireServiceLock(wifiLock?.isHeld == true, locksSuppressed)) {
-            if (locksSuppressed) Log.i(TAG, "WifiLock suppressed (power saving), skip acquire")
+        if (!shouldAcquireServiceLock(wifiLock?.isHeld == true, locksSuppressed, wakeLockEnabled)) {
+            if (!wakeLockEnabled) {
+                Log.i(TAG, "WifiLock not acquired (setting disabled)")
+            } else if (locksSuppressed) {
+                Log.i(TAG, "WifiLock suppressed (power saving), skip acquire")
+            }
             return
         }
 

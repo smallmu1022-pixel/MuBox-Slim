@@ -166,6 +166,7 @@ class StartupManager(
             }
 
             stepStart = SystemClock.elapsedRealtime()
+            coreManager.loadSettings()
             coreManager.acquireLocks()
             callbacks.registerScreenStateReceiver()
             log("[STEP] acquireLocks+registerReceiver: ${SystemClock.elapsedRealtime() - stepStart}ms")

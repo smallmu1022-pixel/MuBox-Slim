@@ -304,15 +304,19 @@ internal fun SingBoxService.initBackgroundPowerManager() {
 
     // Load user setting asynchronously to avoid blocking service initialization.
     serviceScope.launch {
-        val thresholdMs = runCatching {
-            val settings = SettingsRepository.getInstance(this@initBackgroundPowerManager).settings.first()
-            settings.backgroundPowerSavingDelay.delayMs
+        val settings = runCatching {
+            SettingsRepository.getInstance(this@initBackgroundPowerManager).settings.first()
         }.getOrElse { e ->
             Log.w(SingBoxService.TAG, "Failed to read power saving delay setting, using default", e)
-            BackgroundPowerSavingDelay.MINUTES_30.delayMs
+            null
         }
+        val thresholdMs = settings?.backgroundPowerSavingDelay?.delayMs
+            ?: BackgroundPowerSavingDelay.MINUTES_15.delayMs
         backgroundPowerSavingThresholdMs = thresholdMs
         backgroundPowerManager.setThreshold(thresholdMs)
+        if (settings != null) {
+            coreManager.setWakeLockEnabled(settings.acquireWakeLock)
+        }
     }
 
     // 设置 IPC Hub 的 PowerManager 引用，用于接收主进程的生命周期通知

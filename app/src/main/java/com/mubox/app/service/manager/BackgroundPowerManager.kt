@@ -15,7 +15,7 @@ class BackgroundPowerManager(
     companion object {
         private const val TAG = "BackgroundPowerManager"
 
-        const val DEFAULT_BACKGROUND_THRESHOLD_MS = 30 * 60 * 1000L
+        const val DEFAULT_BACKGROUND_THRESHOLD_MS = 15 * 60 * 1000L
 
         const val MIN_THRESHOLD_MS = 5 * 60 * 1000L
 

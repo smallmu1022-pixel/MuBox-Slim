@@ -121,7 +121,7 @@ class SingBoxService : VpnService() {
     }
 
     @Volatile
-    internal var backgroundPowerSavingThresholdMs: Long = BackgroundPowerSavingDelay.MINUTES_30.delayMs
+    internal var backgroundPowerSavingThresholdMs: Long = BackgroundPowerSavingDelay.MINUTES_15.delayMs
 
     // PlatformInterfaceImpl 回调实现
 

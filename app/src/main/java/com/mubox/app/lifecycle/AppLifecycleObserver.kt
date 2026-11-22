@@ -29,7 +29,7 @@ object AppLifecycleObserver : DefaultLifecycleObserver {
     private var isRegistered = false
 
     @Volatile
-    private var backgroundTimeoutMs: Long = BackgroundPowerSavingDelay.MINUTES_30.delayMs
+    private var backgroundTimeoutMs: Long = BackgroundPowerSavingDelay.MINUTES_15.delayMs
 
     @Volatile
     private var backgroundAtMs: Long = 0L

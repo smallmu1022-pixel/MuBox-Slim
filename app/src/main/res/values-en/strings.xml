@@ -774,6 +774,8 @@
     <!-- Connection Settings - Power Saving -->
     <string name="connection_settings_power_saving">Background Power Saving Delay</string>
     <string name="connection_settings_power_saving_subtitle">Pause non-core processes after the app stays in background for this long</string>
+    <string name="connection_settings_acquire_wake_lock">Acquire Wake Lock</string>
+    <string name="connection_settings_acquire_wake_lock_subtitle">Keep CPU and WiFi awake while connected; off saves power</string>
 
     <!-- Node Switch Messages -->
     <string name="node_switch_success">Switched to %s</string>

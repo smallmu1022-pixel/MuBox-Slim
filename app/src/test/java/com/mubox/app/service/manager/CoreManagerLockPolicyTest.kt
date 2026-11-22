@@ -11,9 +11,15 @@ class CoreManagerLockPolicyTest {
 
     @Test
     fun powerSavingSuppressionBlocksServiceLockAcquisition() {
-        assertFalse(CoreManager.shouldAcquireServiceLock(isHeld = false, locksSuppressed = true))
-        assertFalse(CoreManager.shouldAcquireServiceLock(isHeld = true, locksSuppressed = false))
-        assertTrue(CoreManager.shouldAcquireServiceLock(isHeld = false, locksSuppressed = false))
+        assertFalse(CoreManager.shouldAcquireServiceLock(isHeld = false, locksSuppressed = true, wakeLockEnabled = true))
+        assertFalse(CoreManager.shouldAcquireServiceLock(isHeld = true, locksSuppressed = false, wakeLockEnabled = true))
+        assertTrue(CoreManager.shouldAcquireServiceLock(isHeld = false, locksSuppressed = false, wakeLockEnabled = true))
+    }
+
+    @Test
+    fun disabledWakeLockSettingBlocksServiceLockAcquisition() {
+        assertFalse(CoreManager.shouldAcquireServiceLock(isHeld = false, locksSuppressed = false, wakeLockEnabled = false))
+        assertFalse(CoreManager.shouldAcquireServiceLock(isHeld = true, locksSuppressed = true, wakeLockEnabled = false))
     }
 
     @Test

@@ -427,6 +427,11 @@ internal fun SingBoxService.onStartCommandRuntime(intent: Intent?, flags: Int, s
                     requestNotificationUpdate(force = true)
                 }
             }
+            if (key == "acquire_wake_lock") {
+                val value = intent.getBooleanExtra(SingBoxService.EXTRA_SETTING_VALUE_BOOL, false)
+                Log.i(SingBoxService.TAG, "Received setting update: $key = $value")
+                coreManager.setWakeLockEnabled(value)
+            }
         }
         SingBoxService.ACTION_PREPARE_RESTART -> {
             val reason = intent.getStringExtra(SingBoxService.EXTRA_PREPARE_RESTART_REASON).orEmpty()

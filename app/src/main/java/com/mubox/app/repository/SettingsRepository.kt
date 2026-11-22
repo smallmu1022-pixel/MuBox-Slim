@@ -525,6 +525,10 @@ class SettingsRepository(private val context: Context) {
         settingsStore.updateSettingsAndWait { it.copy(backgroundPowerSavingDelay = value) }
     }
 
+    suspend fun setAcquireWakeLock(value: Boolean) {
+        settingsStore.updateSettingsAndWait { it.copy(acquireWakeLock = value) }
+    }
+
     suspend fun setNodeFilter(value: NodeFilter) {
         settingsStore.updateSettingsAndWait { it.copy(nodeFilter = value) }
     }
