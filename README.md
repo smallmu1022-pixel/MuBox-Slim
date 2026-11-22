@@ -9,7 +9,6 @@
 [![Android](https://img.shields.io/badge/Android-16%2B-3DDC84?logo=android&logoColor=white)](https://github.com/smallmu1022-pixel/MuBox-Slim/releases)
 [![内核](https://img.shields.io/badge/%E5%86%85%E6%A0%B8-sing--box%201.14.4-blue)](https://github.com/SagerNet/sing-box)
 [![最近更新](https://img.shields.io/github/last-commit/smallmu1022-pixel/MuBox-Slim?label=%E6%9C%80%E8%BF%91%E6%9B%B4%E6%96%B0)](https://github.com/smallmu1022-pixel/MuBox-Slim/commits/main)
-[![许可证](https://img.shields.io/github/license/smallmu1022-pixel/MuBox-Slim?label=%E8%AE%B8%E5%8F%AF%E8%AF%81)](LICENSE)
 
 </div>
 
