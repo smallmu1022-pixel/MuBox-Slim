@@ -63,11 +63,10 @@ internal fun NodeLinkParser.parseVLessLink(link: String): Outbound? {
         val flow = firstParam(params, "flow")?.takeIf { it.isNotBlank() }
         val packetEncoding = firstParam(params, "packetEncoding", "packet-encoding")
             ?.takeIf { it.isNotBlank() }
+        // VLESS Encryption（mlkem768x25519plus）内核已支持（vc37 起）：透传到出站，
+        // 空 / none 视为不启用。
         val encryption = firstParam(params, "encryption")?.trim()
-        if (!encryption.isNullOrEmpty() && !encryption.equals("none", ignoreCase = true)) {
-            Log.w("NodeLinkParser", "Ignoring VLESS node with unsupported private encryption")
-            return null
-        }
+            ?.takeIf { it.isNotEmpty() && !it.equals("none", ignoreCase = true) }
 
         val echConfig = parseEchConfig(params)
 
@@ -143,7 +142,9 @@ internal fun NodeLinkParser.parseVLessLink(link: String): Outbound? {
             server = server,
             serverPort = port,
             uuid = uuid,
-            flow = flow,
+            // encryption 与 xtls-rprx-vision 互斥（内核移植未覆盖该组合）：同时出现时弃 flow。
+            flow = if (encryption != null && flow == "xtls-rprx-vision") null else flow,
+            encryption = encryption,
             tls = tlsConfig,
             transport = transport,
             packetEncoding = packetEncoding

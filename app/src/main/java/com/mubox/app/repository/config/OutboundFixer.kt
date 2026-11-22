@@ -474,20 +474,23 @@ object OutboundFixer {
             }
 
             "vless" -> {
+                // VLESS Encryption（mlkem768x25519plus）内核已支持（vc37 起）：透传到
+                // 出站；空 / none 归一化为 null。与 xtls-rprx-vision 互斥，同时出现时弃 flow。
                 val encryption = fixed.encryption?.trim()
-                if (!encryption.isNullOrEmpty() && !encryption.equals("none", ignoreCase = true)) {
-                    Log.w(TAG, "Skipping unsupported VLESS encryption for '${fixed.tag}': $encryption")
-                    return null
-                }
+                    ?.takeIf { it.isNotEmpty() && !it.equals("none", ignoreCase = true) }
                 Outbound(
                     type = fixed.type,
                     tag = fixed.tag,
                     server = fixed.server,
                     serverPort = fixed.serverPort,
                     uuid = fixed.uuid,
-                    flow = fixed.flow,
+                    flow = if (encryption != null && fixed.flow?.trim() == "xtls-rprx-vision") {
+                        null
+                    } else {
+                        fixed.flow
+                    },
                     packetEncoding = fixed.packetEncoding,
-                    encryption = null,
+                    encryption = encryption,
                     tls = fixed.tls,
                     transport = fixed.transport,
                     network = fixed.network,

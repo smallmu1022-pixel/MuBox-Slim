@@ -251,6 +251,9 @@ abstract class ClashYamlParserPart1 : ClashYamlParserBase() {
         val insecure = asBool(map["skip-cert-verify"]) == true
         val alpn = asStringList(map["alpn"])
         val flow = asString(map["flow"])
+        // VLESS Encryption（mlkem768x25519plus）内核已支持（vc37 起）：透传到出站。
+        val encryption = asString(map["encryption"])?.trim()
+            ?.takeIf { it.isNotEmpty() && !it.equals("none", ignoreCase = true) }
         val packetEncoding = asString(map["packet-encoding"])?.takeIf { it.isNotBlank() }
 
         val tlsMinVersion = asString(map["tls-version"]) ?: asString(map["min-tls-version"]) ?: globalTlsMinVersion
@@ -335,7 +338,8 @@ abstract class ClashYamlParserPart1 : ClashYamlParserBase() {
             server = server,
             serverPort = port,
             uuid = uuid,
-            flow = flow,
+            flow = if (encryption != null && flow == "xtls-rprx-vision") null else flow,
+            encryption = encryption,
             tls = tlsConfig,
             transport = transport,
             packetEncoding = packetEncoding,
