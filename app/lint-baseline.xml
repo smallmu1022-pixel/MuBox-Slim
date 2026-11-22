@@ -1,0 +1,4052 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<issues format="6" by="lint 9.2.1" type="baseline" client="gradle" dependencies="false" name="AGP (9.2.1)" variant="all" version="9.2.1">
+
+    <issue
+        id="DefaultLocale"
+        message="Implicitly using the default locale is a common source of bugs: Use `String.format(Locale, ...)` instead"
+        errorLine1="    return String.format(&quot;%.1f MB&quot;, bytes / 1024.0 / 1024.0)"
+        errorLine2="           ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
+        <location
+            file="src/main/java/com/mubox/app/ui/components/AppUpdateDialog.kt"
+            line="224"
+            column="12"/>
+    </issue>
+
+    <issue
+        id="InlinedApi"
+        message="Field requires API level 26 (current min is 24): `android.provider.Settings#ACTION_MANAGE_UNKNOWN_APP_SOURCES`"
+        errorLine1="            Settings.ACTION_MANAGE_UNKNOWN_APP_SOURCES,"
+        errorLine2="            ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
+        <location
+            file="src/main/java/com/mubox/app/utils/AppUpdater.kt"
+            line="136"
+            column="13"/>
+    </issue>
+
+    <issue
+        id="InlinedApi"
+        message="Field requires API level 37 (current min is 24): `android.Manifest.permission#ACCESS_LOCAL_NETWORK`"
+        errorLine1="    const val ACCESS_LOCAL_NETWORK = Manifest.permission.ACCESS_LOCAL_NETWORK"
+        errorLine2="                                     ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
+        <location
+            file="src/main/java/com/mubox/app/utils/LocalNetworkPermission.kt"
+            line="19"
+            column="38"/>
+    </issue>
+
+    <issue
+        id="InlinedApi"
+        message="Field requires API level 34 (current min is 29): `android.content.pm.ServiceInfo#FOREGROUND_SERVICE_TYPE_SPECIAL_USE`"
+        errorLine1="        startForeground(RootTransparentForegroundService.NOTIFICATION_ID, notification, ServiceInfo.FOREGROUND_SERVICE_TYPE_SPECIAL_USE)"
+        errorLine2="                                                                                        ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
+        <location
+            file="src/main/java/com/mubox/app/service/root/runtime/RootTransparentForegroundRuntime.kt"
+            line="610"
+            column="89"/>
+    </issue>
+
+    <issue
+        id="NewApi"
+        message="Call requires API level 26, or core library desugaring (current min is 24): `java.io.File#toPath`"
+        errorLine1="                check(!Files.isSymbolicLink(directory.toPath())) {"
+        errorLine2="                                                      ~~~~~~">
+        <location
+            file="src/main/java/com/mubox/app/repository/configrepo/ConfigRepositoryPart5.kt"
+            line="843"
+            column="55"/>
+    </issue>
+
+    <issue
+        id="NewApi"
+        message="Call requires API level 26, or core library desugaring (current min is 24): `java.nio.file.Files#isSymbolicLink`"
+        errorLine1="                check(!Files.isSymbolicLink(directory.toPath())) {"
+        errorLine2="                             ~~~~~~~~~~~~~~">
+        <location
+            file="src/main/java/com/mubox/app/repository/configrepo/ConfigRepositoryPart5.kt"
+            line="843"
+            column="30"/>
+    </issue>
+
+    <issue
+        id="NewApi"
+        message="Call requires API level 26, or core library desugaring (current min is 24): `java.util.Base64#getEncoder`"
+        errorLine1="                val encoded = Base64.getEncoder()"
+        errorLine2="                                     ~~~~~~~~~~">
+        <location
+            file="src/main/java/com/mubox/app/repository/configrepo/LanSubscriptionHttpFetcher.kt"
+            line="234"
+            column="38"/>
+    </issue>
+
+    <issue
+        id="NewApi"
+        message="Call requires API level 26, or core library desugaring (current min is 24): `java.util.Base64.Encoder#encodeToString`"
+        errorLine1="                    .encodeToString(userInfo.toByteArray(Charsets.UTF_8))"
+        errorLine2="                     ~~~~~~~~~~~~~~">
+        <location
+            file="src/main/java/com/mubox/app/repository/configrepo/LanSubscriptionHttpFetcher.kt"
+            line="235"
+            column="22"/>
+    </issue>
+
+    <issue
+        id="NewApi"
+        message="Call requires API level 26, or core library desugaring (current min is 24): `java.io.File#toPath`"
+        errorLine1="    check(!Files.isSymbolicLink(sidecarFile.toPath()) &amp;&amp; !Files.isSymbolicLink(manifestFile.toPath())) {"
+        errorLine2="                                            ~~~~~~">
+        <location
+            file="src/main/java/com/mubox/app/service/root/runtime/MuBoxRootServiceRuntime.kt"
+            line="594"
+            column="45"/>
+    </issue>
+
+    <issue
+        id="NewApi"
+        message="Call requires API level 26, or core library desugaring (current min is 24): `java.io.File#toPath`"
+        errorLine1="    check(!Files.isSymbolicLink(sidecarFile.toPath()) &amp;&amp; !Files.isSymbolicLink(manifestFile.toPath())) {"
+        errorLine2="                                                                                            ~~~~~~">
+        <location
+            file="src/main/java/com/mubox/app/service/root/runtime/MuBoxRootServiceRuntime.kt"
+            line="594"
+            column="93"/>
+    </issue>
+
+    <issue
+        id="NewApi"
+        message="Call requires API level 26, or core library desugaring (current min is 24): `java.nio.file.Files#isSymbolicLink`"
+        errorLine1="    check(!Files.isSymbolicLink(sidecarFile.toPath()) &amp;&amp; !Files.isSymbolicLink(manifestFile.toPath())) {"
+        errorLine2="                 ~~~~~~~~~~~~~~">
+        <location
+            file="src/main/java/com/mubox/app/service/root/runtime/MuBoxRootServiceRuntime.kt"
+            line="594"
+            column="18"/>
+    </issue>
+
+    <issue
+        id="NewApi"
+        message="Call requires API level 26, or core library desugaring (current min is 24): `java.nio.file.Files#isSymbolicLink`"
+        errorLine1="    check(!Files.isSymbolicLink(sidecarFile.toPath()) &amp;&amp; !Files.isSymbolicLink(manifestFile.toPath())) {"
+        errorLine2="                                                                ~~~~~~~~~~~~~~">
+        <location
+            file="src/main/java/com/mubox/app/service/root/runtime/MuBoxRootServiceRuntime.kt"
+            line="594"
+            column="65"/>
+    </issue>
+
+    <issue
+        id="NewApi"
+        message="Call requires API level 26, or core library desugaring (current min is 24): `java.io.File#toPath`"
+        errorLine1="        check(!Files.isSymbolicLink(file.toPath())) {"
+        errorLine2="                                         ~~~~~~">
+        <location
+            file="src/main/java/com/mubox/app/service/root/runtime/MuBoxRootServiceRuntime.kt"
+            line="659"
+            column="42"/>
+    </issue>
+
+    <issue
+        id="NewApi"
+        message="Call requires API level 26, or core library desugaring (current min is 24): `java.nio.file.Files#isSymbolicLink`"
+        errorLine1="        check(!Files.isSymbolicLink(file.toPath())) {"
+        errorLine2="                     ~~~~~~~~~~~~~~">
+        <location
+            file="src/main/java/com/mubox/app/service/root/runtime/MuBoxRootServiceRuntime.kt"
+            line="659"
+            column="22"/>
+    </issue>
+
+    <issue
+        id="NewApi"
+        message="Call requires API level 26, or core library desugaring (current min is 24): `java.io.File#toPath`"
+        errorLine1="        check(!Files.isSymbolicLink(parent.toPath())) {"
+        errorLine2="                                           ~~~~~~">
+        <location
+            file="src/main/java/com/mubox/app/service/root/runtime/MuBoxRootServiceRuntime.kt"
+            line="664"
+            column="44"/>
+    </issue>
+
+    <issue
+        id="NewApi"
+        message="Call requires API level 26, or core library desugaring (current min is 24): `java.nio.file.Files#isSymbolicLink`"
+        errorLine1="        check(!Files.isSymbolicLink(parent.toPath())) {"
+        errorLine2="                     ~~~~~~~~~~~~~~">
+        <location
+            file="src/main/java/com/mubox/app/service/root/runtime/MuBoxRootServiceRuntime.kt"
+            line="664"
+            column="22"/>
+    </issue>
+
+    <issue
+        id="NewApi"
+        message="Call requires API level 29 (current min is 24): `android.net.ConnectivityManager#getConnectionOwnerUid`"
+        errorLine1="                val uid = cm.getConnectionOwnerUid("
+        errorLine2="                             ~~~~~~~~~~~~~~~~~~~~~">
+        <location
+            file="src/main/java/com/mubox/app/service/manager/PlatformInterfaceImpl.kt"
+            line="588"
+            column="30"/>
+    </issue>
+
+    <issue
+        id="NewApi"
+        message="Call requires API level 26, or core library desugaring (current min is 24): `java.io.File#toPath`"
+        errorLine1="        val rootPath = runtimeDirectory.toPath()"
+        errorLine2="                                        ~~~~~~">
+        <location
+            file="src/main/java/com/mubox/app/service/root/RootArtifactSnapshotStore.kt"
+            line="79"
+            column="41"/>
+    </issue>
+
+    <issue
+        id="NewApi"
+        message="Call requires API level 26, or core library desugaring (current min is 24): `java.nio.file.Files#isSymbolicLink`"
+        errorLine1="        check(!runtimeDirectory.exists() || !Files.isSymbolicLink(rootPath)) {"
+        errorLine2="                                                   ~~~~~~~~~~~~~~">
+        <location
+            file="src/main/java/com/mubox/app/service/root/RootArtifactSnapshotStore.kt"
+            line="80"
+            column="52"/>
+    </issue>
+
+    <issue
+        id="NewApi"
+        message="Call requires API level 26, or core library desugaring (current min is 24): `java.io.File#toPath`"
+        errorLine1="        check(root.isDirectory &amp;&amp; !Files.isSymbolicLink(root.toPath())) {"
+        errorLine2="                                                             ~~~~~~">
+        <location
+            file="src/main/java/com/mubox/app/service/root/RootArtifactSnapshotStore.kt"
+            line="85"
+            column="62"/>
+    </issue>
+
+    <issue
+        id="NewApi"
+        message="Call requires API level 26, or core library desugaring (current min is 24): `java.nio.file.Files#isSymbolicLink`"
+        errorLine1="        check(root.isDirectory &amp;&amp; !Files.isSymbolicLink(root.toPath())) {"
+        errorLine2="                                         ~~~~~~~~~~~~~~">
+        <location
+            file="src/main/java/com/mubox/app/service/root/RootArtifactSnapshotStore.kt"
+            line="85"
+            column="42"/>
+    </issue>
+
+    <issue
+        id="NewApi"
+        message="Call requires API level 26, or core library desugaring (current min is 24): `java.io.File#toPath`"
+        errorLine1="        check(!rawDirectory.exists() || !Files.isSymbolicLink(rawDirectory.toPath())) {"
+        errorLine2="                                                                           ~~~~~~">
+        <location
+            file="src/main/java/com/mubox/app/service/root/RootArtifactSnapshotStore.kt"
+            line="90"
+            column="76"/>
+    </issue>
+
+    <issue
+        id="NewApi"
+        message="Call requires API level 26, or core library desugaring (current min is 24): `java.nio.file.Files#isSymbolicLink`"
+        errorLine1="        check(!rawDirectory.exists() || !Files.isSymbolicLink(rawDirectory.toPath())) {"
+        errorLine2="                                               ~~~~~~~~~~~~~~">
+        <location
+            file="src/main/java/com/mubox/app/service/root/RootArtifactSnapshotStore.kt"
+            line="90"
+            column="48"/>
+    </issue>
+
+    <issue
+        id="NewApi"
+        message="Call requires API level 26, or core library desugaring (current min is 24): `java.io.File#toPath`"
+        errorLine1="        check(directory.isDirectory &amp;&amp; !Files.isSymbolicLink(directory.toPath())) {"
+        errorLine2="                                                                       ~~~~~~">
+        <location
+            file="src/main/java/com/mubox/app/service/root/RootArtifactSnapshotStore.kt"
+            line="96"
+            column="72"/>
+    </issue>
+
+    <issue
+        id="NewApi"
+        message="Call requires API level 26, or core library desugaring (current min is 24): `java.nio.file.Files#isSymbolicLink`"
+        errorLine1="        check(directory.isDirectory &amp;&amp; !Files.isSymbolicLink(directory.toPath())) {"
+        errorLine2="                                              ~~~~~~~~~~~~~~">
+        <location
+            file="src/main/java/com/mubox/app/service/root/RootArtifactSnapshotStore.kt"
+            line="96"
+            column="47"/>
+    </issue>
+
+    <issue
+        id="NewApi"
+        message="Call requires API level 26, or core library desugaring (current min is 24): `java.io.File#toPath`"
+        errorLine1="            check(!Files.isSymbolicLink(temp.toPath())) { &quot;Root snapshot temporary file is a symbolic link&quot; }"
+        errorLine2="                                             ~~~~~~">
+        <location
+            file="src/main/java/com/mubox/app/service/root/RootArtifactSnapshotStore.kt"
+            line="106"
+            column="46"/>
+    </issue>
+
+    <issue
+        id="NewApi"
+        message="Call requires API level 26, or core library desugaring (current min is 24): `java.nio.file.Files#isSymbolicLink`"
+        errorLine1="            check(!Files.isSymbolicLink(temp.toPath())) { &quot;Root snapshot temporary file is a symbolic link&quot; }"
+        errorLine2="                         ~~~~~~~~~~~~~~">
+        <location
+            file="src/main/java/com/mubox/app/service/root/RootArtifactSnapshotStore.kt"
+            line="106"
+            column="26"/>
+    </issue>
+
+    <issue
+        id="NewApi"
+        message="Call requires API level 26, or core library desugaring (current min is 24): `java.io.File#toPath`"
+        errorLine1="        check(root.isDirectory &amp;&amp; !Files.isSymbolicLink(root.toPath())) {"
+        errorLine2="                                                             ~~~~~~">
+        <location
+            file="src/main/java/com/mubox/app/service/root/RootArtifactSnapshotStore.kt"
+            line="119"
+            column="62"/>
+    </issue>
+
+    <issue
+        id="NewApi"
+        message="Call requires API level 26, or core library desugaring (current min is 24): `java.nio.file.Files#isSymbolicLink`"
+        errorLine1="        check(root.isDirectory &amp;&amp; !Files.isSymbolicLink(root.toPath())) {"
+        errorLine2="                                         ~~~~~~~~~~~~~~">
+        <location
+            file="src/main/java/com/mubox/app/service/root/RootArtifactSnapshotStore.kt"
+            line="119"
+            column="42"/>
+    </issue>
+
+    <issue
+        id="NewApi"
+        message="Call requires API level 26, or core library desugaring (current min is 24): `java.io.File#toPath`"
+        errorLine1="            if (!child.isDirectory || Files.isSymbolicLink(child.toPath())) return@forEach"
+        errorLine2="                                                                 ~~~~~~">
+        <location
+            file="src/main/java/com/mubox/app/service/root/RootArtifactSnapshotStore.kt"
+            line="123"
+            column="66"/>
+    </issue>
+
+    <issue
+        id="NewApi"
+        message="Call requires API level 26, or core library desugaring (current min is 24): `java.nio.file.Files#isSymbolicLink`"
+        errorLine1="            if (!child.isDirectory || Files.isSymbolicLink(child.toPath())) return@forEach"
+        errorLine2="                                            ~~~~~~~~~~~~~~">
+        <location
+            file="src/main/java/com/mubox/app/service/root/RootArtifactSnapshotStore.kt"
+            line="123"
+            column="45"/>
+    </issue>
+
+    <issue
+        id="NewApi"
+        message="Call requires API level 26, or core library desugaring (current min is 24): `java.io.File#toPath`"
+        errorLine1="                    !Files.isSymbolicLink(it.toPath()) &amp;&amp; it.isFile"
+        errorLine2="                                             ~~~~~~">
+        <location
+            file="src/main/java/com/mubox/app/service/root/RootArtifactSnapshotStore.kt"
+            line="130"
+            column="46"/>
+    </issue>
+
+    <issue
+        id="NewApi"
+        message="Call requires API level 26, or core library desugaring (current min is 24): `java.nio.file.Files#isSymbolicLink`"
+        errorLine1="                    !Files.isSymbolicLink(it.toPath()) &amp;&amp; it.isFile"
+        errorLine2="                           ~~~~~~~~~~~~~~">
+        <location
+            file="src/main/java/com/mubox/app/service/root/RootArtifactSnapshotStore.kt"
+            line="130"
+            column="28"/>
+    </issue>
+
+    <issue
+        id="NewApi"
+        message="Call requires API level 26, or core library desugaring (current min is 24): `java.io.File#toPath`"
+        errorLine1="        check(!Files.isSymbolicLink(target.toPath())) { &quot;Root snapshot file cannot be a symbolic link&quot; }"
+        errorLine2="                                           ~~~~~~">
+        <location
+            file="src/main/java/com/mubox/app/service/root/RootArtifactSnapshotStore.kt"
+            line="141"
+            column="44"/>
+    </issue>
+
+    <issue
+        id="NewApi"
+        message="Call requires API level 26, or core library desugaring (current min is 24): `java.nio.file.Files#isSymbolicLink`"
+        errorLine1="        check(!Files.isSymbolicLink(target.toPath())) { &quot;Root snapshot file cannot be a symbolic link&quot; }"
+        errorLine2="                     ~~~~~~~~~~~~~~">
+        <location
+            file="src/main/java/com/mubox/app/service/root/RootArtifactSnapshotStore.kt"
+            line="141"
+            column="22"/>
+    </issue>
+
+    <issue
+        id="NewApi"
+        message="Call requires API level 26, or core library desugaring (current min is 24): `java.nio.file.Files#move`"
+        errorLine1="                    Files.move("
+        errorLine2="                          ~~~~">
+        <location
+            file="src/main/java/com/mubox/app/service/root/RootArtifactSnapshotStore.kt"
+            line="152"
+            column="27"/>
+    </issue>
+
+    <issue
+        id="NewApi"
+        message="Call requires API level 26, or core library desugaring (current min is 24): `java.io.File#toPath`"
+        errorLine1="                        temp.toPath(),"
+        errorLine2="                             ~~~~~~">
+        <location
+            file="src/main/java/com/mubox/app/service/root/RootArtifactSnapshotStore.kt"
+            line="153"
+            column="30"/>
+    </issue>
+
+    <issue
+        id="NewApi"
+        message="Call requires API level 26, or core library desugaring (current min is 24): `java.io.File#toPath`"
+        errorLine1="                        target.toPath(),"
+        errorLine2="                               ~~~~~~">
+        <location
+            file="src/main/java/com/mubox/app/service/root/RootArtifactSnapshotStore.kt"
+            line="154"
+            column="32"/>
+    </issue>
+
+    <issue
+        id="NewApi"
+        message="Field requires API level 26, or core library desugaring (current min is 24): `java.nio.file.StandardCopyOption#ATOMIC_MOVE`"
+        errorLine1="                        java.nio.file.StandardCopyOption.ATOMIC_MOVE"
+        errorLine2="                        ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
+        <location
+            file="src/main/java/com/mubox/app/service/root/RootArtifactSnapshotStore.kt"
+            line="155"
+            column="25"/>
+    </issue>
+
+    <issue
+        id="NewApi"
+        message="Call requires API level 26, or core library desugaring (current min is 24): `java.io.File#toPath`"
+        errorLine1="                    Files.move(temp.toPath(), target.toPath())"
+        errorLine2="                                    ~~~~~~">
+        <location
+            file="src/main/java/com/mubox/app/service/root/RootArtifactSnapshotStore.kt"
+            line="158"
+            column="37"/>
+    </issue>
+
+    <issue
+        id="NewApi"
+        message="Call requires API level 26, or core library desugaring (current min is 24): `java.io.File#toPath`"
+        errorLine1="                    Files.move(temp.toPath(), target.toPath())"
+        errorLine2="                                                     ~~~~~~">
+        <location
+            file="src/main/java/com/mubox/app/service/root/RootArtifactSnapshotStore.kt"
+            line="158"
+            column="54"/>
+    </issue>
+
+    <issue
+        id="NewApi"
+        message="Call requires API level 26, or core library desugaring (current min is 24): `java.nio.file.Files#move`"
+        errorLine1="                    Files.move(temp.toPath(), target.toPath())"
+        errorLine2="                          ~~~~">
+        <location
+            file="src/main/java/com/mubox/app/service/root/RootArtifactSnapshotStore.kt"
+            line="158"
+            column="27"/>
+    </issue>
+
+    <issue
+        id="NewApi"
+        message="Call requires API level 26, or core library desugaring (current min is 24): `java.io.File#toPath`"
+        errorLine1="                    FileChannel.open(directory.toPath()).use { channel -> channel.force(true) }"
+        errorLine2="                                               ~~~~~~">
+        <location
+            file="src/main/java/com/mubox/app/service/root/RootArtifactSnapshotStore.kt"
+            line="161"
+            column="48"/>
+    </issue>
+
+    <issue
+        id="NewApi"
+        message="Call requires API level 26, or core library desugaring (current min is 24): `java.nio.channels.FileChannel#open`"
+        errorLine1="                    FileChannel.open(directory.toPath()).use { channel -> channel.force(true) }"
+        errorLine2="                                ~~~~">
+        <location
+            file="src/main/java/com/mubox/app/service/root/RootArtifactSnapshotStore.kt"
+            line="161"
+            column="33"/>
+    </issue>
+
+    <issue
+        id="NewApi"
+        message="Method reference requires API level 26 (current min is 24): `Process::isAlive`"
+        errorLine1="        val processes = synchronized(activeProcesses) { activeProcesses.filter(Process::isAlive) }"
+        errorLine2="                                                                               ~~~~~~~~~~~~~~~~">
+        <location
+            file="src/main/java/com/mubox/app/service/root/netfilter/RootCommandExecutor.kt"
+            line="292"
+            column="80"/>
+    </issue>
+
+    <issue
+        id="NewApi"
+        message="Call requires API level 26 (current min is 24): `java.lang.Process#destroyForcibly`"
+        errorLine1="            runCatching { process.destroyForcibly() }"
+        errorLine2="                                  ~~~~~~~~~~~~~~~">
+        <location
+            file="src/main/java/com/mubox/app/service/root/netfilter/RootCommandExecutor.kt"
+            line="295"
+            column="35"/>
+    </issue>
+
+    <issue
+        id="NewApi"
+        message="Call requires API level 26 (current min is 24): `java.lang.Process#waitFor`"
+        errorLine1="        if (!process.waitFor(commandTimeoutMs, TimeUnit.MILLISECONDS)) {"
+        errorLine2="                     ~~~~~~~">
+        <location
+            file="src/main/java/com/mubox/app/service/root/netfilter/RootCommandExecutor.kt"
+            line="365"
+            column="22"/>
+    </issue>
+
+    <issue
+        id="NewApi"
+        message="Call requires API level 26 (current min is 24): `java.lang.Process#waitFor`"
+        errorLine1="            if (!process.waitFor(PROCESS_DESTROY_GRACE_MS, TimeUnit.MILLISECONDS)) {"
+        errorLine2="                         ~~~~~~~">
+        <location
+            file="src/main/java/com/mubox/app/service/root/netfilter/RootCommandExecutor.kt"
+            line="367"
+            column="26"/>
+    </issue>
+
+    <issue
+        id="NewApi"
+        message="Call requires API level 26 (current min is 24): `java.lang.Process#destroyForcibly`"
+        errorLine1="                process.destroyForcibly()"
+        errorLine2="                        ~~~~~~~~~~~~~~~">
+        <location
+            file="src/main/java/com/mubox/app/service/root/netfilter/RootCommandExecutor.kt"
+            line="368"
+            column="25"/>
+    </issue>
+
+    <issue
+        id="NewApi"
+        message="Call requires API level 26 (current min is 24): `java.lang.Process#waitFor`"
+        errorLine1="                process.waitFor(PROCESS_DESTROY_GRACE_MS, TimeUnit.MILLISECONDS)"
+        errorLine2="                        ~~~~~~~">
+        <location
+            file="src/main/java/com/mubox/app/service/root/netfilter/RootCommandExecutor.kt"
+            line="369"
+            column="25"/>
+    </issue>
+
+    <issue
+        id="NewApi"
+        message="Call requires API level 26, or core library desugaring (current min is 24): `java.io.File#toPath`"
+        errorLine1="        if (Files.isSymbolicLink(file.toPath()) || Files.isSymbolicLink(markerFile.toPath())) return false"
+        errorLine2="                                      ~~~~~~">
+        <location
+            file="src/main/java/com/mubox/app/repository/RootGenerationStore.kt"
+            line="163"
+            column="39"/>
+    </issue>
+
+    <issue
+        id="NewApi"
+        message="Call requires API level 26, or core library desugaring (current min is 24): `java.io.File#toPath`"
+        errorLine1="        if (Files.isSymbolicLink(file.toPath()) || Files.isSymbolicLink(markerFile.toPath())) return false"
+        errorLine2="                                                                                   ~~~~~~">
+        <location
+            file="src/main/java/com/mubox/app/repository/RootGenerationStore.kt"
+            line="163"
+            column="84"/>
+    </issue>
+
+    <issue
+        id="NewApi"
+        message="Call requires API level 26, or core library desugaring (current min is 24): `java.nio.file.Files#isSymbolicLink`"
+        errorLine1="        if (Files.isSymbolicLink(file.toPath()) || Files.isSymbolicLink(markerFile.toPath())) return false"
+        errorLine2="                  ~~~~~~~~~~~~~~">
+        <location
+            file="src/main/java/com/mubox/app/repository/RootGenerationStore.kt"
+            line="163"
+            column="19"/>
+    </issue>
+
+    <issue
+        id="NewApi"
+        message="Call requires API level 26, or core library desugaring (current min is 24): `java.nio.file.Files#isSymbolicLink`"
+        errorLine1="        if (Files.isSymbolicLink(file.toPath()) || Files.isSymbolicLink(markerFile.toPath())) return false"
+        errorLine2="                                                         ~~~~~~~~~~~~~~">
+        <location
+            file="src/main/java/com/mubox/app/repository/RootGenerationStore.kt"
+            line="163"
+            column="58"/>
+    </issue>
+
+    <issue
+        id="NewApi"
+        message="Call requires API level 26, or core library desugaring (current min is 24): `java.io.File#toPath`"
+        errorLine1="        check(!Files.isSymbolicLink(target.toPath())) { &quot;Root generation path cannot be a symbolic link&quot; }"
+        errorLine2="                                           ~~~~~~">
+        <location
+            file="src/main/java/com/mubox/app/repository/RootGenerationStore.kt"
+            line="205"
+            column="44"/>
+    </issue>
+
+    <issue
+        id="NewApi"
+        message="Call requires API level 26, or core library desugaring (current min is 24): `java.nio.file.Files#isSymbolicLink`"
+        errorLine1="        check(!Files.isSymbolicLink(target.toPath())) { &quot;Root generation path cannot be a symbolic link&quot; }"
+        errorLine2="                     ~~~~~~~~~~~~~~">
+        <location
+            file="src/main/java/com/mubox/app/repository/RootGenerationStore.kt"
+            line="205"
+            column="22"/>
+    </issue>
+
+    <issue
+        id="NewApi"
+        message="Call requires API level 26, or core library desugaring (current min is 24): `java.io.File#toPath`"
+        errorLine1="            !Files.isSymbolicLink(child.toPath()) &amp;&amp; child.isFile &amp;&amp;"
+        errorLine2="                                        ~~~~~~">
+        <location
+            file="src/main/java/com/mubox/app/repository/RootGenerationStore.kt"
+            line="208"
+            column="41"/>
+    </issue>
+
+    <issue
+        id="NewApi"
+        message="Call requires API level 26, or core library desugaring (current min is 24): `java.nio.file.Files#isSymbolicLink`"
+        errorLine1="            !Files.isSymbolicLink(child.toPath()) &amp;&amp; child.isFile &amp;&amp;"
+        errorLine2="                   ~~~~~~~~~~~~~~">
+        <location
+            file="src/main/java/com/mubox/app/repository/RootGenerationStore.kt"
+            line="208"
+            column="20"/>
+    </issue>
+
+    <issue
+        id="NewApi"
+        message="Call requires API level 26, or core library desugaring (current min is 24): `java.io.File#toPath`"
+        errorLine1="            check(!Files.isSymbolicLink(child.toPath())) {"
+        errorLine2="                                              ~~~~~~">
+        <location
+            file="src/main/java/com/mubox/app/repository/RootGenerationStore.kt"
+            line="231"
+            column="47"/>
+    </issue>
+
+    <issue
+        id="NewApi"
+        message="Call requires API level 26, or core library desugaring (current min is 24): `java.nio.file.Files#isSymbolicLink`"
+        errorLine1="            check(!Files.isSymbolicLink(child.toPath())) {"
+        errorLine2="                         ~~~~~~~~~~~~~~">
+        <location
+            file="src/main/java/com/mubox/app/repository/RootGenerationStore.kt"
+            line="231"
+            column="26"/>
+    </issue>
+
+    <issue
+        id="NewApi"
+        message="Call requires API level 26, or core library desugaring (current min is 24): `java.io.File#toPath`"
+        errorLine1="        if (Files.isSymbolicLink(file.toPath())) return null"
+        errorLine2="                                      ~~~~~~">
+        <location
+            file="src/main/java/com/mubox/app/repository/RootGenerationStore.kt"
+            line="249"
+            column="39"/>
+    </issue>
+
+    <issue
+        id="NewApi"
+        message="Call requires API level 26, or core library desugaring (current min is 24): `java.nio.file.Files#isSymbolicLink`"
+        errorLine1="        if (Files.isSymbolicLink(file.toPath())) return null"
+        errorLine2="                  ~~~~~~~~~~~~~~">
+        <location
+            file="src/main/java/com/mubox/app/repository/RootGenerationStore.kt"
+            line="249"
+            column="19"/>
+    </issue>
+
+    <issue
+        id="NewApi"
+        message="Call requires API level 26, or core library desugaring (current min is 24): `java.io.File#toPath`"
+        errorLine1="                check(!Files.isSymbolicLink(child.toPath())) {"
+        errorLine2="                                                  ~~~~~~">
+        <location
+            file="src/main/java/com/mubox/app/repository/RootGenerationStore.kt"
+            line="415"
+            column="51"/>
+    </issue>
+
+    <issue
+        id="NewApi"
+        message="Call requires API level 26, or core library desugaring (current min is 24): `java.nio.file.Files#isSymbolicLink`"
+        errorLine1="                check(!Files.isSymbolicLink(child.toPath())) {"
+        errorLine2="                             ~~~~~~~~~~~~~~">
+        <location
+            file="src/main/java/com/mubox/app/repository/RootGenerationStore.kt"
+            line="415"
+            column="30"/>
+    </issue>
+
+    <issue
+        id="NewApi"
+        message="Call requires API level 26, or core library desugaring (current min is 24): `java.io.File#toPath`"
+        errorLine1="        check(!Files.isSymbolicLink(file.toPath()) &amp;&amp; file.isFile)"
+        errorLine2="                                         ~~~~~~">
+        <location
+            file="src/main/java/com/mubox/app/repository/RootGenerationStore.kt"
+            line="437"
+            column="42"/>
+    </issue>
+
+    <issue
+        id="NewApi"
+        message="Call requires API level 26, or core library desugaring (current min is 24): `java.nio.file.Files#isSymbolicLink`"
+        errorLine1="        check(!Files.isSymbolicLink(file.toPath()) &amp;&amp; file.isFile)"
+        errorLine2="                     ~~~~~~~~~~~~~~">
+        <location
+            file="src/main/java/com/mubox/app/repository/RootGenerationStore.kt"
+            line="437"
+            column="22"/>
+    </issue>
+
+    <issue
+        id="NewApi"
+        message="Call requires API level 26, or core library desugaring (current min is 24): `java.nio.file.Files#move`"
+        errorLine1="                Files.move("
+        errorLine2="                      ~~~~">
+        <location
+            file="src/main/java/com/mubox/app/repository/RootGenerationStore.kt"
+            line="477"
+            column="23"/>
+    </issue>
+
+    <issue
+        id="NewApi"
+        message="Call requires API level 26, or core library desugaring (current min is 24): `java.io.File#toPath`"
+        errorLine1="                    temp.toPath(),"
+        errorLine2="                         ~~~~~~">
+        <location
+            file="src/main/java/com/mubox/app/repository/RootGenerationStore.kt"
+            line="478"
+            column="26"/>
+    </issue>
+
+    <issue
+        id="NewApi"
+        message="Call requires API level 26, or core library desugaring (current min is 24): `java.io.File#toPath`"
+        errorLine1="                    target.toPath(),"
+        errorLine2="                           ~~~~~~">
+        <location
+            file="src/main/java/com/mubox/app/repository/RootGenerationStore.kt"
+            line="479"
+            column="28"/>
+    </issue>
+
+    <issue
+        id="NewApi"
+        message="Field requires API level 26, or core library desugaring (current min is 24): `java.nio.file.StandardCopyOption#REPLACE_EXISTING`"
+        errorLine1="                    StandardCopyOption.REPLACE_EXISTING,"
+        errorLine2="                    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
+        <location
+            file="src/main/java/com/mubox/app/repository/RootGenerationStore.kt"
+            line="480"
+            column="21"/>
+    </issue>
+
+    <issue
+        id="NewApi"
+        message="Field requires API level 26, or core library desugaring (current min is 24): `java.nio.file.StandardCopyOption#ATOMIC_MOVE`"
+        errorLine1="                    StandardCopyOption.ATOMIC_MOVE"
+        errorLine2="                    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
+        <location
+            file="src/main/java/com/mubox/app/repository/RootGenerationStore.kt"
+            line="481"
+            column="21"/>
+    </issue>
+
+    <issue
+        id="NewApi"
+        message="Call requires API level 26, or core library desugaring (current min is 24): `java.io.File#toPath`"
+        errorLine1="                Files.move(temp.toPath(), target.toPath(), StandardCopyOption.REPLACE_EXISTING)"
+        errorLine2="                                ~~~~~~">
+        <location
+            file="src/main/java/com/mubox/app/repository/RootGenerationStore.kt"
+            line="484"
+            column="33"/>
+    </issue>
+
+    <issue
+        id="NewApi"
+        message="Call requires API level 26, or core library desugaring (current min is 24): `java.io.File#toPath`"
+        errorLine1="                Files.move(temp.toPath(), target.toPath(), StandardCopyOption.REPLACE_EXISTING)"
+        errorLine2="                                                 ~~~~~~">
+        <location
+            file="src/main/java/com/mubox/app/repository/RootGenerationStore.kt"
+            line="484"
+            column="50"/>
+    </issue>
+
+    <issue
+        id="NewApi"
+        message="Call requires API level 26, or core library desugaring (current min is 24): `java.nio.file.Files#move`"
+        errorLine1="                Files.move(temp.toPath(), target.toPath(), StandardCopyOption.REPLACE_EXISTING)"
+        errorLine2="                      ~~~~">
+        <location
+            file="src/main/java/com/mubox/app/repository/RootGenerationStore.kt"
+            line="484"
+            column="23"/>
+    </issue>
+
+    <issue
+        id="NewApi"
+        message="Field requires API level 26, or core library desugaring (current min is 24): `java.nio.file.StandardCopyOption#REPLACE_EXISTING`"
+        errorLine1="                Files.move(temp.toPath(), target.toPath(), StandardCopyOption.REPLACE_EXISTING)"
+        errorLine2="                                                           ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
+        <location
+            file="src/main/java/com/mubox/app/repository/RootGenerationStore.kt"
+            line="484"
+            column="60"/>
+    </issue>
+
+    <issue
+        id="NewApi"
+        message="Call requires API level 26, or core library desugaring (current min is 24): `java.io.File#toPath`"
+        errorLine1="                    FileChannel.open(parent.toPath()).use { channel -> channel.force(true) }"
+        errorLine2="                                            ~~~~~~">
+        <location
+            file="src/main/java/com/mubox/app/repository/RootGenerationStore.kt"
+            line="488"
+            column="45"/>
+    </issue>
+
+    <issue
+        id="NewApi"
+        message="Call requires API level 26, or core library desugaring (current min is 24): `java.nio.channels.FileChannel#open`"
+        errorLine1="                    FileChannel.open(parent.toPath()).use { channel -> channel.force(true) }"
+        errorLine2="                                ~~~~">
+        <location
+            file="src/main/java/com/mubox/app/repository/RootGenerationStore.kt"
+            line="488"
+            column="33"/>
+    </issue>
+
+    <issue
+        id="NewApi"
+        message="Call requires API level 26, or core library desugaring (current min is 24): `java.io.File#toPath`"
+        errorLine1="        check(file != null &amp;&amp; !Files.isSymbolicLink(file.toPath())) {"
+        errorLine2="                                                         ~~~~~~">
+        <location
+            file="src/main/java/com/mubox/app/repository/RootGenerationStore.kt"
+            line="510"
+            column="58"/>
+    </issue>
+
+    <issue
+        id="NewApi"
+        message="Call requires API level 26, or core library desugaring (current min is 24): `java.nio.file.Files#isSymbolicLink`"
+        errorLine1="        check(file != null &amp;&amp; !Files.isSymbolicLink(file.toPath())) {"
+        errorLine2="                                     ~~~~~~~~~~~~~~">
+        <location
+            file="src/main/java/com/mubox/app/repository/RootGenerationStore.kt"
+            line="510"
+            column="38"/>
+    </issue>
+
+    <issue
+        id="NewApi"
+        message="Call requires API level 26, or core library desugaring (current min is 24): `java.io.File#toPath`"
+        errorLine1="        check(confDirectory.isDirectory &amp;&amp; !Files.isSymbolicLink(confDirectory.toPath())) {"
+        errorLine2="                                                                               ~~~~~~">
+        <location
+            file="src/main/java/com/mubox/app/service/root/RootIpv6PrivacyGuard.kt"
+            line="97"
+            column="80"/>
+    </issue>
+
+    <issue
+        id="NewApi"
+        message="Call requires API level 26, or core library desugaring (current min is 24): `java.nio.file.Files#isSymbolicLink`"
+        errorLine1="        check(confDirectory.isDirectory &amp;&amp; !Files.isSymbolicLink(confDirectory.toPath())) {"
+        errorLine2="                                                  ~~~~~~~~~~~~~~">
+        <location
+            file="src/main/java/com/mubox/app/service/root/RootIpv6PrivacyGuard.kt"
+            line="97"
+            column="51"/>
+    </issue>
+
+    <issue
+        id="NewApi"
+        message="Call requires API level 26, or core library desugaring (current min is 24): `java.io.File#toPath`"
+        errorLine1="        check(directory.isDirectory &amp;&amp; !Files.isSymbolicLink(directory.toPath())) {"
+        errorLine2="                                                                       ~~~~~~">
+        <location
+            file="src/main/java/com/mubox/app/service/root/RootIpv6PrivacyGuard.kt"
+            line="145"
+            column="72"/>
+    </issue>
+
+    <issue
+        id="NewApi"
+        message="Call requires API level 26, or core library desugaring (current min is 24): `java.nio.file.Files#isSymbolicLink`"
+        errorLine1="        check(directory.isDirectory &amp;&amp; !Files.isSymbolicLink(directory.toPath())) {"
+        errorLine2="                                              ~~~~~~~~~~~~~~">
+        <location
+            file="src/main/java/com/mubox/app/service/root/RootIpv6PrivacyGuard.kt"
+            line="145"
+            column="47"/>
+    </issue>
+
+    <issue
+        id="NewApi"
+        message="Call requires API level 26, or core library desugaring (current min is 24): `java.io.File#toPath`"
+        errorLine1="        check(file.isFile &amp;&amp; !Files.isSymbolicLink(file.toPath())) {"
+        errorLine2="                                                        ~~~~~~">
+        <location
+            file="src/main/java/com/mubox/app/service/root/RootIpv6PrivacyGuard.kt"
+            line="149"
+            column="57"/>
+    </issue>
+
+    <issue
+        id="NewApi"
+        message="Call requires API level 26, or core library desugaring (current min is 24): `java.nio.file.Files#isSymbolicLink`"
+        errorLine1="        check(file.isFile &amp;&amp; !Files.isSymbolicLink(file.toPath())) {"
+        errorLine2="                                    ~~~~~~~~~~~~~~">
+        <location
+            file="src/main/java/com/mubox/app/service/root/RootIpv6PrivacyGuard.kt"
+            line="149"
+            column="37"/>
+    </issue>
+
+    <issue
+        id="NewApi"
+        message="Call requires API level 26, or core library desugaring (current min is 24): `java.io.File#toPath`"
+        errorLine1="        check(stateFile.isFile &amp;&amp; !Files.isSymbolicLink(stateFile.toPath())) {"
+        errorLine2="                                                                  ~~~~~~">
+        <location
+            file="src/main/java/com/mubox/app/service/root/RootIpv6PrivacyGuard.kt"
+            line="157"
+            column="67"/>
+    </issue>
+
+    <issue
+        id="NewApi"
+        message="Call requires API level 26, or core library desugaring (current min is 24): `java.nio.file.Files#isSymbolicLink`"
+        errorLine1="        check(stateFile.isFile &amp;&amp; !Files.isSymbolicLink(stateFile.toPath())) {"
+        errorLine2="                                         ~~~~~~~~~~~~~~">
+        <location
+            file="src/main/java/com/mubox/app/service/root/RootIpv6PrivacyGuard.kt"
+            line="157"
+            column="42"/>
+    </issue>
+
+    <issue
+        id="NewApi"
+        message="Call requires API level 26, or core library desugaring (current min is 24): `java.io.File#toPath`"
+        errorLine1="        check(parent.isDirectory &amp;&amp; !Files.isSymbolicLink(parent.toPath())) {"
+        errorLine2="                                                                 ~~~~~~">
+        <location
+            file="src/main/java/com/mubox/app/service/root/RootIpv6PrivacyGuard.kt"
+            line="192"
+            column="66"/>
+    </issue>
+
+    <issue
+        id="NewApi"
+        message="Call requires API level 26, or core library desugaring (current min is 24): `java.nio.file.Files#isSymbolicLink`"
+        errorLine1="        check(parent.isDirectory &amp;&amp; !Files.isSymbolicLink(parent.toPath())) {"
+        errorLine2="                                           ~~~~~~~~~~~~~~">
+        <location
+            file="src/main/java/com/mubox/app/service/root/RootIpv6PrivacyGuard.kt"
+            line="192"
+            column="44"/>
+    </issue>
+
+    <issue
+        id="NewApi"
+        message="Call requires API level 26, or core library desugaring (current min is 24): `java.nio.file.Files#move`"
+        errorLine1="                Files.move("
+        errorLine2="                      ~~~~">
+        <location
+            file="src/main/java/com/mubox/app/service/root/RootIpv6PrivacyGuard.kt"
+            line="209"
+            column="23"/>
+    </issue>
+
+    <issue
+        id="NewApi"
+        message="Call requires API level 26, or core library desugaring (current min is 24): `java.io.File#toPath`"
+        errorLine1="                    temp.toPath(),"
+        errorLine2="                         ~~~~~~">
+        <location
+            file="src/main/java/com/mubox/app/service/root/RootIpv6PrivacyGuard.kt"
+            line="210"
+            column="26"/>
+    </issue>
+
+    <issue
+        id="NewApi"
+        message="Call requires API level 26, or core library desugaring (current min is 24): `java.io.File#toPath`"
+        errorLine1="                    stateFile.toPath(),"
+        errorLine2="                              ~~~~~~">
+        <location
+            file="src/main/java/com/mubox/app/service/root/RootIpv6PrivacyGuard.kt"
+            line="211"
+            column="31"/>
+    </issue>
+
+    <issue
+        id="NewApi"
+        message="Field requires API level 26, or core library desugaring (current min is 24): `java.nio.file.StandardCopyOption#ATOMIC_MOVE`"
+        errorLine1="                    StandardCopyOption.ATOMIC_MOVE,"
+        errorLine2="                    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
+        <location
+            file="src/main/java/com/mubox/app/service/root/RootIpv6PrivacyGuard.kt"
+            line="212"
+            column="21"/>
+    </issue>
+
+    <issue
+        id="NewApi"
+        message="Field requires API level 26, or core library desugaring (current min is 24): `java.nio.file.StandardCopyOption#REPLACE_EXISTING`"
+        errorLine1="                    StandardCopyOption.REPLACE_EXISTING"
+        errorLine2="                    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
+        <location
+            file="src/main/java/com/mubox/app/service/root/RootIpv6PrivacyGuard.kt"
+            line="213"
+            column="21"/>
+    </issue>
+
+    <issue
+        id="NewApi"
+        message="Call requires API level 26, or core library desugaring (current min is 24): `java.io.File#toPath`"
+        errorLine1="                Files.move(temp.toPath(), stateFile.toPath(), StandardCopyOption.REPLACE_EXISTING)"
+        errorLine2="                                ~~~~~~">
+        <location
+            file="src/main/java/com/mubox/app/service/root/RootIpv6PrivacyGuard.kt"
+            line="216"
+            column="33"/>
+    </issue>
+
+    <issue
+        id="NewApi"
+        message="Call requires API level 26, or core library desugaring (current min is 24): `java.io.File#toPath`"
+        errorLine1="                Files.move(temp.toPath(), stateFile.toPath(), StandardCopyOption.REPLACE_EXISTING)"
+        errorLine2="                                                    ~~~~~~">
+        <location
+            file="src/main/java/com/mubox/app/service/root/RootIpv6PrivacyGuard.kt"
+            line="216"
+            column="53"/>
+    </issue>
+
+    <issue
+        id="NewApi"
+        message="Call requires API level 26, or core library desugaring (current min is 24): `java.nio.file.Files#move`"
+        errorLine1="                Files.move(temp.toPath(), stateFile.toPath(), StandardCopyOption.REPLACE_EXISTING)"
+        errorLine2="                      ~~~~">
+        <location
+            file="src/main/java/com/mubox/app/service/root/RootIpv6PrivacyGuard.kt"
+            line="216"
+            column="23"/>
+    </issue>
+
+    <issue
+        id="NewApi"
+        message="Field requires API level 26, or core library desugaring (current min is 24): `java.nio.file.StandardCopyOption#REPLACE_EXISTING`"
+        errorLine1="                Files.move(temp.toPath(), stateFile.toPath(), StandardCopyOption.REPLACE_EXISTING)"
+        errorLine2="                                                              ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
+        <location
+            file="src/main/java/com/mubox/app/service/root/RootIpv6PrivacyGuard.kt"
+            line="216"
+            column="63"/>
+    </issue>
+
+    <issue
+        id="NewApi"
+        message="Call requires API level 26, or core library desugaring (current min is 24): `java.io.File#toPath`"
+        errorLine1="                fd.absoluteFile.toPath().let { path ->"
+        errorLine2="                                ~~~~~~">
+        <location
+            file="src/main/java/com/mubox/app/service/root/RootListenerVerifier.kt"
+            line="93"
+            column="33"/>
+    </issue>
+
+    <issue
+        id="NewApi"
+        message="Call requires API level 26, or core library desugaring (current min is 24): `java.nio.file.Files#readSymbolicLink`"
+        errorLine1="                    runCatching { java.nio.file.Files.readSymbolicLink(path).toString() }"
+        errorLine2="                                                      ~~~~~~~~~~~~~~~~">
+        <location
+            file="src/main/java/com/mubox/app/service/root/RootListenerVerifier.kt"
+            line="94"
+            column="55"/>
+    </issue>
+
+    <issue
+        id="NewApi"
+        message="Call requires API level 26, or core library desugaring (current min is 24): `java.io.File#toPath`"
+        errorLine1="        check(!Files.isSymbolicLink(file.toPath())) { &quot;Root netfilter owner file cannot be a symbolic link&quot; }"
+        errorLine2="                                         ~~~~~~">
+        <location
+            file="src/main/java/com/mubox/app/service/root/RootNetfilterOwnership.kt"
+            line="186"
+            column="42"/>
+    </issue>
+
+    <issue
+        id="NewApi"
+        message="Call requires API level 26, or core library desugaring (current min is 24): `java.nio.file.Files#isSymbolicLink`"
+        errorLine1="        check(!Files.isSymbolicLink(file.toPath())) { &quot;Root netfilter owner file cannot be a symbolic link&quot; }"
+        errorLine2="                     ~~~~~~~~~~~~~~">
+        <location
+            file="src/main/java/com/mubox/app/service/root/RootNetfilterOwnership.kt"
+            line="186"
+            column="22"/>
+    </issue>
+
+    <issue
+        id="NewApi"
+        message="Call requires API level 26, or core library desugaring (current min is 24): `java.io.File#toPath`"
+        errorLine1="        check(!Files.isSymbolicLink(file.toPath())) { &quot;Root netfilter owner file cannot be a symbolic link&quot; }"
+        errorLine2="                                         ~~~~~~">
+        <location
+            file="src/main/java/com/mubox/app/service/root/RootNetfilterOwnership.kt"
+            line="300"
+            column="42"/>
+    </issue>
+
+    <issue
+        id="NewApi"
+        message="Call requires API level 26, or core library desugaring (current min is 24): `java.nio.file.Files#isSymbolicLink`"
+        errorLine1="        check(!Files.isSymbolicLink(file.toPath())) { &quot;Root netfilter owner file cannot be a symbolic link&quot; }"
+        errorLine2="                     ~~~~~~~~~~~~~~">
+        <location
+            file="src/main/java/com/mubox/app/service/root/RootNetfilterOwnership.kt"
+            line="300"
+            column="22"/>
+    </issue>
+
+    <issue
+        id="NewApi"
+        message="Call requires API level 26, or core library desugaring (current min is 24): `java.io.File#toPath`"
+        errorLine1="        check(!Files.isSymbolicLink(parent.toPath())) {"
+        errorLine2="                                           ~~~~~~">
+        <location
+            file="src/main/java/com/mubox/app/service/root/RootNetfilterOwnership.kt"
+            line="301"
+            column="44"/>
+    </issue>
+
+    <issue
+        id="NewApi"
+        message="Call requires API level 26, or core library desugaring (current min is 24): `java.nio.file.Files#isSymbolicLink`"
+        errorLine1="        check(!Files.isSymbolicLink(parent.toPath())) {"
+        errorLine2="                     ~~~~~~~~~~~~~~">
+        <location
+            file="src/main/java/com/mubox/app/service/root/RootNetfilterOwnership.kt"
+            line="301"
+            column="22"/>
+    </issue>
+
+    <issue
+        id="NewApi"
+        message="Call requires API level 26, or core library desugaring (current min is 24): `java.nio.file.Files#move`"
+        errorLine1="            Files.move("
+        errorLine2="                  ~~~~">
+        <location
+            file="src/main/java/com/mubox/app/service/root/RootNetfilterOwnership.kt"
+            line="312"
+            column="19"/>
+    </issue>
+
+    <issue
+        id="NewApi"
+        message="Call requires API level 26, or core library desugaring (current min is 24): `java.io.File#toPath`"
+        errorLine1="                temp.toPath(),"
+        errorLine2="                     ~~~~~~">
+        <location
+            file="src/main/java/com/mubox/app/service/root/RootNetfilterOwnership.kt"
+            line="313"
+            column="22"/>
+    </issue>
+
+    <issue
+        id="NewApi"
+        message="Call requires API level 26, or core library desugaring (current min is 24): `java.io.File#toPath`"
+        errorLine1="                file.toPath(),"
+        errorLine2="                     ~~~~~~">
+        <location
+            file="src/main/java/com/mubox/app/service/root/RootNetfilterOwnership.kt"
+            line="314"
+            column="22"/>
+    </issue>
+
+    <issue
+        id="NewApi"
+        message="Field requires API level 26, or core library desugaring (current min is 24): `java.nio.file.StandardCopyOption#REPLACE_EXISTING`"
+        errorLine1="                StandardCopyOption.REPLACE_EXISTING,"
+        errorLine2="                ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
+        <location
+            file="src/main/java/com/mubox/app/service/root/RootNetfilterOwnership.kt"
+            line="315"
+            column="17"/>
+    </issue>
+
+    <issue
+        id="NewApi"
+        message="Field requires API level 26, or core library desugaring (current min is 24): `java.nio.file.StandardCopyOption#ATOMIC_MOVE`"
+        errorLine1="                StandardCopyOption.ATOMIC_MOVE"
+        errorLine2="                ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
+        <location
+            file="src/main/java/com/mubox/app/service/root/RootNetfilterOwnership.kt"
+            line="316"
+            column="17"/>
+    </issue>
+
+    <issue
+        id="NewApi"
+        message="Call requires API level 26, or core library desugaring (current min is 24): `java.io.File#toPath`"
+        errorLine1="            runCatching { FileChannel.open(parent.toPath()).use { channel -> channel.force(true) } }"
+        errorLine2="                                                  ~~~~~~">
+        <location
+            file="src/main/java/com/mubox/app/service/root/RootNetfilterOwnership.kt"
+            line="318"
+            column="51"/>
+    </issue>
+
+    <issue
+        id="NewApi"
+        message="Call requires API level 26, or core library desugaring (current min is 24): `java.nio.channels.FileChannel#open`"
+        errorLine1="            runCatching { FileChannel.open(parent.toPath()).use { channel -> channel.force(true) } }"
+        errorLine2="                                      ~~~~">
+        <location
+            file="src/main/java/com/mubox/app/service/root/RootNetfilterOwnership.kt"
+            line="318"
+            column="39"/>
+    </issue>
+
+    <issue
+        id="NewApi"
+        message="Call requires API level 26, or core library desugaring (current min is 24): `java.io.File#toPath`"
+        errorLine1="                Files.move(temp.toPath(), file.toPath(), StandardCopyOption.REPLACE_EXISTING)"
+        errorLine2="                                ~~~~~~">
+        <location
+            file="src/main/java/com/mubox/app/service/root/RootNetfilterOwnership.kt"
+            line="325"
+            column="33"/>
+    </issue>
+
+    <issue
+        id="NewApi"
+        message="Call requires API level 26, or core library desugaring (current min is 24): `java.io.File#toPath`"
+        errorLine1="                Files.move(temp.toPath(), file.toPath(), StandardCopyOption.REPLACE_EXISTING)"
+        errorLine2="                                               ~~~~~~">
+        <location
+            file="src/main/java/com/mubox/app/service/root/RootNetfilterOwnership.kt"
+            line="325"
+            column="48"/>
+    </issue>
+
+    <issue
+        id="NewApi"
+        message="Call requires API level 26, or core library desugaring (current min is 24): `java.nio.file.Files#move`"
+        errorLine1="                Files.move(temp.toPath(), file.toPath(), StandardCopyOption.REPLACE_EXISTING)"
+        errorLine2="                      ~~~~">
+        <location
+            file="src/main/java/com/mubox/app/service/root/RootNetfilterOwnership.kt"
+            line="325"
+            column="23"/>
+    </issue>
+
+    <issue
+        id="NewApi"
+        message="Field requires API level 26, or core library desugaring (current min is 24): `java.nio.file.StandardCopyOption#REPLACE_EXISTING`"
+        errorLine1="                Files.move(temp.toPath(), file.toPath(), StandardCopyOption.REPLACE_EXISTING)"
+        errorLine2="                                                         ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
+        <location
+            file="src/main/java/com/mubox/app/service/root/RootNetfilterOwnership.kt"
+            line="325"
+            column="58"/>
+    </issue>
+
+    <issue
+        id="NewApi"
+        message="Call requires API level 26, or core library desugaring (current min is 24): `java.io.File#toPath`"
+        errorLine1="        check(!Files.isSymbolicLink(stagingFile.toPath())) {"
+        errorLine2="                                                ~~~~~~">
+        <location
+            file="src/main/java/com/mubox/app/service/root/RootNetfilterOwnership.kt"
+            line="566"
+            column="49"/>
+    </issue>
+
+    <issue
+        id="NewApi"
+        message="Call requires API level 26, or core library desugaring (current min is 24): `java.nio.file.Files#isSymbolicLink`"
+        errorLine1="        check(!Files.isSymbolicLink(stagingFile.toPath())) {"
+        errorLine2="                     ~~~~~~~~~~~~~~">
+        <location
+            file="src/main/java/com/mubox/app/service/root/RootNetfilterOwnership.kt"
+            line="566"
+            column="22"/>
+    </issue>
+
+    <issue
+        id="NewApi"
+        message="Call requires API level 26, or core library desugaring (current min is 24): `java.io.File#toPath`"
+        errorLine1="            check(!Files.isSymbolicLink(file.toPath())) {"
+        errorLine2="                                             ~~~~~~">
+        <location
+            file="src/main/java/com/mubox/app/service/root/RootNetfilterOwnership.kt"
+            line="574"
+            column="46"/>
+    </issue>
+
+    <issue
+        id="NewApi"
+        message="Call requires API level 26, or core library desugaring (current min is 24): `java.nio.file.Files#isSymbolicLink`"
+        errorLine1="            check(!Files.isSymbolicLink(file.toPath())) {"
+        errorLine2="                         ~~~~~~~~~~~~~~">
+        <location
+            file="src/main/java/com/mubox/app/service/root/RootNetfilterOwnership.kt"
+            line="574"
+            column="26"/>
+    </issue>
+
+    <issue
+        id="NewApi"
+        message="Call requires API level 26, or core library desugaring (current min is 24): `java.io.File#toPath`"
+        errorLine1="        check(!Files.isSymbolicLink(ownerFile.toPath())) { &quot;Root owner file cannot be a symbolic link&quot; }"
+        errorLine2="                                              ~~~~~~">
+        <location
+            file="src/main/java/com/mubox/app/service/root/RootNetfilterOwnership.kt"
+            line="582"
+            column="47"/>
+    </issue>
+
+    <issue
+        id="NewApi"
+        message="Call requires API level 26, or core library desugaring (current min is 24): `java.nio.file.Files#isSymbolicLink`"
+        errorLine1="        check(!Files.isSymbolicLink(ownerFile.toPath())) { &quot;Root owner file cannot be a symbolic link&quot; }"
+        errorLine2="                     ~~~~~~~~~~~~~~">
+        <location
+            file="src/main/java/com/mubox/app/service/root/RootNetfilterOwnership.kt"
+            line="582"
+            column="22"/>
+    </issue>
+
+    <issue
+        id="NewApi"
+        message="Call requires API level 26, or core library desugaring (current min is 24): `java.io.File#toPath`"
+        errorLine1="        check(!Files.isSymbolicLink(stagingFile.toPath())) {"
+        errorLine2="                                                ~~~~~~">
+        <location
+            file="src/main/java/com/mubox/app/service/root/RootNetfilterOwnership.kt"
+            line="583"
+            column="49"/>
+    </issue>
+
+    <issue
+        id="NewApi"
+        message="Call requires API level 26, or core library desugaring (current min is 24): `java.nio.file.Files#isSymbolicLink`"
+        errorLine1="        check(!Files.isSymbolicLink(stagingFile.toPath())) {"
+        errorLine2="                     ~~~~~~~~~~~~~~">
+        <location
+            file="src/main/java/com/mubox/app/service/root/RootNetfilterOwnership.kt"
+            line="583"
+            column="22"/>
+    </issue>
+
+    <issue
+        id="NewApi"
+        message="Call requires API level 26, or core library desugaring (current min is 24): `java.io.File#toPath`"
+        errorLine1="        check(!Files.isSymbolicLink(rootDirectory.toPath())) {"
+        errorLine2="                                                  ~~~~~~">
+        <location
+            file="src/main/java/com/mubox/app/service/root/RootNetfilterOwnership.kt"
+            line="600"
+            column="51"/>
+    </issue>
+
+    <issue
+        id="NewApi"
+        message="Call requires API level 26, or core library desugaring (current min is 24): `java.nio.file.Files#isSymbolicLink`"
+        errorLine1="        check(!Files.isSymbolicLink(rootDirectory.toPath())) {"
+        errorLine2="                     ~~~~~~~~~~~~~~">
+        <location
+            file="src/main/java/com/mubox/app/service/root/RootNetfilterOwnership.kt"
+            line="600"
+            column="22"/>
+    </issue>
+
+    <issue
+        id="NewApi"
+        message="Call requires API level 26, or core library desugaring (current min is 24): `java.io.File#toPath`"
+        errorLine1="        check(!Files.isSymbolicLink(legacyScanMarker.toPath())) { &quot;Root legacy marker cannot be a symbolic link&quot; }"
+        errorLine2="                                                     ~~~~~~">
+        <location
+            file="src/main/java/com/mubox/app/service/root/RootNetfilterOwnership.kt"
+            line="659"
+            column="54"/>
+    </issue>
+
+    <issue
+        id="NewApi"
+        message="Call requires API level 26, or core library desugaring (current min is 24): `java.nio.file.Files#isSymbolicLink`"
+        errorLine1="        check(!Files.isSymbolicLink(legacyScanMarker.toPath())) { &quot;Root legacy marker cannot be a symbolic link&quot; }"
+        errorLine2="                     ~~~~~~~~~~~~~~">
+        <location
+            file="src/main/java/com/mubox/app/service/root/RootNetfilterOwnership.kt"
+            line="659"
+            column="22"/>
+    </issue>
+
+    <issue
+        id="NewApi"
+        message="Call requires API level 26, or core library desugaring (current min is 24): `java.io.File#toPath`"
+        errorLine1="        check(!Files.isSymbolicLink(rootDirectory.toPath())) {"
+        errorLine2="                                                  ~~~~~~">
+        <location
+            file="src/main/java/com/mubox/app/service/root/RootNetfilterOwnership.kt"
+            line="664"
+            column="51"/>
+    </issue>
+
+    <issue
+        id="NewApi"
+        message="Call requires API level 26, or core library desugaring (current min is 24): `java.nio.file.Files#isSymbolicLink`"
+        errorLine1="        check(!Files.isSymbolicLink(rootDirectory.toPath())) {"
+        errorLine2="                     ~~~~~~~~~~~~~~">
+        <location
+            file="src/main/java/com/mubox/app/service/root/RootNetfilterOwnership.kt"
+            line="664"
+            column="22"/>
+    </issue>
+
+    <issue
+        id="NewApi"
+        message="Call requires API level 26, or core library desugaring (current min is 24): `java.io.File#toPath`"
+        errorLine1="        check(!Files.isSymbolicLink(legacyScanMarker.toPath())) { &quot;Root legacy marker cannot be a symbolic link&quot; }"
+        errorLine2="                                                     ~~~~~~">
+        <location
+            file="src/main/java/com/mubox/app/service/root/RootNetfilterOwnership.kt"
+            line="668"
+            column="54"/>
+    </issue>
+
+    <issue
+        id="NewApi"
+        message="Call requires API level 26, or core library desugaring (current min is 24): `java.nio.file.Files#isSymbolicLink`"
+        errorLine1="        check(!Files.isSymbolicLink(legacyScanMarker.toPath())) { &quot;Root legacy marker cannot be a symbolic link&quot; }"
+        errorLine2="                     ~~~~~~~~~~~~~~">
+        <location
+            file="src/main/java/com/mubox/app/service/root/RootNetfilterOwnership.kt"
+            line="668"
+            column="22"/>
+    </issue>
+
+    <issue
+        id="NewApi"
+        message="Call requires API level 26, or core library desugaring (current min is 24): `java.io.File#toPath`"
+        errorLine1="            check(!Files.isSymbolicLink(conflictFile.toPath()))"
+        errorLine2="                                                     ~~~~~~">
+        <location
+            file="src/main/java/com/mubox/app/service/root/RootNetfilterOwnership.kt"
+            line="674"
+            column="54"/>
+    </issue>
+
+    <issue
+        id="NewApi"
+        message="Call requires API level 26, or core library desugaring (current min is 24): `java.nio.file.Files#isSymbolicLink`"
+        errorLine1="            check(!Files.isSymbolicLink(conflictFile.toPath()))"
+        errorLine2="                         ~~~~~~~~~~~~~~">
+        <location
+            file="src/main/java/com/mubox/app/service/root/RootNetfilterOwnership.kt"
+            line="674"
+            column="26"/>
+    </issue>
+
+    <issue
+        id="NewApi"
+        message="Call requires API level 26 (current min is 24): `android.system.Os#setsockoptInt`"
+        errorLine1="                    Os.setsockoptInt("
+        errorLine2="                       ~~~~~~~~~~~~~">
+        <location
+            file="src/main/java/com/mubox/app/service/root/RootPlatformInterface.kt"
+            line="67"
+            column="24"/>
+    </issue>
+
+    <issue
+        id="NewApi"
+        message="Call requires API level 26 (current min is 24): `java.lang.Process#isAlive`"
+        errorLine1="        check(process.isAlive) { &quot;Root watchdog exited during startup&quot; }"
+        errorLine2="                      ~~~~~~~">
+        <location
+            file="src/main/java/com/mubox/app/service/root/RootWatchdogInstaller.kt"
+            line="67"
+            column="23"/>
+    </issue>
+
+    <issue
+        id="NewApi"
+        message="Call requires API level 26, or core library desugaring (current min is 24): `java.io.File#toPath`"
+        errorLine1="        check(!Files.isSymbolicLink(runtimeDir.toPath())) { &quot;Root watchdog directory cannot be a symbolic link&quot; }"
+        errorLine2="                                               ~~~~~~">
+        <location
+            file="src/main/java/com/mubox/app/service/root/RootWatchdogInstaller.kt"
+            line="127"
+            column="48"/>
+    </issue>
+
+    <issue
+        id="NewApi"
+        message="Call requires API level 26, or core library desugaring (current min is 24): `java.nio.file.Files#isSymbolicLink`"
+        errorLine1="        check(!Files.isSymbolicLink(runtimeDir.toPath())) { &quot;Root watchdog directory cannot be a symbolic link&quot; }"
+        errorLine2="                     ~~~~~~~~~~~~~~">
+        <location
+            file="src/main/java/com/mubox/app/service/root/RootWatchdogInstaller.kt"
+            line="127"
+            column="22"/>
+    </issue>
+
+    <issue
+        id="NewApi"
+        message="Call requires API level 26, or core library desugaring (current min is 24): `java.io.File#toPath`"
+        errorLine1="        if (!sessionFile.isFile || Files.isSymbolicLink(sessionFile.toPath())) return"
+        errorLine2="                                                                    ~~~~~~">
+        <location
+            file="src/main/java/com/mubox/app/service/root/RootWatchdogInstaller.kt"
+            line="169"
+            column="69"/>
+    </issue>
+
+    <issue
+        id="NewApi"
+        message="Call requires API level 26, or core library desugaring (current min is 24): `java.nio.file.Files#isSymbolicLink`"
+        errorLine1="        if (!sessionFile.isFile || Files.isSymbolicLink(sessionFile.toPath())) return"
+        errorLine2="                                         ~~~~~~~~~~~~~~">
+        <location
+            file="src/main/java/com/mubox/app/service/root/RootWatchdogInstaller.kt"
+            line="169"
+            column="42"/>
+    </issue>
+
+    <issue
+        id="NewApi"
+        message="Call requires API level 26, or core library desugaring (current min is 24): `java.io.File#toPath`"
+        errorLine1="            check(!Files.isSymbolicLink(file.toPath())) { &quot;Root watchdog runtime file is a symbolic link: $name&quot; }"
+        errorLine2="                                             ~~~~~~">
+        <location
+            file="src/main/java/com/mubox/app/service/root/RootWatchdogInstaller.kt"
+            line="174"
+            column="46"/>
+    </issue>
+
+    <issue
+        id="NewApi"
+        message="Call requires API level 26, or core library desugaring (current min is 24): `java.nio.file.Files#isSymbolicLink`"
+        errorLine1="            check(!Files.isSymbolicLink(file.toPath())) { &quot;Root watchdog runtime file is a symbolic link: $name&quot; }"
+        errorLine2="                         ~~~~~~~~~~~~~~">
+        <location
+            file="src/main/java/com/mubox/app/service/root/RootWatchdogInstaller.kt"
+            line="174"
+            column="26"/>
+    </issue>
+
+    <issue
+        id="NewApi"
+        message="Call requires API level 26 (current min is 24): `java.lang.Process#destroyForcibly`"
+        errorLine1="        process.destroyForcibly()"
+        errorLine2="                ~~~~~~~~~~~~~~~">
+        <location
+            file="src/main/java/com/mubox/app/service/root/RootWatchdogInstaller.kt"
+            line="211"
+            column="17"/>
+    </issue>
+
+    <issue
+        id="NewApi"
+        message="Call requires API level 26 (current min is 24): `java.lang.Process#waitFor`"
+        errorLine1="        runCatching { process.waitFor(PROCESS_REAP_WAIT_MS, TimeUnit.MILLISECONDS) }"
+        errorLine2="                              ~~~~~~~">
+        <location
+            file="src/main/java/com/mubox/app/service/root/RootWatchdogInstaller.kt"
+            line="212"
+            column="31"/>
+    </issue>
+
+    <issue
+        id="NewApi"
+        message="Call requires API level 26 (current min is 24): `java.lang.Process#isAlive`"
+        errorLine1="        val watchdogAlive = watchdogProcess?.isAlive == true"
+        errorLine2="                                             ~~~~~~~">
+        <location
+            file="src/main/java/com/mubox/app/service/root/RootWatchdogInstaller.kt"
+            line="243"
+            column="46"/>
+    </issue>
+
+    <issue
+        id="NewApi"
+        message="Call requires API level 26, or core library desugaring (current min is 24): `java.io.File#toPath`"
+        errorLine1="        check(!Files.isSymbolicLink(parent.toPath()) &amp;&amp; parent.isDirectory) {"
+        errorLine2="                                           ~~~~~~">
+        <location
+            file="src/main/java/com/mubox/app/service/root/RootWatchdogInstaller.kt"
+            line="252"
+            column="44"/>
+    </issue>
+
+    <issue
+        id="NewApi"
+        message="Call requires API level 26, or core library desugaring (current min is 24): `java.nio.file.Files#isSymbolicLink`"
+        errorLine1="        check(!Files.isSymbolicLink(parent.toPath()) &amp;&amp; parent.isDirectory) {"
+        errorLine2="                     ~~~~~~~~~~~~~~">
+        <location
+            file="src/main/java/com/mubox/app/service/root/RootWatchdogInstaller.kt"
+            line="252"
+            column="22"/>
+    </issue>
+
+    <issue
+        id="NewApi"
+        message="Call requires API level 26, or core library desugaring (current min is 24): `java.io.File#toPath`"
+        errorLine1="        check(!Files.isSymbolicLink(target.toPath()) &amp;&amp; (!target.exists() || target.isFile)) {"
+        errorLine2="                                           ~~~~~~">
+        <location
+            file="src/main/java/com/mubox/app/service/root/RootWatchdogInstaller.kt"
+            line="255"
+            column="44"/>
+    </issue>
+
+    <issue
+        id="NewApi"
+        message="Call requires API level 26, or core library desugaring (current min is 24): `java.nio.file.Files#isSymbolicLink`"
+        errorLine1="        check(!Files.isSymbolicLink(target.toPath()) &amp;&amp; (!target.exists() || target.isFile)) {"
+        errorLine2="                     ~~~~~~~~~~~~~~">
+        <location
+            file="src/main/java/com/mubox/app/service/root/RootWatchdogInstaller.kt"
+            line="255"
+            column="22"/>
+    </issue>
+
+    <issue
+        id="NewApi"
+        message="Call requires API level 26, or core library desugaring (current min is 24): `java.io.File#toPath`"
+        errorLine1="        check(!Files.isSymbolicLink(target.toPath()) &amp;&amp; (!target.exists() || target.isFile)) {"
+        errorLine2="                                           ~~~~~~">
+        <location
+            file="src/main/java/com/mubox/app/service/root/RootWatchdogInstaller.kt"
+            line="272"
+            column="44"/>
+    </issue>
+
+    <issue
+        id="NewApi"
+        message="Call requires API level 26, or core library desugaring (current min is 24): `java.nio.file.Files#isSymbolicLink`"
+        errorLine1="        check(!Files.isSymbolicLink(target.toPath()) &amp;&amp; (!target.exists() || target.isFile)) {"
+        errorLine2="                     ~~~~~~~~~~~~~~">
+        <location
+            file="src/main/java/com/mubox/app/service/root/RootWatchdogInstaller.kt"
+            line="272"
+            column="22"/>
+    </issue>
+
+    <issue
+        id="SoonBlockedPrivateApi"
+        message="Reflective access to getsockoptInt will throw an exception when targeting API 37 and above"
+        errorLine1="            Os::class.java.getDeclaredMethod("
+        errorLine2="            ^">
+        <location
+            file="src/main/java/com/mubox/app/service/root/RootPlatformInterface.kt"
+            line="33"
+            column="13"/>
+    </issue>
+
+    <issue
+        id="UnusedAttribute"
+        message="Attribute `enableOnBackInvokedCallback` is only used in API level 33 and higher (current min is 31)"
+        errorLine1="        android:enableOnBackInvokedCallback=&quot;true&quot;"
+        errorLine2="        ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
+        <location
+            file="src/main/AndroidManifest.xml"
+            line="28"
+            column="9"/>
+    </issue>
+
+    <issue
+        id="UnusedAttribute"
+        message="Attribute `shortcutId` is only used in API level 25 and higher (current min is 24)"
+        errorLine1="        android:shortcutId=&quot;toggle_vpn&quot;"
+        errorLine2="        ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
+        <location
+            file="src/main/res/xml/shortcuts.xml"
+            line="4"
+            column="9"/>
+    </issue>
+
+    <issue
+        id="UnusedAttribute"
+        message="Attribute `shortcutShortLabel` is only used in API level 25 and higher (current min is 24)"
+        errorLine1="        android:shortcutShortLabel=&quot;@string/shortcut_toggle_vpn_short&quot;"
+        errorLine2="        ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
+        <location
+            file="src/main/res/xml/shortcuts.xml"
+            line="7"
+            column="9"/>
+    </issue>
+
+    <issue
+        id="UnusedAttribute"
+        message="Attribute `shortcutLongLabel` is only used in API level 25 and higher (current min is 24)"
+        errorLine1="        android:shortcutLongLabel=&quot;@string/shortcut_toggle_vpn&quot;>"
+        errorLine2="        ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
+        <location
+            file="src/main/res/xml/shortcuts.xml"
+            line="8"
+            column="9"/>
+    </issue>
+
+    <issue
+        id="UnusedAttribute"
+        message="Attribute `shortcutId` is only used in API level 25 and higher (current min is 24)"
+        errorLine1="        android:shortcutId=&quot;switch_node&quot;"
+        errorLine2="        ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
+        <location
+            file="src/main/res/xml/shortcuts.xml"
+            line="15"
+            column="9"/>
+    </issue>
+
+    <issue
+        id="UnusedAttribute"
+        message="Attribute `shortcutShortLabel` is only used in API level 25 and higher (current min is 24)"
+        errorLine1="        android:shortcutShortLabel=&quot;@string/shortcut_switch_node_short&quot;"
+        errorLine2="        ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
+        <location
+            file="src/main/res/xml/shortcuts.xml"
+            line="18"
+            column="9"/>
+    </issue>
+
+    <issue
+        id="UnusedAttribute"
+        message="Attribute `shortcutLongLabel` is only used in API level 25 and higher (current min is 24)"
+        errorLine1="        android:shortcutLongLabel=&quot;@string/shortcut_switch_node&quot;>"
+        errorLine2="        ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
+        <location
+            file="src/main/res/xml/shortcuts.xml"
+            line="19"
+            column="9"/>
+    </issue>
+
+    <issue
+        id="AppBundleLocaleChanges"
+        message="Found dynamic locale changes, but did not find corresponding Play Core library calls for downloading languages and splitting by language is not disabled in the `bundle` configuration"
+        errorLine1="        configuration.setLocales(LocaleList(locale))"
+        errorLine2="        ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
+        <location
+            file="src/main/java/com/mubox/app/utils/LocaleHelper.kt"
+            line="62"
+            column="9"/>
+    </issue>
+
+    <issue
+        id="BatteryLife"
+        message="Use of `REQUEST_IGNORE_BATTERY_OPTIMIZATIONS` violates the Play Store Content Policy regarding acceptable use cases, as described in https://developer.android.com/training/monitoring-device-state/doze-standby.html"
+        errorLine1="                                android.provider.Settings.ACTION_REQUEST_IGNORE_BATTERY_OPTIMIZATIONS"
+        errorLine2="                                                          ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
+        <location
+            file="src/main/java/com/mubox/app/ui/screens/SettingsScreen.kt"
+            line="283"
+            column="59"/>
+    </issue>
+
+    <issue
+        id="AndroidGradlePluginVersion"
+        message="A newer version of Gradle than 9.6.1 is available: 9.9.2"
+        errorLine1="distributionUrl=https\://downloads.gradle.org/distributions/gradle-9.6.1-bin.zip"
+        errorLine2="                ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
+        <location
+            file="$HOME/work/MuBox/MuBox/slim-src/gradle/wrapper/gradle-wrapper.properties"
+            line="4"
+            column="17"/>
+    </issue>
+
+    <issue
+        id="GradleDependency"
+        message="A newer version of androidx.core:core-ktx than 1.19.0 is available: 1.19.1"
+        errorLine1="    implementation(&quot;androidx.core:core-ktx:1.19.0&quot;)"
+        errorLine2="                   ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
+        <location
+            file="build.gradle.kts"
+            line="414"
+            column="20"/>
+    </issue>
+
+    <issue
+        id="GradleDependency"
+        message="A newer version of androidx.lifecycle:lifecycle-runtime-ktx than 2.11.0 is available: 2.11.1"
+        errorLine1="    implementation(&quot;androidx.lifecycle:lifecycle-runtime-ktx:2.11.0&quot;)"
+        errorLine2="                   ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
+        <location
+            file="build.gradle.kts"
+            line="415"
+            column="20"/>
+    </issue>
+
+    <issue
+        id="GradleDependency"
+        message="A newer version of androidx.appcompat:appcompat than 1.7.1 is available: 1.8.0"
+        errorLine1="    implementation(&quot;androidx.appcompat:appcompat:1.7.1&quot;)"
+        errorLine2="                   ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
+        <location
+            file="build.gradle.kts"
+            line="416"
+            column="20"/>
+    </issue>
+
+    <issue
+        id="GradleDependency"
+        message="A newer version of androidx.compose:compose-bom than 2026.06.00 is available: 2026.11.01"
+        errorLine1="    implementation(platform(&quot;androidx.compose:compose-bom:$composeBomVersion&quot;))"
+        errorLine2="                            ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
+        <location
+            file="build.gradle.kts"
+            line="418"
+            column="29"/>
+    </issue>
+
+    <issue
+        id="GradleDependency"
+        message="A newer version of androidx.navigation:navigation-compose than 2.9.8 is available: 2.10.2"
+        errorLine1="    implementation(&quot;androidx.navigation:navigation-compose:2.9.8&quot;)"
+        errorLine2="                   ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
+        <location
+            file="build.gradle.kts"
+            line="423"
+            column="20"/>
+    </issue>
+
+    <issue
+        id="GradleDependency"
+        message="A newer version of androidx.lifecycle:lifecycle-viewmodel-compose than 2.11.0 is available: 2.11.1"
+        errorLine1="    implementation(&quot;androidx.lifecycle:lifecycle-viewmodel-compose:2.11.0&quot;)"
+        errorLine2="                   ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
+        <location
+            file="build.gradle.kts"
+            line="428"
+            column="20"/>
+    </issue>
+
+    <issue
+        id="GradleDependency"
+        message="A newer version of androidx.lifecycle:lifecycle-runtime-compose than 2.11.0 is available: 2.11.1"
+        errorLine1="    implementation(&quot;androidx.lifecycle:lifecycle-runtime-compose:2.11.0&quot;)"
+        errorLine2="                   ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
+        <location
+            file="build.gradle.kts"
+            line="429"
+            column="20"/>
+    </issue>
+
+    <issue
+        id="GradleDependency"
+        message="A newer version of androidx.lifecycle:lifecycle-process than 2.11.0 is available: 2.11.1"
+        errorLine1="    implementation(&quot;androidx.lifecycle:lifecycle-process:2.11.0&quot;)"
+        errorLine2="                   ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
+        <location
+            file="build.gradle.kts"
+            line="430"
+            column="20"/>
+    </issue>
+
+    <issue
+        id="GradleDependency"
+        message="A newer version of androidx.work:work-runtime-ktx than 2.11.2 is available: 2.12.0"
+        errorLine1="    implementation(&quot;androidx.work:work-runtime-ktx:2.11.2&quot;)"
+        errorLine2="                   ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
+        <location
+            file="build.gradle.kts"
+            line="439"
+            column="20"/>
+    </issue>
+
+    <issue
+        id="GradleDependency"
+        message="A newer version of androidx.room:room-runtime than 2.8.4 is available: 2.8.5"
+        errorLine1="    implementation(&quot;androidx.room:room-runtime:$roomVersion&quot;)"
+        errorLine2="                   ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
+        <location
+            file="build.gradle.kts"
+            line="442"
+            column="20"/>
+    </issue>
+
+    <issue
+        id="GradleDependency"
+        message="A newer version of androidx.room:room-ktx than 2.8.4 is available: 2.8.5"
+        errorLine1="    implementation(&quot;androidx.room:room-ktx:$roomVersion&quot;)"
+        errorLine2="                   ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
+        <location
+            file="build.gradle.kts"
+            line="443"
+            column="20"/>
+    </issue>
+
+    <issue
+        id="GradleDependency"
+        message="A newer version of androidx.room:room-compiler than 2.8.4 is available: 2.8.5"
+        errorLine1="    ksp(&quot;androidx.room:room-compiler:$roomVersion&quot;)"
+        errorLine2="        ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
+        <location
+            file="build.gradle.kts"
+            line="444"
+            column="9"/>
+    </issue>
+
+    <issue
+        id="GradleDependency"
+        message="A newer version of androidx.compose:compose-bom than 2026.06.00 is available: 2026.11.01"
+        errorLine1="    androidTestImplementation(platform(&quot;androidx.compose:compose-bom:$composeBomVersion&quot;))"
+        errorLine2="                                       ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
+        <location
+            file="build.gradle.kts"
+            line="451"
+            column="40"/>
+    </issue>
+
+    <issue
+        id="NewerVersionAvailable"
+        message="A newer version of dev.chrisbanes.haze:haze than 1.7.2 is available: 2.1.0"
+        errorLine1="    implementation(&quot;dev.chrisbanes.haze:haze:1.7.2&quot;)"
+        errorLine2="                   ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
+        <location
+            file="build.gradle.kts"
+            line="424"
+            column="20"/>
+    </issue>
+
+    <issue
+        id="NewerVersionAvailable"
+        message="A newer version of io.github.kyant0:backdrop than 2.0.0 is available: 2.0.1"
+        errorLine1="    implementation(&quot;io.github.kyant0:backdrop:2.0.0&quot;)"
+        errorLine2="                   ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
+        <location
+            file="build.gradle.kts"
+            line="425"
+            column="20"/>
+    </issue>
+
+    <issue
+        id="NewerVersionAvailable"
+        message="A newer version of com.squareup.okhttp3:okhttp than 5.4.0 is available: 5.5.1"
+        errorLine1="    implementation(&quot;com.squareup.okhttp3:okhttp:5.4.0&quot;)"
+        errorLine2="                   ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
+        <location
+            file="build.gradle.kts"
+            line="431"
+            column="20"/>
+    </issue>
+
+    <issue
+        id="NewerVersionAvailable"
+        message="A newer version of com.google.code.gson:gson than 2.14.0 is available: 2.15.0"
+        errorLine1="    implementation(&quot;com.google.code.gson:gson:2.14.0&quot;)"
+        errorLine2="                   ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
+        <location
+            file="build.gradle.kts"
+            line="432"
+            column="20"/>
+    </issue>
+
+    <issue
+        id="NewerVersionAvailable"
+        message="A newer version of org.yaml:snakeyaml than 2.6 is available: 2.7"
+        errorLine1="    implementation(&quot;org.yaml:snakeyaml:2.6&quot;)"
+        errorLine2="                   ~~~~~~~~~~~~~~~~~~~~~~~~">
+        <location
+            file="build.gradle.kts"
+            line="433"
+            column="20"/>
+    </issue>
+
+    <issue
+        id="NewerVersionAvailable"
+        message="A newer version of com.tencent:mmkv than 2.4.0 is available: 2.4.3"
+        errorLine1="    implementation(&quot;com.tencent:mmkv:2.4.0&quot;)"
+        errorLine2="                   ~~~~~~~~~~~~~~~~~~~~~~~~">
+        <location
+            file="build.gradle.kts"
+            line="434"
+            column="20"/>
+    </issue>
+
+    <issue
+        id="NewerVersionAvailable"
+        message="A newer version of com.squareup.okhttp3:mockwebserver than 5.4.0 is available: 5.5.1"
+        errorLine1="    androidTestImplementation(&quot;com.squareup.okhttp3:mockwebserver:5.4.0&quot;)"
+        errorLine2="                              ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
+        <location
+            file="build.gradle.kts"
+            line="450"
+            column="31"/>
+    </issue>
+
+    <issue
+        id="ComposableNaming"
+        message="Composable functions that return Unit should start with an uppercase letter"
+        errorLine1="private fun confirmDialogActionButton("
+        errorLine2="            ~~~~~~~~~~~~~~~~~~~~~~~~~">
+        <location
+            file="src/main/java/com/mubox/app/ui/components/CommonDialogs.kt"
+            line="96"
+            column="13"/>
+    </issue>
+
+    <issue
+        id="LocalContextGetResourceValueCall"
+        message="Querying resource values using LocalContext.current"
+        errorLine1="                            message = context.getString(R.string.nodes_protocol_removed, removedName),"
+        errorLine2="                                      ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
+        <location
+            file="src/main/java/com/mubox/app/ui/screens/ProfileImportDialogs.kt"
+            line="581"
+            column="39"/>
+    </issue>
+
+    <issue
+        id="LocalContextGetResourceValueCall"
+        message="Querying resource values using LocalContext.current"
+        errorLine1="                        context.getString("
+        errorLine2="                        ^">
+        <location
+            file="src/main/java/com/mubox/app/ui/screens/ProfilesScreen.kt"
+            line="392"
+            column="25"/>
+    </issue>
+
+    <issue
+        id="ModifierParameter"
+        message="Modifier parameter should be the first optional parameter"
+        errorLine1="    modifier: Modifier = Modifier"
+        errorLine2="    ~~~~~~~~">
+        <location
+            file="src/main/java/com/mubox/app/MainActivity.kt"
+            line="459"
+            column="5"/>
+    </issue>
+
+    <issue
+        id="ModifierParameter"
+        message="Modifier parameter should be the first optional parameter"
+        errorLine1="    modifier: Modifier = Modifier"
+        errorLine2="    ~~~~~~~~">
+        <location
+            file="src/main/java/com/mubox/app/ui/components/NodeCard.kt"
+            line="75"
+            column="5"/>
+    </issue>
+
+    <issue
+        id="ModifierParameter"
+        message="Modifier parameter should be the first optional parameter"
+        errorLine1="    modifier: Modifier = Modifier"
+        errorLine2="    ~~~~~~~~">
+        <location
+            file="src/main/java/com/mubox/app/ui/components/NodeCard.kt"
+            line="420"
+            column="5"/>
+    </issue>
+
+    <issue
+        id="ModifierParameter"
+        message="Modifier parameter should be the first optional parameter"
+        errorLine1="    modifier: Modifier = Modifier"
+        errorLine2="    ~~~~~~~~">
+        <location
+            file="src/main/java/com/mubox/app/ui/components/ProfileCard.kt"
+            line="161"
+            column="5"/>
+    </issue>
+
+    <issue
+        id="ModifierParameter"
+        message="Modifier parameter should be the first optional parameter"
+        errorLine1="    modifier: Modifier = Modifier"
+        errorLine2="    ~~~~~~~~">
+        <location
+            file="src/main/java/com/mubox/app/ui/screens/RuleSetsDialogs.kt"
+            line="116"
+            column="5"/>
+    </issue>
+
+    <issue
+        id="DiscouragedApi"
+        message="Fixed screen orientations will be ignored in most cases, starting from Android 16. Android is moving toward a model where apps are expected to adapt to various orientations, display sizes, and aspect ratios."
+        errorLine1="            android:screenOrientation=&quot;fullSensor&quot;"
+        errorLine2="            ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
+        <location
+            file="src/main/AndroidManifest.xml"
+            line="70"
+            column="13"/>
+    </issue>
+
+    <issue
+        id="DiscouragedApi"
+        message="Use of `scheduleAtFixedRate` is strongly discouraged because it can lead to unexpected behavior when Android processes become cached (tasks may unexpectedly execute hundreds or thousands of times in quick succession when a process changes from cached to uncached); prefer using `scheduleWithFixedDelay`"
+        errorLine1="        task = executor.scheduleAtFixedRate("
+        errorLine2="               ^">
+        <location
+            file="src/main/java/com/mubox/app/service/root/RootResourceGuard.kt"
+            line="28"
+            column="16"/>
+    </issue>
+
+    <issue
+        id="DiscouragedApi"
+        message="Use of `scheduleAtFixedRate` is strongly discouraged because it can lead to unexpected behavior when Android processes become cached (tasks may unexpectedly execute hundreds or thousands of times in quick succession when a process changes from cached to uncached); prefer using `scheduleWithFixedDelay`"
+        errorLine1="        ackTask = scheduler.scheduleAtFixedRate("
+        errorLine2="                  ^">
+        <location
+            file="src/main/java/com/mubox/app/service/root/RootWatchdogInstaller.kt"
+            line="70"
+            column="19"/>
+    </issue>
+
+    <issue
+        id="UseRequiresApi"
+        message="Use `@RequiresApi(Build.VERSION_CODES.O) instead of `@TargetApi` to propagate the requirement to callers of `moveTempFileWithNio`"
+        errorLine1="@TargetApi(Build.VERSION_CODES.O)"
+        errorLine2="~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
+        <location
+            file="src/main/java/com/mubox/app/repository/configrepo/ConfigRepositoryStatics1.kt"
+            line="594"
+            column="1"/>
+    </issue>
+
+    <issue
+        id="UseRequiresApi"
+        message="Use `@RequiresApi(Build.VERSION_CODES.Q) instead of `@TargetApi` to propagate the requirement to callers of `lookupWithDnsResolver`"
+        errorLine1="    @TargetApi(Build.VERSION_CODES.Q)"
+        errorLine2="    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
+        <location
+            file="src/main/java/com/mubox/app/core/LocalResolverImpl.kt"
+            line="59"
+            column="5"/>
+    </issue>
+
+    <issue
+        id="UseRequiresApi"
+        message="Use `@RequiresApi(Build.VERSION_CODES.Q) instead of `@TargetApi` to propagate the requirement to callers of `exchangeWithDnsResolver`"
+        errorLine1="    @TargetApi(Build.VERSION_CODES.Q)"
+        errorLine2="    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
+        <location
+            file="src/main/java/com/mubox/app/core/LocalResolverImpl.kt"
+            line="126"
+            column="5"/>
+    </issue>
+
+    <issue
+        id="UseRequiresApi"
+        message="Use `@RequiresApi(Build.VERSION_CODES.O) instead of `@TargetApi` to propagate the requirement to callers of `replaceRuleSetFileWithNio`"
+        errorLine1="    @TargetApi(Build.VERSION_CODES.O)"
+        errorLine2="    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
+        <location
+            file="src/main/java/com/mubox/app/repository/RuleSetRepository.kt"
+            line="622"
+            column="5"/>
+    </issue>
+
+    <issue
+        id="UseRequiresApi"
+        message="Use `@RequiresApi(Build.VERSION_CODES.O) instead of `@TargetApi` to propagate the requirement to callers of `moveTempFileWithNio`"
+        errorLine1="@TargetApi(Build.VERSION_CODES.O)"
+        errorLine2="~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
+        <location
+            file="src/main/java/com/mubox/app/repository/TrafficRepository.kt"
+            line="462"
+            column="1"/>
+    </issue>
+
+    <issue
+        id="PluralsCandidate"
+        message="Formatting %d followed by words (&quot;minutes&quot;): This should probably be a plural rather than a string"
+        errorLine1="    &lt;string name=&quot;settings_ruleset_auto_update_enabled&quot;>Update every %d minutes&lt;/string>"
+        errorLine2="    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
+        <location
+            file="src/main/res/values-en/strings.xml"
+            line="123"
+            column="5"/>
+    </issue>
+
+    <issue
+        id="PluralsCandidate"
+        message="Formatting %d followed by words (&quot;minutes&quot;): This should probably be a plural rather than a string"
+        errorLine1="    &lt;string name=&quot;settings_update_interval_value&quot;>%d minutes&lt;/string>"
+        errorLine2="    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
+        <location
+            file="src/main/res/values-en/strings.xml"
+            line="126"
+            column="5"/>
+    </issue>
+
+    <issue
+        id="PluralsCandidate"
+        message="Formatting %d followed by words (&quot;seconds&quot;): This should probably be a plural rather than a string"
+        errorLine1="    &lt;string name=&quot;routing_settings_latency_test_timeout_s&quot;>%d seconds&lt;/string>"
+        errorLine2="    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
+        <location
+            file="src/main/res/values-en/strings.xml"
+            line="170"
+            column="5"/>
+    </issue>
+
+    <issue
+        id="PluralsCandidate"
+        message="Formatting %d followed by words (&quot;rules&quot;): This should probably be a plural rather than a string"
+        errorLine1="    &lt;string name=&quot;routing_settings_app_routing_rules&quot;>%d rules&lt;/string>"
+        errorLine2="    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
+        <location
+            file="src/main/res/values-en/strings.xml"
+            line="180"
+            column="5"/>
+    </issue>
+
+    <issue
+        id="PluralsCandidate"
+        message="Formatting %d followed by words (&quot;configured&quot;): This should probably be a plural rather than a string"
+        errorLine1="    &lt;string name=&quot;tun_settings_route_cidrs_configured&quot;>%d configured&lt;/string>"
+        errorLine2="    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
+        <location
+            file="src/main/res/values-en/strings.xml"
+            line="209"
+            column="5"/>
+    </issue>
+
+    <issue
+        id="PluralsCandidate"
+        message="Formatting %d followed by words (&quot;configured&quot;): This should probably be a plural rather than a string"
+        errorLine1="    &lt;string name=&quot;tun_settings_allowlist_configured&quot;>%d configured&lt;/string>"
+        errorLine2="    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
+        <location
+            file="src/main/res/values-en/strings.xml"
+            line="212"
+            column="5"/>
+    </issue>
+
+    <issue
+        id="PluralsCandidate"
+        message="Formatting %d followed by words (&quot;configured&quot;): This should probably be a plural rather than a string"
+        errorLine1="    &lt;string name=&quot;tun_settings_blocklist_configured&quot;>%d configured&lt;/string>"
+        errorLine2="    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
+        <location
+            file="src/main/res/values-en/strings.xml"
+            line="214"
+            column="5"/>
+    </issue>
+
+    <issue
+        id="PluralsCandidate"
+        message="Formatting %d followed by words (&quot;nodes&quot;): This should probably be a plural rather than a string"
+        errorLine1="    &lt;string name=&quot;custom_profile_selected_nodes&quot;>%d nodes total&lt;/string>"
+        errorLine2="    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
+        <location
+            file="src/main/res/values-en/strings.xml"
+            line="284"
+            column="5"/>
+    </issue>
+
+    <issue
+        id="PluralsCandidate"
+        message="Formatting %d followed by words (&quot;success&quot;): This should probably be a plural rather than a string"
+        errorLine1="    &lt;string name=&quot;nodes_test_complete_stats&quot;>Test complete: %1$d success, %2$d timeout&lt;/string>"
+        errorLine2="    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
+        <location
+            file="src/main/res/values-en/strings.xml"
+            line="334"
+            column="5"/>
+    </issue>
+
+    <issue
+        id="PluralsCandidate"
+        message="Formatting %d followed by words (&quot;success&quot;): This should probably be a plural rather than a string"
+        errorLine1="    &lt;string name=&quot;nodes_test_complete_stats_v6&quot;>Test complete: %1$d success, %2$d timeout, %3$d IPv6 only&lt;/string>"
+        errorLine2="    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
+        <location
+            file="src/main/res/values-en/strings.xml"
+            line="335"
+            column="5"/>
+    </issue>
+
+    <issue
+        id="PluralsCandidate"
+        message="Formatting %d followed by words (&quot;selected&quot;): This should probably be a plural rather than a string"
+        errorLine1="    &lt;string name=&quot;rulesets_delete_batch_confirm&quot;>Are you sure you want to delete %d selected rule sets?&lt;/string>"
+        errorLine2="    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
+        <location
+            file="src/main/res/values-en/strings.xml"
+            line="474"
+            column="5"/>
+    </issue>
+
+    <issue
+        id="PluralsCandidate"
+        message="Formatting %d followed by words (&quot;nodes&quot;): This should probably be a plural rather than a string"
+        errorLine1="    &lt;string name=&quot;rulesets_nodes_count&quot;>%d nodes&lt;/string>"
+        errorLine2="    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
+        <location
+            file="src/main/res/values-en/strings.xml"
+            line="486"
+            column="5"/>
+    </issue>
+
+    <issue
+        id="PluralsCandidate"
+        message="Formatting %d followed by words (&quot;apps&quot;): This should probably be a plural rather than a string"
+        errorLine1="    &lt;string name=&quot;app_groups_delete_confirm&quot;>Are you sure you want to delete \&quot;%1$s\&quot; group? Contains %2$d apps.&lt;/string>"
+        errorLine2="    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
+        <location
+            file="src/main/res/values-en/strings.xml"
+            line="512"
+            column="5"/>
+    </issue>
+
+    <issue
+        id="PluralsCandidate"
+        message="Formatting %d followed by words (&quot;records&quot;): This should probably be a plural rather than a string"
+        errorLine1="    &lt;string name=&quot;diagnostics_resource_sampling_active&quot;>Sampling, %1$d records captured&lt;/string>"
+        errorLine2="    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
+        <location
+            file="src/main/res/values-en/strings.xml"
+            line="564"
+            column="5"/>
+    </issue>
+
+    <issue
+        id="PluralsCandidate"
+        message="Formatting %d followed by words (&quot;records&quot;): This should probably be a plural rather than a string"
+        errorLine1="    &lt;string name=&quot;diagnostics_resource_sampling_stopped&quot;>Stopped, %1$d records retained&lt;/string>"
+        errorLine2="    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
+        <location
+            file="src/main/res/values-en/strings.xml"
+            line="565"
+            column="5"/>
+    </issue>
+
+    <issue
+        id="PluralsCandidate"
+        message="Formatting %d followed by words (&quot;items&quot;): This should probably be a plural rather than a string"
+        errorLine1="    &lt;string name=&quot;import_count_items&quot;>%d items&lt;/string>"
+        errorLine2="    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
+        <location
+            file="src/main/res/values-en/strings.xml"
+            line="616"
+            column="5"/>
+    </issue>
+
+    <issue
+        id="PluralsCandidate"
+        message="Formatting %d followed by words (&quot;profiles&quot;): This should probably be a plural rather than a string"
+        errorLine1="    &lt;string name=&quot;import_success_detail&quot;>Imported: %1$d profiles, %2$d nodes&lt;/string>"
+        errorLine2="    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
+        <location
+            file="src/main/res/values-en/strings.xml"
+            line="620"
+            column="5"/>
+    </issue>
+
+    <issue
+        id="PluralsCandidate"
+        message="Formatting %d followed by words (&quot;apps&quot;): This should probably be a plural rather than a string"
+        errorLine1="    &lt;string name=&quot;app_list_loaded&quot;>Loaded %1$d / %2$d apps&lt;/string>"
+        errorLine2="    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
+        <location
+            file="src/main/res/values-en/strings.xml"
+            line="624"
+            column="5"/>
+    </issue>
+
+    <issue
+        id="PluralsCandidate"
+        message="Formatting %d followed by words (&quot;subscriptions&quot;): This should probably be a plural rather than a string"
+        errorLine1="    &lt;string name=&quot;update_status_success_changes&quot;>Update successful, %d subscriptions changed&lt;/string>"
+        errorLine2="    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
+        <location
+            file="src/main/res/values-en/strings.xml"
+            line="761"
+            column="5"/>
+    </issue>
+
+    <issue
+        id="PluralsCandidate"
+        message="Formatting %d followed by words (&quot;successful&quot;): This should probably be a plural rather than a string"
+        errorLine1="    &lt;string name=&quot;update_status_partial&quot;>Update complete, %1$d successful, %2$d failed&lt;/string>"
+        errorLine2="    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
+        <location
+            file="src/main/res/values-en/strings.xml"
+            line="763"
+            column="5"/>
+    </issue>
+
+    <issue
+        id="PluralsCandidate"
+        message="Formatting %d followed by words (&quot;nodes&quot;): This should probably be a plural rather than a string"
+        errorLine1="    &lt;string name=&quot;subscription_update_success_with_changes&quot;>Update successful (%1$s, %2$d nodes)&lt;/string>"
+        errorLine2="    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
+        <location
+            file="src/main/res/values-en/strings.xml"
+            line="788"
+            column="5"/>
+    </issue>
+
+    <issue
+        id="PluralsCandidate"
+        message="Formatting %d followed by words (&quot;nodes&quot;): This should probably be a plural rather than a string"
+        errorLine1="    &lt;string name=&quot;subscription_update_success_no_changes&quot;>Update complete, no changes (%d nodes)&lt;/string>"
+        errorLine2="    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
+        <location
+            file="src/main/res/values-en/strings.xml"
+            line="789"
+            column="5"/>
+    </issue>
+
+    <issue
+        id="PluralsCandidate"
+        message="Formatting %d followed by words (&quot;selected&quot;): This should probably be a plural rather than a string"
+        errorLine1="    &lt;string name=&quot;rulesets_selection_mode&quot;>%d selected&lt;/string>"
+        errorLine2="    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
+        <location
+            file="src/main/res/values-en/strings.xml"
+            line="800"
+            column="5"/>
+    </issue>
+
+    <issue
+        id="ChromeOsAbiSupport"
+        message="Missing x86_64 ABI support for ChromeOS"
+        errorLine1="            include(*apkAbis.toTypedArray())"
+        errorLine2="                     ~~~~~~~~~~~~~~~~~~~~~~">
+        <location
+            file="build.gradle.kts"
+            line="345"
+            column="22"/>
+    </issue>
+
+    <issue
+        id="WakelockTimeout"
+        message="Provide a timeout when requesting a wakelock with `PowerManager.Wakelock.acquire(long timeout)`. This will ensure the OS will cleanup any wakelocks that last longer than you intend, and will save your user&apos;s battery."
+        errorLine1="        wakeLock?.acquire()"
+        errorLine2="        ~~~~~~~~~~~~~~~~~~~">
+        <location
+            file="src/main/java/com/mubox/app/service/manager/CoreManager.kt"
+            line="231"
+            column="9"/>
+    </issue>
+
+    <issue
+        id="StaticFieldLeak"
+        message="Do not place Android context classes in static fields (static reference to `ConfigRepository` which has field `context` pointing to `Context`); this is a memory leak"
+        errorLine1="        @Volatile"
+        errorLine2="        ^">
+        <location
+            file="src/main/java/com/mubox/app/repository/ConfigRepository.kt"
+            line="312"
+            column="9"/>
+    </issue>
+
+    <issue
+        id="StaticFieldLeak"
+        message="Do not place Android context classes in static fields (static reference to `DataExportRepository` which has field `context` pointing to `Context`); this is a memory leak"
+        errorLine1="        @Volatile"
+        errorLine2="        ^">
+        <location
+            file="src/main/java/com/mubox/app/repository/DataExportRepository.kt"
+            line="30"
+            column="9"/>
+    </issue>
+
+    <issue
+        id="StaticFieldLeak"
+        message="Do not place Android context classes in static fields (static reference to `InstalledAppsRepository` which has field `context` pointing to `Context`); this is a memory leak"
+        errorLine1="        @Volatile"
+        errorLine2="        ^">
+        <location
+            file="src/main/java/com/mubox/app/repository/InstalledAppsRepository.kt"
+            line="328"
+            column="9"/>
+    </issue>
+
+    <issue
+        id="StaticFieldLeak"
+        message="Do not place Android context classes in static fields (static reference to `RootServiceConnection` which has field `context` pointing to `Context`); this is a memory leak"
+        errorLine1="    @Volatile"
+        errorLine2="    ^">
+        <location
+            file="src/main/java/com/mubox/app/service/root/RootServiceConnection.kt"
+            line="158"
+            column="5"/>
+    </issue>
+
+    <issue
+        id="StaticFieldLeak"
+        message="Do not place Android context classes in static fields (static reference to `RuleSetRepository` which has field `context` pointing to `Context`); this is a memory leak"
+        errorLine1="        @Volatile"
+        errorLine2="        ^">
+        <location
+            file="src/main/java/com/mubox/app/repository/RuleSetRepository.kt"
+            line="47"
+            column="9"/>
+    </issue>
+
+    <issue
+        id="StaticFieldLeak"
+        message="Do not place Android context classes in static fields (static reference to `SettingsRepository` which has field `context` pointing to `Context`); this is a memory leak"
+        errorLine1="        @Volatile"
+        errorLine2="        ^">
+        <location
+            file="src/main/java/com/mubox/app/repository/SettingsRepository.kt"
+            line="731"
+            column="9"/>
+    </issue>
+
+    <issue
+        id="StaticFieldLeak"
+        message="Do not place Android context classes in static fields (static reference to `SingBoxCore` which has field `context` pointing to `Context`); this is a memory leak"
+        errorLine1="        @Volatile"
+        errorLine2="        ^">
+        <location
+            file="src/main/java/com/mubox/app/core/SingBoxCore.kt"
+            line="161"
+            column="9"/>
+    </issue>
+
+    <issue
+        id="StaticFieldLeak"
+        message="Do not place Android context classes in static fields (static reference to `TrafficRepository` which has field `context` pointing to `Context`); this is a memory leak"
+        errorLine1="        @Volatile"
+        errorLine2="        ^">
+        <location
+            file="src/main/java/com/mubox/app/repository/TrafficRepository.kt"
+            line="489"
+            column="9"/>
+    </issue>
+
+    <issue
+        id="MergeRootFrame"
+        message="This `&lt;FrameLayout>` can be replaced with a `&lt;merge>` tag"
+        errorLine1="&lt;FrameLayout xmlns:android=&quot;http://schemas.android.com/apk/res/android&quot;"
+        errorLine2="^">
+        <location
+            file="src/main/res/layout/activity_qr_scanner.xml"
+            line="2"
+            column="1"/>
+    </issue>
+
+    <issue
+        id="UnusedResources"
+        message="The resource `R.string.dashboard_latency_test_confirm` appears to be unused"
+        errorLine1="    &lt;string name=&quot;dashboard_latency_test_confirm&quot;>确定要测试所有节点延迟吗？&lt;/string>"
+        errorLine2="            ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
+        <location
+            file="src/main/res/values/strings.xml"
+            line="77"
+            column="13"/>
+    </issue>
+
+    <issue
+        id="UnusedResources"
+        message="The resource `R.string.dashboard_start_test` appears to be unused"
+        errorLine1="    &lt;string name=&quot;dashboard_start_test&quot;>开始测试&lt;/string>"
+        errorLine2="            ~~~~~~~~~~~~~~~~~~~~~~~~~~~">
+        <location
+            file="src/main/res/values/strings.xml"
+            line="78"
+            column="13"/>
+    </issue>
+
+    <issue
+        id="UnusedResources"
+        message="The resource `R.string.dashboard_logs` appears to be unused"
+        errorLine1="    &lt;string name=&quot;dashboard_logs&quot;>运行日志&lt;/string>"
+        errorLine2="            ~~~~~~~~~~~~~~~~~~~~~">
+        <location
+            file="src/main/res/values/strings.xml"
+            line="79"
+            column="13"/>
+    </issue>
+
+    <issue
+        id="UnusedResources"
+        message="The resource `R.string.dashboard_diagnostics` appears to be unused"
+        errorLine1="    &lt;string name=&quot;dashboard_diagnostics&quot;>网络诊断&lt;/string>"
+        errorLine2="            ~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
+        <location
+            file="src/main/res/values/strings.xml"
+            line="80"
+            column="13"/>
+    </issue>
+
+    <issue
+        id="UnusedResources"
+        message="The resource `R.string.tun_settings_enable` appears to be unused"
+        errorLine1="    &lt;string name=&quot;tun_settings_enable&quot;>启用 TUN&lt;/string>"
+        errorLine2="            ~~~~~~~~~~~~~~~~~~~~~~~~~~">
+        <location
+            file="src/main/res/values/strings.xml"
+            line="186"
+            column="13"/>
+    </issue>
+
+    <issue
+        id="UnusedResources"
+        message="The resource `R.string.tun_settings_enable_subtitle` appears to be unused"
+        errorLine1="    &lt;string name=&quot;tun_settings_enable_subtitle&quot;>开启后接管系统流量和经典 DNS；关闭后仅提供本地代理，系统 DNS 不受保护&lt;/string>"
+        errorLine2="            ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
+        <location
+            file="src/main/res/values/strings.xml"
+            line="187"
+            column="13"/>
+    </issue>
+
+    <issue
+        id="UnusedResources"
+        message="The resource `R.string.root_mode_running` appears to be unused"
+        errorLine1="    &lt;string name=&quot;root_mode_running&quot;>Root 透明代理运行中&lt;/string>"
+        errorLine2="            ~~~~~~~~~~~~~~~~~~~~~~~~">
+        <location
+            file="src/main/res/values/strings.xml"
+            line="194"
+            column="13"/>
+    </issue>
+
+    <issue
+        id="UnusedResources"
+        message="The resource `R.string.tun_settings_follow_new_apps_subtitle` appears to be unused"
+        errorLine1="    &lt;string name=&quot;tun_settings_follow_new_apps_subtitle&quot;>仅允许模式自动加入仅允许列表；排除模式自动加入排除列表&lt;/string>"
+        errorLine2="            ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
+        <location
+            file="src/main/res/values/strings.xml"
+            line="216"
+            column="13"/>
+    </issue>
+
+    <issue
+        id="UnusedResources"
+        message="The resource `R.string.rulesets_select_target` appears to be unused"
+        errorLine1="    &lt;string name=&quot;rulesets_select_target&quot;>选择目标&lt;/string>"
+        errorLine2="            ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
+        <location
+            file="src/main/res/values/strings.xml"
+            line="262"
+            column="13"/>
+    </issue>
+
+    <issue
+        id="UnusedResources"
+        message="The resource `R.string.node_detail_encryption` appears to be unused"
+        errorLine1="    &lt;string name=&quot;node_detail_encryption&quot;>加密方式&lt;/string>"
+        errorLine2="            ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
+        <location
+            file="src/main/res/values/strings.xml"
+            line="374"
+            column="13"/>
+    </issue>
+
+    <issue
+        id="UnusedResources"
+        message="The resource `R.string.node_detail_plugin_options` appears to be unused"
+        errorLine1="    &lt;string name=&quot;node_detail_plugin_options&quot;>插件参数&lt;/string>"
+        errorLine2="            ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
+        <location
+            file="src/main/res/values/strings.xml"
+            line="376"
+            column="13"/>
+    </issue>
+
+    <issue
+        id="UnusedResources"
+        message="The resource `R.string.node_detail_congestion_control` appears to be unused"
+        errorLine1="    &lt;string name=&quot;node_detail_congestion_control&quot;>拥塞控制&lt;/string>"
+        errorLine2="            ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
+        <location
+            file="src/main/res/values/strings.xml"
+            line="380"
+            column="13"/>
+    </issue>
+
+    <issue
+        id="UnusedResources"
+        message="The resource `R.string.node_detail_username` appears to be unused"
+        errorLine1="    &lt;string name=&quot;node_detail_username&quot;>用户名&lt;/string>"
+        errorLine2="            ~~~~~~~~~~~~~~~~~~~~~~~~~~~">
+        <location
+            file="src/main/res/values/strings.xml"
+            line="381"
+            column="13"/>
+    </issue>
+
+    <issue
+        id="UnusedResources"
+        message="The resource `R.string.node_detail_private_key` appears to be unused"
+        errorLine1="    &lt;string name=&quot;node_detail_private_key&quot;>私钥&lt;/string>"
+        errorLine2="            ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
+        <location
+            file="src/main/res/values/strings.xml"
+            line="382"
+            column="13"/>
+    </issue>
+
+    <issue
+        id="UnusedResources"
+        message="The resource `R.string.node_detail_auth_string` appears to be unused"
+        errorLine1="    &lt;string name=&quot;node_detail_auth_string&quot;>认证字符串&lt;/string>"
+        errorLine2="            ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
+        <location
+            file="src/main/res/values/strings.xml"
+            line="386"
+            column="13"/>
+    </issue>
+
+    <issue
+        id="UnusedResources"
+        message="The resource `R.string.node_detail_plugin` appears to be unused"
+        errorLine1="    &lt;string name=&quot;node_detail_plugin&quot;>插件 (可选)&lt;/string>"
+        errorLine2="            ~~~~~~~~~~~~~~~~~~~~~~~~~">
+        <location
+            file="src/main/res/values/strings.xml"
+            line="396"
+            column="13"/>
+    </issue>
+
+    <issue
+        id="UnusedResources"
+        message="The resource `R.string.node_detail_udp_over_tcp` appears to be unused"
+        errorLine1="    &lt;string name=&quot;node_detail_udp_over_tcp&quot;>UDP over TCP&lt;/string>"
+        errorLine2="            ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
+        <location
+            file="src/main/res/values/strings.xml"
+            line="397"
+            column="13"/>
+    </issue>
+
+    <issue
+        id="UnusedResources"
+        message="The resource `R.string.node_detail_udp_relay_mode` appears to be unused"
+        errorLine1="    &lt;string name=&quot;node_detail_udp_relay_mode&quot;>UDP 中继模式&lt;/string>"
+        errorLine2="            ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
+        <location
+            file="src/main/res/values/strings.xml"
+            line="403"
+            column="13"/>
+    </issue>
+
+    <issue
+        id="UnusedResources"
+        message="The resource `R.string.node_detail_heartbeat` appears to be unused"
+        errorLine1="    &lt;string name=&quot;node_detail_heartbeat&quot;>心跳&lt;/string>"
+        errorLine2="            ~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
+        <location
+            file="src/main/res/values/strings.xml"
+            line="404"
+            column="13"/>
+    </issue>
+
+    <issue
+        id="UnusedResources"
+        message="The resource `R.string.node_detail_zero_rtt` appears to be unused"
+        errorLine1="    &lt;string name=&quot;node_detail_zero_rtt&quot;>Zero RTT&lt;/string>"
+        errorLine2="            ~~~~~~~~~~~~~~~~~~~~~~~~~~~">
+        <location
+            file="src/main/res/values/strings.xml"
+            line="405"
+            column="13"/>
+    </issue>
+
+    <issue
+        id="UnusedResources"
+        message="The resource `R.string.node_detail_insecure_concurrency` appears to be unused"
+        errorLine1="    &lt;string name=&quot;node_detail_insecure_concurrency&quot;>不安全并发&lt;/string>"
+        errorLine2="            ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
+        <location
+            file="src/main/res/values/strings.xml"
+            line="408"
+            column="13"/>
+    </issue>
+
+    <issue
+        id="UnusedResources"
+        message="The resource `R.string.node_detail_extra_headers` appears to be unused"
+        errorLine1="    &lt;string name=&quot;node_detail_extra_headers&quot;>额外请求头&lt;/string>"
+        errorLine2="            ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
+        <location
+            file="src/main/res/values/strings.xml"
+            line="409"
+            column="13"/>
+    </issue>
+
+    <issue
+        id="UnusedResources"
+        message="The resource `R.string.node_detail_extra_headers_hint` appears to be unused"
+        errorLine1="    &lt;string name=&quot;node_detail_extra_headers_hint&quot;>每行一个请求头，格式：Key: Value&lt;/string>"
+        errorLine2="            ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
+        <location
+            file="src/main/res/values/strings.xml"
+            line="410"
+            column="13"/>
+    </issue>
+
+    <issue
+        id="UnusedResources"
+        message="The resource `R.string.node_detail_peer_public_key` appears to be unused"
+        errorLine1="    &lt;string name=&quot;node_detail_peer_public_key&quot;>对端公钥&lt;/string>"
+        errorLine2="            ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
+        <location
+            file="src/main/res/values/strings.xml"
+            line="411"
+            column="13"/>
+    </issue>
+
+    <issue
+        id="UnusedResources"
+        message="The resource `R.string.node_detail_pre_shared_key` appears to be unused"
+        errorLine1="    &lt;string name=&quot;node_detail_pre_shared_key&quot;>预共享密钥&lt;/string>"
+        errorLine2="            ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
+        <location
+            file="src/main/res/values/strings.xml"
+            line="412"
+            column="13"/>
+    </issue>
+
+    <issue
+        id="UnusedResources"
+        message="The resource `R.string.node_detail_local_address` appears to be unused"
+        errorLine1="    &lt;string name=&quot;node_detail_local_address&quot;>本地地址 (CIDR)&lt;/string>"
+        errorLine2="            ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
+        <location
+            file="src/main/res/values/strings.xml"
+            line="413"
+            column="13"/>
+    </issue>
+
+    <issue
+        id="UnusedResources"
+        message="The resource `R.string.node_detail_allowed_ips` appears to be unused"
+        errorLine1="    &lt;string name=&quot;node_detail_allowed_ips&quot;>AllowedIPs&lt;/string>"
+        errorLine2="            ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
+        <location
+            file="src/main/res/values/strings.xml"
+            line="414"
+            column="13"/>
+    </issue>
+
+    <issue
+        id="UnusedResources"
+        message="The resource `R.string.node_detail_persistent_keepalive` appears to be unused"
+        errorLine1="    &lt;string name=&quot;node_detail_persistent_keepalive&quot;>Keepalive (秒)&lt;/string>"
+        errorLine2="            ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
+        <location
+            file="src/main/res/values/strings.xml"
+            line="415"
+            column="13"/>
+    </issue>
+
+    <issue
+        id="UnusedResources"
+        message="The resource `R.string.node_detail_mtu` appears to be unused"
+        errorLine1="    &lt;string name=&quot;node_detail_mtu&quot;>MTU&lt;/string>"
+        errorLine2="            ~~~~~~~~~~~~~~~~~~~~~~">
+        <location
+            file="src/main/res/values/strings.xml"
+            line="416"
+            column="13"/>
+    </issue>
+
+    <issue
+        id="UnusedResources"
+        message="The resource `R.string.node_detail_reserved` appears to be unused"
+        errorLine1="    &lt;string name=&quot;node_detail_reserved&quot;>Reserved (WARP)&lt;/string>"
+        errorLine2="            ~~~~~~~~~~~~~~~~~~~~~~~~~~~">
+        <location
+            file="src/main/res/values/strings.xml"
+            line="417"
+            column="13"/>
+    </issue>
+
+    <issue
+        id="UnusedResources"
+        message="The resource `R.string.node_detail_passphrase` appears to be unused"
+        errorLine1="    &lt;string name=&quot;node_detail_passphrase&quot;>密码短语&lt;/string>"
+        errorLine2="            ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
+        <location
+            file="src/main/res/values/strings.xml"
+            line="418"
+            column="13"/>
+    </issue>
+
+    <issue
+        id="UnusedResources"
+        message="The resource `R.string.node_detail_host_key` appears to be unused"
+        errorLine1="    &lt;string name=&quot;node_detail_host_key&quot;>主机密钥&lt;/string>"
+        errorLine2="            ~~~~~~~~~~~~~~~~~~~~~~~~~~~">
+        <location
+            file="src/main/res/values/strings.xml"
+            line="419"
+            column="13"/>
+    </issue>
+
+    <issue
+        id="UnusedResources"
+        message="The resource `R.string.node_detail_hop_interval` appears to be unused"
+        errorLine1="    &lt;string name=&quot;node_detail_hop_interval&quot;>跳跃间隔 (秒)&lt;/string>"
+        errorLine2="            ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
+        <location
+            file="src/main/res/values/strings.xml"
+            line="423"
+            column="13"/>
+    </issue>
+
+    <issue
+        id="UnusedResources"
+        message="The resource `R.string.node_detail_ech_key` appears to be unused"
+        errorLine1="    &lt;string name=&quot;node_detail_ech_key&quot;>ECH 密钥 (Base64)&lt;/string>"
+        errorLine2="            ~~~~~~~~~~~~~~~~~~~~~~~~~~">
+        <location
+            file="src/main/res/values/strings.xml"
+            line="449"
+            column="13"/>
+    </issue>
+
+    <issue
+        id="UnusedResources"
+        message="The resource `R.string.node_detail_unknown_profile` appears to be unused"
+        errorLine1="    &lt;string name=&quot;node_detail_unknown_profile&quot;>未知配置 (%s)&lt;/string>"
+        errorLine2="            ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
+        <location
+            file="src/main/res/values/strings.xml"
+            line="468"
+            column="13"/>
+    </issue>
+
+    <issue
+        id="UnusedResources"
+        message="The resource `R.string.app_list_show_system` appears to be unused"
+        errorLine1="    &lt;string name=&quot;app_list_show_system&quot;>显示系统应用&lt;/string>"
+        errorLine2="            ~~~~~~~~~~~~~~~~~~~~~~~~~~~">
+        <location
+            file="src/main/res/values/strings.xml"
+            line="626"
+            column="13"/>
+    </issue>
+
+    <issue
+        id="UnusedResources"
+        message="The resource `R.string.app_list_show_no_launcher` appears to be unused"
+        errorLine1="    &lt;string name=&quot;app_list_show_no_launcher&quot;>显示无启动入口应用&lt;/string>"
+        errorLine2="            ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
+        <location
+            file="src/main/res/values/strings.xml"
+            line="627"
+            column="13"/>
+    </issue>
+
+    <issue
+        id="UnusedResources"
+        message="The resource `R.string.latency_test_url_test` appears to be unused"
+        errorLine1="    &lt;string name=&quot;latency_test_url_test&quot;>URL Test&lt;/string>"
+        errorLine2="            ~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
+        <location
+            file="src/main/res/values/strings.xml"
+            line="724"
+            column="13"/>
+    </issue>
+
+    <issue
+        id="UnusedResources"
+        message="The resource `R.string.node_switch_failed` appears to be unused"
+        errorLine1="    &lt;string name=&quot;node_switch_failed&quot;>切换到 %s 失败&lt;/string>"
+        errorLine2="            ~~~~~~~~~~~~~~~~~~~~~~~~~">
+        <location
+            file="src/main/res/values/strings.xml"
+            line="782"
+            column="13"/>
+    </issue>
+
+    <issue
+        id="TypographyEllipsis"
+        message="Replace &quot;...&quot; with ellipsis character (…, &amp;#8230;) ?"
+        errorLine1="    &lt;string name=&quot;common_loading&quot;>Loading...&lt;/string>"
+        errorLine2="                                  ~~~~~~~~~~">
+        <location
+            file="src/main/res/values-en/strings.xml"
+            line="48"
+            column="35"/>
+    </issue>
+
+    <issue
+        id="TypographyEllipsis"
+        message="Replace &quot;...&quot; with ellipsis character (…, &amp;#8230;) ?"
+        errorLine1="    &lt;string name=&quot;common_loading&quot;>加载中...&lt;/string>"
+        errorLine2="                                  ~~~~~~">
+        <location
+            file="src/main/res/values-zh/strings.xml"
+            line="48"
+            column="35"/>
+    </issue>
+
+    <issue
+        id="TypographyEllipsis"
+        message="Replace &quot;...&quot; with ellipsis character (…, &amp;#8230;) ?"
+        errorLine1="    &lt;string name=&quot;common_loading&quot;>加载中...&lt;/string>"
+        errorLine2="                                  ~~~~~~">
+        <location
+            file="src/main/res/values/strings.xml"
+            line="48"
+            column="35"/>
+    </issue>
+
+    <issue
+        id="TypographyEllipsis"
+        message="Replace &quot;...&quot; with ellipsis character (…, &amp;#8230;) ?"
+        errorLine1="    &lt;string name=&quot;connection_connecting&quot;>Connecting...&lt;/string>"
+        errorLine2="                                         ~~~~~~~~~~~~~">
+        <location
+            file="src/main/res/values-en/strings.xml"
+            line="67"
+            column="42"/>
+    </issue>
+
+    <issue
+        id="TypographyEllipsis"
+        message="Replace &quot;...&quot; with ellipsis character (…, &amp;#8230;) ?"
+        errorLine1="    &lt;string name=&quot;connection_connecting&quot;>连接中...&lt;/string>"
+        errorLine2="                                         ~~~~~~">
+        <location
+            file="src/main/res/values-zh/strings.xml"
+            line="67"
+            column="42"/>
+    </issue>
+
+    <issue
+        id="TypographyEllipsis"
+        message="Replace &quot;...&quot; with ellipsis character (…, &amp;#8230;) ?"
+        errorLine1="    &lt;string name=&quot;connection_connecting&quot;>连接中...&lt;/string>"
+        errorLine2="                                         ~~~~~~">
+        <location
+            file="src/main/res/values/strings.xml"
+            line="67"
+            column="42"/>
+    </issue>
+
+    <issue
+        id="TypographyEllipsis"
+        message="Replace &quot;...&quot; with ellipsis character (…, &amp;#8230;) ?"
+        errorLine1="    &lt;string name=&quot;connection_disconnecting&quot;>Disconnecting...&lt;/string>"
+        errorLine2="                                            ~~~~~~~~~~~~~~~~">
+        <location
+            file="src/main/res/values-en/strings.xml"
+            line="69"
+            column="45"/>
+    </issue>
+
+    <issue
+        id="TypographyEllipsis"
+        message="Replace &quot;...&quot; with ellipsis character (…, &amp;#8230;) ?"
+        errorLine1="    &lt;string name=&quot;connection_disconnecting&quot;>断开中...&lt;/string>"
+        errorLine2="                                            ~~~~~~">
+        <location
+            file="src/main/res/values-zh/strings.xml"
+            line="69"
+            column="45"/>
+    </issue>
+
+    <issue
+        id="TypographyEllipsis"
+        message="Replace &quot;...&quot; with ellipsis character (…, &amp;#8230;) ?"
+        errorLine1="    &lt;string name=&quot;connection_disconnecting&quot;>断开中...&lt;/string>"
+        errorLine2="                                            ~~~~~~">
+        <location
+            file="src/main/res/values/strings.xml"
+            line="69"
+            column="45"/>
+    </issue>
+
+    <issue
+        id="TypographyEllipsis"
+        message="Replace &quot;...&quot; with ellipsis character (…, &amp;#8230;) ?"
+        errorLine1="    &lt;string name=&quot;settings_updating&quot;>Downloading...&lt;/string>"
+        errorLine2="                                     ~~~~~~~~~~~~~~">
+        <location
+            file="src/main/res/values-en/strings.xml"
+            line="116"
+            column="38"/>
+    </issue>
+
+    <issue
+        id="TypographyEllipsis"
+        message="Replace &quot;...&quot; with ellipsis character (…, &amp;#8230;) ?"
+        errorLine1="    &lt;string name=&quot;settings_updating&quot;>正在下载...&lt;/string>"
+        errorLine2="                                     ~~~~~~~">
+        <location
+            file="src/main/res/values-zh/strings.xml"
+            line="116"
+            column="38"/>
+    </issue>
+
+    <issue
+        id="TypographyEllipsis"
+        message="Replace &quot;...&quot; with ellipsis character (…, &amp;#8230;) ?"
+        errorLine1="    &lt;string name=&quot;settings_updating&quot;>正在下载...&lt;/string>"
+        errorLine2="                                     ~~~~~~~">
+        <location
+            file="src/main/res/values/strings.xml"
+            line="116"
+            column="38"/>
+    </issue>
+
+    <issue
+        id="TypographyEllipsis"
+        message="Replace &quot;...&quot; with ellipsis character (…, &amp;#8230;) ?"
+        errorLine1="    &lt;string name=&quot;settings_preparing_update&quot;>Preparing update...&lt;/string>"
+        errorLine2="                                             ~~~~~~~~~~~~~~~~~~~">
+        <location
+            file="src/main/res/values-en/strings.xml"
+            line="117"
+            column="46"/>
+    </issue>
+
+    <issue
+        id="TypographyEllipsis"
+        message="Replace &quot;...&quot; with ellipsis character (…, &amp;#8230;) ?"
+        errorLine1="    &lt;string name=&quot;settings_preparing_update&quot;>准备更新...&lt;/string>"
+        errorLine2="                                             ~~~~~~~">
+        <location
+            file="src/main/res/values-zh/strings.xml"
+            line="117"
+            column="46"/>
+    </issue>
+
+    <issue
+        id="TypographyEllipsis"
+        message="Replace &quot;...&quot; with ellipsis character (…, &amp;#8230;) ?"
+        errorLine1="    &lt;string name=&quot;settings_preparing_update&quot;>准备更新...&lt;/string>"
+        errorLine2="                                             ~~~~~~~">
+        <location
+            file="src/main/res/values/strings.xml"
+            line="117"
+            column="46"/>
+    </issue>
+
+    <issue
+        id="TypographyEllipsis"
+        message="Replace &quot;...&quot; with ellipsis character (…, &amp;#8230;) ?"
+        errorLine1="    &lt;string name=&quot;profiles_search_hint&quot;>Enter keyword...&lt;/string>"
+        errorLine2="                                        ~~~~~~~~~~~~~~~~">
+        <location
+            file="src/main/res/values-en/strings.xml"
+            line="246"
+            column="41"/>
+    </issue>
+
+    <issue
+        id="TypographyEllipsis"
+        message="Replace &quot;...&quot; with ellipsis character (…, &amp;#8230;) ?"
+        errorLine1="    &lt;string name=&quot;profiles_search_hint&quot;>输入关键词...&lt;/string>"
+        errorLine2="                                        ~~~~~~~~">
+        <location
+            file="src/main/res/values-zh/strings.xml"
+            line="246"
+            column="41"/>
+    </issue>
+
+    <issue
+        id="TypographyEllipsis"
+        message="Replace &quot;...&quot; with ellipsis character (…, &amp;#8230;) ?"
+        errorLine1="    &lt;string name=&quot;profiles_search_hint&quot;>输入关键词...&lt;/string>"
+        errorLine2="                                        ~~~~~~~~">
+        <location
+            file="src/main/res/values/strings.xml"
+            line="246"
+            column="41"/>
+    </issue>
+
+    <issue
+        id="TypographyEllipsis"
+        message="Replace &quot;...&quot; with ellipsis character (…, &amp;#8230;) ?"
+        errorLine1="    &lt;string name=&quot;rulesets_tap_to_select&quot;>点击选择...&lt;/string>"
+        errorLine2="                                          ~~~~~~~">
+        <location
+            file="src/main/res/values-zh/strings.xml"
+            line="263"
+            column="43"/>
+    </issue>
+
+    <issue
+        id="TypographyEllipsis"
+        message="Replace &quot;...&quot; with ellipsis character (…, &amp;#8230;) ?"
+        errorLine1="    &lt;string name=&quot;rulesets_tap_to_select&quot;>点击选择...&lt;/string>"
+        errorLine2="                                          ~~~~~~~">
+        <location
+            file="src/main/res/values/strings.xml"
+            line="263"
+            column="43"/>
+    </issue>
+
+    <issue
+        id="TypographyEllipsis"
+        message="Replace &quot;...&quot; with ellipsis character (…, &amp;#8230;) ?"
+        errorLine1="    &lt;string name=&quot;subscription_import_fetching&quot;>Fetching subscription content...&lt;/string>"
+        errorLine2="                                                ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
+        <location
+            file="src/main/res/values-en/strings.xml"
+            line="273"
+            column="49"/>
+    </issue>
+
+    <issue
+        id="TypographyEllipsis"
+        message="Replace &quot;...&quot; with ellipsis character (…, &amp;#8230;) ?"
+        errorLine1="    &lt;string name=&quot;subscription_import_requesting&quot;>Trying subscription request with User-Agent (%1$d/%2$d)...&lt;/string>"
+        errorLine2="                                                  ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
+        <location
+            file="src/main/res/values-en/strings.xml"
+            line="274"
+            column="51"/>
+    </issue>
+
+    <issue
+        id="TypographyEllipsis"
+        message="Replace &quot;...&quot; with ellipsis character (…, &amp;#8230;) ?"
+        errorLine1="    &lt;string name=&quot;subscription_import_parsing&quot;>Parsing subscription response...&lt;/string>"
+        errorLine2="                                               ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
+        <location
+            file="src/main/res/values-en/strings.xml"
+            line="275"
+            column="48"/>
+    </issue>
+
+    <issue
+        id="TypographyEllipsis"
+        message="Replace &quot;...&quot; with ellipsis character (…, &amp;#8230;) ?"
+        errorLine1="    &lt;string name=&quot;subscription_import_fetching&quot;>正在获取订阅内容...&lt;/string>"
+        errorLine2="                                                ~~~~~~~~~~~">
+        <location
+            file="src/main/res/values-zh/strings.xml"
+            line="276"
+            column="49"/>
+    </issue>
+
+    <issue
+        id="TypographyEllipsis"
+        message="Replace &quot;...&quot; with ellipsis character (…, &amp;#8230;) ?"
+        errorLine1="    &lt;string name=&quot;subscription_import_fetching&quot;>正在获取订阅内容...&lt;/string>"
+        errorLine2="                                                ~~~~~~~~~~~">
+        <location
+            file="src/main/res/values/strings.xml"
+            line="276"
+            column="49"/>
+    </issue>
+
+    <issue
+        id="TypographyEllipsis"
+        message="Replace &quot;...&quot; with ellipsis character (…, &amp;#8230;) ?"
+        errorLine1="    &lt;string name=&quot;subscription_import_requesting&quot;>正在尝试订阅请求（User-Agent %1$d/%2$d）...&lt;/string>"
+        errorLine2="                                                  ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
+        <location
+            file="src/main/res/values-zh/strings.xml"
+            line="277"
+            column="51"/>
+    </issue>
+
+    <issue
+        id="TypographyEllipsis"
+        message="Replace &quot;...&quot; with ellipsis character (…, &amp;#8230;) ?"
+        errorLine1="    &lt;string name=&quot;subscription_import_requesting&quot;>正在尝试订阅请求（User-Agent %1$d/%2$d）...&lt;/string>"
+        errorLine2="                                                  ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
+        <location
+            file="src/main/res/values/strings.xml"
+            line="277"
+            column="51"/>
+    </issue>
+
+    <issue
+        id="TypographyEllipsis"
+        message="Replace &quot;...&quot; with ellipsis character (…, &amp;#8230;) ?"
+        errorLine1="    &lt;string name=&quot;subscription_import_parsing&quot;>正在解析订阅响应...&lt;/string>"
+        errorLine2="                                               ~~~~~~~~~~~">
+        <location
+            file="src/main/res/values-zh/strings.xml"
+            line="278"
+            column="48"/>
+    </issue>
+
+    <issue
+        id="TypographyEllipsis"
+        message="Replace &quot;...&quot; with ellipsis character (…, &amp;#8230;) ?"
+        errorLine1="    &lt;string name=&quot;subscription_import_parsing&quot;>正在解析订阅响应...&lt;/string>"
+        errorLine2="                                               ~~~~~~~~~~~">
+        <location
+            file="src/main/res/values/strings.xml"
+            line="278"
+            column="48"/>
+    </issue>
+
+    <issue
+        id="TypographyEllipsis"
+        message="Replace &quot;...&quot; with ellipsis character (…, &amp;#8230;) ?"
+        errorLine1="    &lt;string name=&quot;custom_profile_creating&quot;>Creating custom profile...&lt;/string>"
+        errorLine2="                                           ~~~~~~~~~~~~~~~~~~~~~~~~~~">
+        <location
+            file="src/main/res/values-en/strings.xml"
+            line="292"
+            column="44"/>
+    </issue>
+
+    <issue
+        id="TypographyEllipsis"
+        message="Replace &quot;...&quot; with ellipsis character (…, &amp;#8230;) ?"
+        errorLine1="    &lt;string name=&quot;custom_profile_creating&quot;>正在创建自定义配置...&lt;/string>"
+        errorLine2="                                           ~~~~~~~~~~~~">
+        <location
+            file="src/main/res/values-zh/strings.xml"
+            line="295"
+            column="44"/>
+    </issue>
+
+    <issue
+        id="TypographyEllipsis"
+        message="Replace &quot;...&quot; with ellipsis character (…, &amp;#8230;) ?"
+        errorLine1="    &lt;string name=&quot;custom_profile_creating&quot;>正在创建自定义配置...&lt;/string>"
+        errorLine2="                                           ~~~~~~~~~~~~">
+        <location
+            file="src/main/res/values/strings.xml"
+            line="295"
+            column="44"/>
+    </issue>
+
+    <issue
+        id="TypographyEllipsis"
+        message="Replace &quot;...&quot; with ellipsis character (…, &amp;#8230;) ?"
+        errorLine1="    &lt;string name=&quot;profiles_extracting_nodes&quot;>Extracting nodes (%1$d/%2$d)...&lt;/string>"
+        errorLine2="                                             ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
+        <location
+            file="src/main/res/values-en/strings.xml"
+            line="315"
+            column="46"/>
+    </issue>
+
+    <issue
+        id="TypographyEllipsis"
+        message="Replace &quot;...&quot; with ellipsis character (…, &amp;#8230;) ?"
+        errorLine1="    &lt;string name=&quot;profiles_extracting_nodes&quot;>正在提取节点 (%1$d/%2$d)...&lt;/string>"
+        errorLine2="                                             ~~~~~~~~~~~~~~~~~~~~~">
+        <location
+            file="src/main/res/values-zh/strings.xml"
+            line="318"
+            column="46"/>
+    </issue>
+
+    <issue
+        id="TypographyEllipsis"
+        message="Replace &quot;...&quot; with ellipsis character (…, &amp;#8230;) ?"
+        errorLine1="    &lt;string name=&quot;profiles_extracting_nodes&quot;>正在提取节点 (%1$d/%2$d)...&lt;/string>"
+        errorLine2="                                             ~~~~~~~~~~~~~~~~~~~~~">
+        <location
+            file="src/main/res/values/strings.xml"
+            line="318"
+            column="46"/>
+    </issue>
+
+    <issue
+        id="TypographyEllipsis"
+        message="Replace &quot;...&quot; with ellipsis character (…, &amp;#8230;) ?"
+        errorLine1="    &lt;string name=&quot;nodes_add_hint&quot;>Enter node link (vless://, trojan://, hysteria2://, etc)...&lt;/string>"
+        errorLine2="                                  ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
+        <location
+            file="src/main/res/values-en/strings.xml"
+            line="323"
+            column="35"/>
+    </issue>
+
+    <issue
+        id="TypographyEllipsis"
+        message="Replace &quot;...&quot; with ellipsis character (…, &amp;#8230;) ?"
+        errorLine1="    &lt;string name=&quot;nodes_add_new_profile_name_hint&quot;>Enter new profile name...&lt;/string>"
+        errorLine2="                                                   ~~~~~~~~~~~~~~~~~~~~~~~~~">
+        <location
+            file="src/main/res/values-en/strings.xml"
+            line="326"
+            column="52"/>
+    </issue>
+
+    <issue
+        id="TypographyEllipsis"
+        message="Replace &quot;...&quot; with ellipsis character (…, &amp;#8230;) ?"
+        errorLine1="    &lt;string name=&quot;nodes_add_hint&quot;>输入节点链接 (vless://, trojan://, hysteria2://, etc)...&lt;/string>"
+        errorLine2="                                  ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
+        <location
+            file="src/main/res/values-zh/strings.xml"
+            line="326"
+            column="35"/>
+    </issue>
+
+    <issue
+        id="TypographyEllipsis"
+        message="Replace &quot;...&quot; with ellipsis character (…, &amp;#8230;) ?"
+        errorLine1="    &lt;string name=&quot;nodes_add_hint&quot;>输入节点链接 (vless://, trojan://, hysteria2://, etc)...&lt;/string>"
+        errorLine2="                                  ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
+        <location
+            file="src/main/res/values/strings.xml"
+            line="326"
+            column="35"/>
+    </issue>
+
+    <issue
+        id="TypographyEllipsis"
+        message="Replace &quot;...&quot; with ellipsis character (…, &amp;#8230;) ?"
+        errorLine1="    &lt;string name=&quot;nodes_add_new_profile_name_hint&quot;>输入新配置名称...&lt;/string>"
+        errorLine2="                                                   ~~~~~~~~~~">
+        <location
+            file="src/main/res/values-zh/strings.xml"
+            line="329"
+            column="52"/>
+    </issue>
+
+    <issue
+        id="TypographyEllipsis"
+        message="Replace &quot;...&quot; with ellipsis character (…, &amp;#8230;) ?"
+        errorLine1="    &lt;string name=&quot;nodes_add_new_profile_name_hint&quot;>输入新配置名称...&lt;/string>"
+        errorLine2="                                                   ~~~~~~~~~~">
+        <location
+            file="src/main/res/values/strings.xml"
+            line="329"
+            column="52"/>
+    </issue>
+
+    <issue
+        id="TypographyEllipsis"
+        message="Replace &quot;...&quot; with ellipsis character (…, &amp;#8230;) ?"
+        errorLine1="    &lt;string name=&quot;nodes_testing_progress&quot;>Testing...&lt;/string>"
+        errorLine2="                                          ~~~~~~~~~~">
+        <location
+            file="src/main/res/values-en/strings.xml"
+            line="333"
+            column="43"/>
+    </issue>
+
+    <issue
+        id="TypographyEllipsis"
+        message="Replace &quot;...&quot; with ellipsis character (…, &amp;#8230;) ?"
+        errorLine1="    &lt;string name=&quot;nodes_testing_progress&quot;>测速中...&lt;/string>"
+        errorLine2="                                          ~~~~~~">
+        <location
+            file="src/main/res/values-zh/strings.xml"
+            line="336"
+            column="43"/>
+    </issue>
+
+    <issue
+        id="TypographyEllipsis"
+        message="Replace &quot;...&quot; with ellipsis character (…, &amp;#8230;) ?"
+        errorLine1="    &lt;string name=&quot;nodes_testing_progress&quot;>测速中...&lt;/string>"
+        errorLine2="                                          ~~~~~~">
+        <location
+            file="src/main/res/values/strings.xml"
+            line="336"
+            column="43"/>
+    </issue>
+
+    <issue
+        id="TypographyEllipsis"
+        message="Replace &quot;...&quot; with ellipsis character (…, &amp;#8230;) ?"
+        errorLine1="    &lt;string name=&quot;rulesets_tap_to_select&quot;>Tap to select...&lt;/string>"
+        errorLine2="                                          ~~~~~~~~~~~~~~~~">
+        <location
+            file="src/main/res/values-en/strings.xml"
+            line="480"
+            column="43"/>
+    </issue>
+
+    <issue
+        id="TypographyEllipsis"
+        message="Replace &quot;...&quot; with ellipsis character (…, &amp;#8230;) ?"
+        errorLine1="    &lt;string name=&quot;app_rules_click_to_select&quot;>Click to select...&lt;/string>"
+        errorLine2="                                             ~~~~~~~~~~~~~~~~~~">
+        <location
+            file="src/main/res/values-en/strings.xml"
+            line="505"
+            column="46"/>
+    </issue>
+
+    <issue
+        id="TypographyEllipsis"
+        message="Replace &quot;...&quot; with ellipsis character (…, &amp;#8230;) ?"
+        errorLine1="    &lt;string name=&quot;app_rules_click_to_select&quot;>点击选择...&lt;/string>"
+        errorLine2="                                             ~~~~~~~">
+        <location
+            file="src/main/res/values-zh/strings.xml"
+            line="505"
+            column="46"/>
+    </issue>
+
+    <issue
+        id="TypographyEllipsis"
+        message="Replace &quot;...&quot; with ellipsis character (…, &amp;#8230;) ?"
+        errorLine1="    &lt;string name=&quot;app_rules_click_to_select&quot;>点击选择...&lt;/string>"
+        errorLine2="                                             ~~~~~~~">
+        <location
+            file="src/main/res/values/strings.xml"
+            line="505"
+            column="46"/>
+    </issue>
+
+    <issue
+        id="TypographyEllipsis"
+        message="Replace &quot;...&quot; with ellipsis character (…, &amp;#8230;) ?"
+        errorLine1="    &lt;string name=&quot;diagnostics_view_config_loading&quot;>Generating...&lt;/string>"
+        errorLine2="                                                   ~~~~~~~~~~~~~">
+        <location
+            file="src/main/res/values-en/strings.xml"
+            line="558"
+            column="52"/>
+    </issue>
+
+    <issue
+        id="TypographyEllipsis"
+        message="Replace &quot;...&quot; with ellipsis character (…, &amp;#8230;) ?"
+        errorLine1="    &lt;string name=&quot;diagnostics_view_config_loading&quot;>正在生成...&lt;/string>"
+        errorLine2="                                                   ~~~~~~~">
+        <location
+            file="src/main/res/values-zh/strings.xml"
+            line="558"
+            column="52"/>
+    </issue>
+
+    <issue
+        id="TypographyEllipsis"
+        message="Replace &quot;...&quot; with ellipsis character (…, &amp;#8230;) ?"
+        errorLine1="    &lt;string name=&quot;diagnostics_view_config_loading&quot;>正在生成...&lt;/string>"
+        errorLine2="                                                   ~~~~~~~">
+        <location
+            file="src/main/res/values/strings.xml"
+            line="558"
+            column="52"/>
+    </issue>
+
+    <issue
+        id="TypographyEllipsis"
+        message="Replace &quot;...&quot; with ellipsis character (…, &amp;#8230;) ?"
+        errorLine1="    &lt;string name=&quot;diagnostics_export_config_loading&quot;>Exporting...&lt;/string>"
+        errorLine2="                                                     ~~~~~~~~~~~~">
+        <location
+            file="src/main/res/values-en/strings.xml"
+            line="561"
+            column="54"/>
+    </issue>
+
+    <issue
+        id="TypographyEllipsis"
+        message="Replace &quot;...&quot; with ellipsis character (…, &amp;#8230;) ?"
+        errorLine1="    &lt;string name=&quot;diagnostics_export_config_loading&quot;>正在导出...&lt;/string>"
+        errorLine2="                                                     ~~~~~~~">
+        <location
+            file="src/main/res/values-zh/strings.xml"
+            line="561"
+            column="54"/>
+    </issue>
+
+    <issue
+        id="TypographyEllipsis"
+        message="Replace &quot;...&quot; with ellipsis character (…, &amp;#8230;) ?"
+        errorLine1="    &lt;string name=&quot;diagnostics_export_config_loading&quot;>正在导出...&lt;/string>"
+        errorLine2="                                                     ~~~~~~~">
+        <location
+            file="src/main/res/values/strings.xml"
+            line="561"
+            column="54"/>
+    </issue>
+
+    <issue
+        id="TypographyEllipsis"
+        message="Replace &quot;...&quot; with ellipsis character (…, &amp;#8230;) ?"
+        errorLine1="    &lt;string name=&quot;diagnostics_export_package_loading&quot;>Building diagnostic package...&lt;/string>"
+        errorLine2="                                                      ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
+        <location
+            file="src/main/res/values-en/strings.xml"
+            line="568"
+            column="55"/>
+    </issue>
+
+    <issue
+        id="TypographyEllipsis"
+        message="Replace &quot;...&quot; with ellipsis character (…, &amp;#8230;) ?"
+        errorLine1="    &lt;string name=&quot;diagnostics_export_package_loading&quot;>正在生成诊断包...&lt;/string>"
+        errorLine2="                                                      ~~~~~~~~~~">
+        <location
+            file="src/main/res/values-zh/strings.xml"
+            line="568"
+            column="55"/>
+    </issue>
+
+    <issue
+        id="TypographyEllipsis"
+        message="Replace &quot;...&quot; with ellipsis character (…, &amp;#8230;) ?"
+        errorLine1="    &lt;string name=&quot;diagnostics_export_package_loading&quot;>正在生成诊断包...&lt;/string>"
+        errorLine2="                                                      ~~~~~~~~~~">
+        <location
+            file="src/main/res/values/strings.xml"
+            line="568"
+            column="55"/>
+    </issue>
+
+    <issue
+        id="TypographyEllipsis"
+        message="Replace &quot;...&quot; with ellipsis character (…, &amp;#8230;) ?"
+        errorLine1="    &lt;string name=&quot;diagnostics_app_routing_loading&quot;>Detecting...&lt;/string>"
+        errorLine2="                                                   ~~~~~~~~~~~~">
+        <location
+            file="src/main/res/values-en/strings.xml"
+            line="573"
+            column="52"/>
+    </issue>
+
+    <issue
+        id="TypographyEllipsis"
+        message="Replace &quot;...&quot; with ellipsis character (…, &amp;#8230;) ?"
+        errorLine1="    &lt;string name=&quot;diagnostics_app_routing_loading&quot;>正在检测...&lt;/string>"
+        errorLine2="                                                   ~~~~~~~">
+        <location
+            file="src/main/res/values-zh/strings.xml"
+            line="573"
+            column="52"/>
+    </issue>
+
+    <issue
+        id="TypographyEllipsis"
+        message="Replace &quot;...&quot; with ellipsis character (…, &amp;#8230;) ?"
+        errorLine1="    &lt;string name=&quot;diagnostics_app_routing_loading&quot;>正在检测...&lt;/string>"
+        errorLine2="                                                   ~~~~~~~">
+        <location
+            file="src/main/res/values/strings.xml"
+            line="573"
+            column="52"/>
+    </issue>
+
+    <issue
+        id="TypographyEllipsis"
+        message="Replace &quot;...&quot; with ellipsis character (…, &amp;#8230;) ?"
+        errorLine1="    &lt;string name=&quot;diagnostics_conn_owner_loading&quot;>Reading...&lt;/string>"
+        errorLine2="                                                  ~~~~~~~~~~">
+        <location
+            file="src/main/res/values-en/strings.xml"
+            line="576"
+            column="51"/>
+    </issue>
+
+    <issue
+        id="TypographyEllipsis"
+        message="Replace &quot;...&quot; with ellipsis character (…, &amp;#8230;) ?"
+        errorLine1="    &lt;string name=&quot;diagnostics_conn_owner_loading&quot;>正在读取...&lt;/string>"
+        errorLine2="                                                  ~~~~~~~">
+        <location
+            file="src/main/res/values-zh/strings.xml"
+            line="576"
+            column="51"/>
+    </issue>
+
+    <issue
+        id="TypographyEllipsis"
+        message="Replace &quot;...&quot; with ellipsis character (…, &amp;#8230;) ?"
+        errorLine1="    &lt;string name=&quot;diagnostics_conn_owner_loading&quot;>正在读取...&lt;/string>"
+        errorLine2="                                                  ~~~~~~~">
+        <location
+            file="src/main/res/values/strings.xml"
+            line="576"
+            column="51"/>
+    </issue>
+
+    <issue
+        id="TypographyEllipsis"
+        message="Replace &quot;...&quot; with ellipsis character (…, &amp;#8230;) ?"
+        errorLine1="    &lt;string name=&quot;diagnostics_node_line_query_loading&quot;>Querying...&lt;/string>"
+        errorLine2="                                                       ~~~~~~~~~~~">
+        <location
+            file="src/main/res/values-en/strings.xml"
+            line="581"
+            column="56"/>
+    </issue>
+
+    <issue
+        id="TypographyEllipsis"
+        message="Replace &quot;...&quot; with ellipsis character (…, &amp;#8230;) ?"
+        errorLine1="    &lt;string name=&quot;diagnostics_node_line_query_loading&quot;>正在查询...&lt;/string>"
+        errorLine2="                                                       ~~~~~~~">
+        <location
+            file="src/main/res/values-zh/strings.xml"
+            line="581"
+            column="56"/>
+    </issue>
+
+    <issue
+        id="TypographyEllipsis"
+        message="Replace &quot;...&quot; with ellipsis character (…, &amp;#8230;) ?"
+        errorLine1="    &lt;string name=&quot;diagnostics_node_line_query_loading&quot;>正在查询...&lt;/string>"
+        errorLine2="                                                       ~~~~~~~">
+        <location
+            file="src/main/res/values/strings.xml"
+            line="581"
+            column="56"/>
+    </issue>
+
+    <issue
+        id="TypographyEllipsis"
+        message="Replace &quot;...&quot; with ellipsis character (…, &amp;#8230;) ?"
+        errorLine1="    &lt;string name=&quot;diagnostics_connectivity_loading&quot;>Checking...&lt;/string>"
+        errorLine2="                                                    ~~~~~~~~~~~">
+        <location
+            file="src/main/res/values-en/strings.xml"
+            line="584"
+            column="53"/>
+    </issue>
+
+    <issue
+        id="TypographyEllipsis"
+        message="Replace &quot;...&quot; with ellipsis character (…, &amp;#8230;) ?"
+        errorLine1="    &lt;string name=&quot;diagnostics_connectivity_loading&quot;>正在检查...&lt;/string>"
+        errorLine2="                                                    ~~~~~~~">
+        <location
+            file="src/main/res/values-zh/strings.xml"
+            line="584"
+            column="53"/>
+    </issue>
+
+    <issue
+        id="TypographyEllipsis"
+        message="Replace &quot;...&quot; with ellipsis character (…, &amp;#8230;) ?"
+        errorLine1="    &lt;string name=&quot;diagnostics_connectivity_loading&quot;>正在检查...&lt;/string>"
+        errorLine2="                                                    ~~~~~~~">
+        <location
+            file="src/main/res/values/strings.xml"
+            line="584"
+            column="53"/>
+    </issue>
+
+    <issue
+        id="TypographyEllipsis"
+        message="Replace &quot;...&quot; with ellipsis character (…, &amp;#8230;) ?"
+        errorLine1="    &lt;string name=&quot;diagnostics_dns_leak_check_loading&quot;>Checking...&lt;/string>"
+        errorLine2="                                                      ~~~~~~~~~~~">
+        <location
+            file="src/main/res/values-en/strings.xml"
+            line="591"
+            column="55"/>
+    </issue>
+
+    <issue
+        id="TypographyEllipsis"
+        message="Replace &quot;...&quot; with ellipsis character (…, &amp;#8230;) ?"
+        errorLine1="    &lt;string name=&quot;diagnostics_dns_leak_check_loading&quot;>正在检测...&lt;/string>"
+        errorLine2="                                                      ~~~~~~~">
+        <location
+            file="src/main/res/values-zh/strings.xml"
+            line="591"
+            column="55"/>
+    </issue>
+
+    <issue
+        id="TypographyEllipsis"
+        message="Replace &quot;...&quot; with ellipsis character (…, &amp;#8230;) ?"
+        errorLine1="    &lt;string name=&quot;diagnostics_dns_leak_check_loading&quot;>正在检测...&lt;/string>"
+        errorLine2="                                                      ~~~~~~~">
+        <location
+            file="src/main/res/values/strings.xml"
+            line="591"
+            column="55"/>
+    </issue>
+
+    <issue
+        id="TypographyEllipsis"
+        message="Replace &quot;...&quot; with ellipsis character (…, &amp;#8230;) ?"
+        errorLine1="    &lt;string name=&quot;diagnostics_routing_test_loading&quot;>Testing...&lt;/string>"
+        errorLine2="                                                    ~~~~~~~~~~">
+        <location
+            file="src/main/res/values-en/strings.xml"
+            line="594"
+            column="53"/>
+    </issue>
+
+    <issue
+        id="TypographyEllipsis"
+        message="Replace &quot;...&quot; with ellipsis character (…, &amp;#8230;) ?"
+        errorLine1="    &lt;string name=&quot;diagnostics_routing_test_loading&quot;>正在测试...&lt;/string>"
+        errorLine2="                                                    ~~~~~~~">
+        <location
+            file="src/main/res/values-zh/strings.xml"
+            line="594"
+            column="53"/>
+    </issue>
+
+    <issue
+        id="TypographyEllipsis"
+        message="Replace &quot;...&quot; with ellipsis character (…, &amp;#8230;) ?"
+        errorLine1="    &lt;string name=&quot;diagnostics_routing_test_loading&quot;>正在测试...&lt;/string>"
+        errorLine2="                                                    ~~~~~~~">
+        <location
+            file="src/main/res/values/strings.xml"
+            line="594"
+            column="53"/>
+    </issue>
+
+    <issue
+        id="TypographyEllipsis"
+        message="Replace &quot;...&quot; with ellipsis character (…, &amp;#8230;) ?"
+        errorLine1="    &lt;string name=&quot;app_list_loading&quot;>Loading app list...&lt;/string>"
+        errorLine2="                                    ~~~~~~~~~~~~~~~~~~~">
+        <location
+            file="src/main/res/values-en/strings.xml"
+            line="623"
+            column="37"/>
+    </issue>
+
+    <issue
+        id="TypographyEllipsis"
+        message="Replace &quot;...&quot; with ellipsis character (…, &amp;#8230;) ?"
+        errorLine1="    &lt;string name=&quot;app_list_loading&quot;>正在加载应用列表...&lt;/string>"
+        errorLine2="                                    ~~~~~~~~~~~">
+        <location
+            file="src/main/res/values-zh/strings.xml"
+            line="623"
+            column="37"/>
+    </issue>
+
+    <issue
+        id="TypographyEllipsis"
+        message="Replace &quot;...&quot; with ellipsis character (…, &amp;#8230;) ?"
+        errorLine1="    &lt;string name=&quot;app_list_loading&quot;>正在加载应用列表...&lt;/string>"
+        errorLine2="                                    ~~~~~~~~~~~">
+        <location
+            file="src/main/res/values/strings.xml"
+            line="623"
+            column="37"/>
+    </issue>
+
+    <issue
+        id="TypographyEllipsis"
+        message="Replace &quot;...&quot; with ellipsis character (…, &amp;#8230;) ?"
+        errorLine1="    &lt;string name=&quot;about_kernel_loading&quot;>Loading...&lt;/string>"
+        errorLine2="                                        ~~~~~~~~~~">
+        <location
+            file="src/main/res/values-en/strings.xml"
+            line="660"
+            column="41"/>
+    </issue>
+
+    <issue
+        id="TypographyEllipsis"
+        message="Replace &quot;...&quot; with ellipsis character (…, &amp;#8230;) ?"
+        errorLine1="    &lt;string name=&quot;about_kernel_loading&quot;>加载中...&lt;/string>"
+        errorLine2="                                        ~~~~~~">
+        <location
+            file="src/main/res/values-zh/strings.xml"
+            line="660"
+            column="41"/>
+    </issue>
+
+    <issue
+        id="TypographyEllipsis"
+        message="Replace &quot;...&quot; with ellipsis character (…, &amp;#8230;) ?"
+        errorLine1="    &lt;string name=&quot;about_kernel_loading&quot;>加载中...&lt;/string>"
+        errorLine2="                                        ~~~~~~">
+        <location
+            file="src/main/res/values/strings.xml"
+            line="660"
+            column="41"/>
+    </issue>
+
+    <issue
+        id="MonochromeLauncherIcon"
+        message="The application adaptive icon is missing a monochrome tag"
+        errorLine1="&lt;adaptive-icon xmlns:android=&quot;http://schemas.android.com/apk/res/android&quot;>"
+        errorLine2="^">
+        <location
+            file="src/main/res/mipmap-anydpi-v26/ic_launcher.xml"
+            line="2"
+            column="1"/>
+    </issue>
+
+    <issue
+        id="MonochromeLauncherIcon"
+        message="The application adaptive roundIcon is missing a monochrome tag"
+        errorLine1="&lt;adaptive-icon xmlns:android=&quot;http://schemas.android.com/apk/res/android&quot;>"
+        errorLine2="^">
+        <location
+            file="src/main/res/mipmap-anydpi-v26/ic_launcher_round.xml"
+            line="2"
+            column="1"/>
+    </issue>
+
+    <issue
+        id="UseKtx"
+        message="Use the KTX extension function `String.toUri` instead?"
+        errorLine1="        val intent = Intent(Intent.ACTION_VIEW, Uri.parse(htmlUrl))"
+        errorLine2="                                                ~~~~~~~~~~~~~~~~~~">
+        <location
+            file="src/main/java/com/mubox/app/utils/AppUpdateChecker.kt"
+            line="284"
+            column="49"/>
+    </issue>
+
+    <issue
+        id="UseKtx"
+        message="Use the KTX extension function `SharedPreferences.edit` instead?"
+        errorLine1="        prefs.edit().putString(KEY_LAST_NOTIFIED_VERSION, version).apply()"
+        errorLine2="        ~~~~~~~~~~~~">
+        <location
+            file="src/main/java/com/mubox/app/utils/AppUpdateChecker.kt"
+            line="356"
+            column="9"/>
+    </issue>
+
+    <issue
+        id="UseKtx"
+        message="Use the KTX extension function `SharedPreferences.edit` instead?"
+        errorLine1="        prefs.edit().remove(KEY_LAST_NOTIFIED_VERSION).apply()"
+        errorLine2="        ~~~~~~~~~~~~">
+        <location
+            file="src/main/java/com/mubox/app/utils/AppUpdateChecker.kt"
+            line="361"
+            column="9"/>
+    </issue>
+
+    <issue
+        id="UseKtx"
+        message="Use the KTX extension function `String.toUri` instead?"
+        errorLine1="            Uri.parse(&quot;package:${context.packageName}&quot;)"
+        errorLine2="            ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
+        <location
+            file="src/main/java/com/mubox/app/utils/AppUpdater.kt"
+            line="137"
+            column="13"/>
+    </issue>
+
+    <issue
+        id="UseKtx"
+        message="Use the KTX extension function `Int.toDrawable` instead?"
+        errorLine1="        window.setBackgroundDrawable(ColorDrawable(android.graphics.Color.TRANSPARENT))"
+        errorLine2="                                     ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
+        <location
+            file="src/main/java/com/mubox/app/ui/components/FullScreenDialogPage.kt"
+            line="402"
+            column="38"/>
+    </issue>
+
+    <issue
+        id="UseKtx"
+        message="Use the KTX extension function `SharedPreferences.edit` instead?"
+        errorLine1="            context.getSharedPreferences(SETTINGS_PREFS, Context.MODE_PRIVATE)"
+        errorLine2="            ^">
+        <location
+            file="src/main/java/com/mubox/app/utils/LocaleHelper.kt"
+            line="16"
+            column="13"/>
+    </issue>
+
+    <issue
+        id="UseKtx"
+        message="Use the KTX extension function `SharedPreferences.edit` instead?"
+        errorLine1="        prefs.edit().putString(&quot;app_language_cache&quot;, language.name).apply()"
+        errorLine2="        ~~~~~~~~~~~~">
+        <location
+            file="src/main/java/com/mubox/app/MainActivity.kt"
+            line="171"
+            column="9"/>
+    </issue>
+
+    <issue
+        id="UseKtx"
+        message="Use the KTX extension function `SharedPreferences.edit` instead?"
+        errorLine1="        context.getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE)"
+        errorLine2="        ^">
+        <location
+            file="src/main/java/com/mubox/app/service/manager/NetworkAutoSwitchManager.kt"
+            line="191"
+            column="9"/>
+    </issue>
+
+    <issue
+        id="UseKtx"
+        message="Use the KTX extension function `String.toUri` instead?"
+        errorLine1="                            val intent = Intent(Intent.ACTION_VIEW, Uri.parse(annotation.item))"
+        errorLine2="                                                                    ~~~~~~~~~~~~~~~~~~~~~~~~~~">
+        <location
+            file="src/main/java/com/mubox/app/ui/components/NodeSelectionDialogs.kt"
+            line="162"
+            column="69"/>
+    </issue>
+
+    <issue
+        id="UseKtx"
+        message="Use the KTX extension function `String.toUri` instead?"
+        errorLine1="                                data = Uri.parse(&quot;package:${context.packageName}&quot;)"
+        errorLine2="                                       ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
+        <location
+            file="src/main/java/com/mubox/app/ui/screens/SettingsScreen.kt"
+            line="285"
+            column="40"/>
+    </issue>
+
+    <issue
+        id="UseKtx"
+        message="Use the KTX extension function `String.toUri` instead?"
+        errorLine1="                                data = Uri.parse(&quot;package:${context.packageName}&quot;)"
+        errorLine2="                                       ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
+        <location
+            file="src/main/java/com/mubox/app/ui/screens/SettingsScreen.kt"
+            line="285"
+            column="40"/>
+    </issue>
+
+    <issue
+        id="UseKtx"
+        message="Use the KTX extension function `SharedPreferences.edit` instead?"
+        errorLine1="        prefs.edit()"
+        errorLine2="        ~~~~~~~~~~~~">
+        <location
+            file="src/main/java/com/mubox/app/repository/TrafficRepository.kt"
+            line="565"
+            column="9"/>
+    </issue>
+
+    <issue
+        id="UseKtx"
+        message="Use the KTX extension function `String.toUri` instead?"
+        errorLine1="        val intent = Intent(Intent.ACTION_VIEW, Uri.parse(&quot;https://example.com&quot;))"
+        errorLine2="                                                ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
+        <location
+            file="src/main/java/com/mubox/app/service/tun/VpnTunManager.kt"
+            line="664"
+            column="49"/>
+    </issue>
+
+</issues>
