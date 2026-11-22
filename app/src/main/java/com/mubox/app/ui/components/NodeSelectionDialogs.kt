@@ -115,7 +115,6 @@ fun AboutDialog(onDismiss: () -> Unit) {
 
     val aboutAddressMsg = stringResource(R.string.about_address)
     val aboutBasedOnMsg = stringResource(R.string.about_based_on)
-    val aboutDesignedByMsg = stringResource(R.string.about_designed_by)
 
     val annotatedString = buildAnnotatedString {
         append("MuBox for Android\n\n")
@@ -134,7 +133,7 @@ fun AboutDialog(onDismiss: () -> Unit) {
             append("MuBoxForAndroid")
         }
         pop()
-        append("\n\n$aboutBasedOnMsg\n\n$aboutDesignedByMsg")
+        append("\n\n$aboutBasedOnMsg")
     }
 
     Dialog(onDismissRequest = onDismiss) {

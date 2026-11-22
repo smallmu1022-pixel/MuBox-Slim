@@ -661,7 +661,6 @@
     <string name="about_kernel_builtin">sing-box (built-in)</string>
     <string name="about_address">Address:</string>
     <string name="about_based_on">Based on Sing-box kernel.</string>
-    <string name="about_designed_by">Designed by Mu.</string>
 
     <!-- MainActivity -->
     <string name="main_restart">Restart</string>

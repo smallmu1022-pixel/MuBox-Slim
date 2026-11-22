@@ -661,7 +661,6 @@
     <string name="about_kernel_builtin">sing-box (内置)</string>
     <string name="about_address">地址:</string>
     <string name="about_based_on">基于 Sing-box 内核构建。</string>
-    <string name="about_designed_by">Designed by Mu.</string>
 
     <!-- MainActivity -->
     <string name="main_restart">重启</string>
