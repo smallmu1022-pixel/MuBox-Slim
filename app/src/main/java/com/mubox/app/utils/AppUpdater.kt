@@ -73,14 +73,35 @@ object AppUpdater {
     }
 
     /**
-     * 清理更新缓存：装完的 APK 与中断的 .part 不再常驻。只删 24 小时前的文件，
-     * 避免误删刚下完、正等系统安装器读取的包。启动时调用。
+     * 清理更新缓存（启动时调用）：已安装的包不等 24 小时——缓存 APK 的
+     * versionCode 不高于当前版本即说明已装或已被覆盖，立即删；解析不出的
+     * 损坏包、中断的 .part 同样立即删。只有「已下载未安装」的新版包保留
+     * （留给用户回头再装），超过 24 小时仍未安装才兜底删除。
      */
     fun clearStaleUpdateFiles(context: Context) {
         val files = File(context.cacheDir, "updates").listFiles() ?: return
+        val pm = context.packageManager
+        val currentVersionCode = try {
+            pm.getPackageInfo(context.packageName, 0).longVersionCode
+        } catch (e: Exception) {
+            return
+        }
         val cutoff = System.currentTimeMillis() - 24 * 60 * 60 * 1000L
         for (file in files) {
-            if (file.isFile && file.lastModified() < cutoff) {
+            if (!file.isFile) continue
+            if (file.name.endsWith(".part")) {
+                file.delete()
+                continue
+            }
+            val archive = try {
+                pm.getPackageArchiveInfo(file.absolutePath, 0)
+            } catch (e: Exception) {
+                null
+            }
+            val installedOrStale = archive == null ||
+                archive.packageName != context.packageName ||
+                archive.longVersionCode <= currentVersionCode
+            if (installedOrStale || file.lastModified() < cutoff) {
                 file.delete()
             }
         }
