@@ -287,6 +287,10 @@ configure<ApplicationExtension> {
         }
     }
 
+    lint {
+        baseline = file("lint-baseline.xml")
+    }
+
     signingConfigs {
         create("release") {
             val props = Properties()
