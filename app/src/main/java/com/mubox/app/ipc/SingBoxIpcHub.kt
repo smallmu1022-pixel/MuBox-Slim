@@ -683,8 +683,25 @@ object SingBoxIpcHub {
      * 不会被主 TUN 回环捕获；结果逐个回传，结束时发 finished 回执。
      */
     fun requestLatencyTest(requestId: Long, requestJson: String) {
+        Log.d(TAG, "requestLatencyTest: received requestId=$requestId")
         val context = serviceRef?.get()
         if (context == null) {
+            // IPC 服务组件引用已失效，本次委托无法执行。此前这里只回 finished、
+            // 零结果且无任何日志，主进程按旧语义误判已执行（vc37 空单缺陷）；
+            // 现补齐 logcat 与运行日志双通道留痕，主进程新语义下零结果 finished
+            // 会回退本地执行。single/batch 仅为日志标注，在此按载荷轻量解析。
+            val single = runCatching {
+                latencyTestGson.fromJson(requestJson, LatencyTestRequest::class.java)?.single
+            }.getOrNull()
+            Log.w(
+                TAG,
+                "requestLatencyTest: IPC service unavailable, finishing with no results " +
+                    "requestId=$requestId single=$single"
+            )
+            log(
+                "requestLatencyTest not executed (IPC service unavailable): " +
+                    "requestId=$requestId single=$single"
+            )
             broadcastLatencyTestFinished(requestId)
             return
         }
@@ -705,7 +722,10 @@ object SingBoxIpcHub {
                         core.testOutboundLatency(
                             outbound = target,
                             allOutbounds = request.allOutbounds,
-                            dnsConfig = request.dnsConfig
+                            dnsConfig = request.dnsConfig,
+                            methodOverride = request.methodOverride?.let { name ->
+                                LatencyTestMethod.entries.firstOrNull { it.name == name }
+                            }
                         )
                     }.getOrElse {
                         Log.w(TAG, "requestLatencyTest single failed: requestId=$requestId", it)

@@ -173,7 +173,10 @@ internal fun ConfigRepository.updateProfileMetadata(
     com.mubox.app.service.SubscriptionAutoUpdateWorker.schedule(context, profileId, normalizedAutoUpdateInterval)
 }
 
-internal suspend fun ConfigRepository.testNodeLatency(nodeId: String): Long {
+internal suspend fun ConfigRepository.testNodeLatency(
+    nodeId: String,
+    methodOverride: LatencyTestMethod? = null
+): Long {
     val existing = inFlightLatencyTests[nodeId]
     if (existing != null) {
         return existing.await()
@@ -238,7 +241,8 @@ internal suspend fun ConfigRepository.testNodeLatency(nodeId: String): Long {
                         SingBoxRemote.testOutboundLatencyInService(
                             outbound = fixedOutbound,
                             allOutbounds = allOutbounds,
-                            dnsConfig = runtimeContext.dnsConfig
+                            dnsConfig = runtimeContext.dnsConfig,
+                            methodOverride = methodOverride
                         )
                     } else {
                         null
@@ -246,7 +250,8 @@ internal suspend fun ConfigRepository.testNodeLatency(nodeId: String): Long {
                     val latency = remoteLatency ?: singBoxCore.testOutboundLatency(
                         fixedOutbound,
                         allOutbounds,
-                        runtimeContext.dnsConfig
+                        runtimeContext.dnsConfig,
+                        methodOverride = methodOverride
                     )
 
                     _nodes.update { list ->

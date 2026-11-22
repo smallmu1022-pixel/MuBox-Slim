@@ -127,7 +127,10 @@ object AppUpdater {
         } else {
             // 用 WithoutRetry 变体显式给足总时长：WithTimeout 传 null 会继承
             // 基础客户端的 60 秒 callTimeout，慢网下 18 MB 包会被中途掐断。
-            NetworkClient.createClientWithoutRetry(
+            // Bypass 变体在此之上绑物理网络绕开 TUN（全局模式下普通直连会被
+            // 自身隧道捕获、与代理通道同路），超时与 retry 语义与原变体一致。
+            NetworkClient.createBypassClientWithoutRetry(
+                context = context,
                 connectTimeoutSeconds = 20,
                 readTimeoutSeconds = 60,
                 writeTimeoutSeconds = 60,

@@ -192,7 +192,7 @@ object AppUpdateChecker {
         val settings = SettingsRepository.getInstance(context).settings.first()
         val proxyResult = tryProxyRequest(request, settings)
 
-        return proxyResult ?: tryDirectRequest(request)
+        return proxyResult ?: tryDirectRequest(context, request)
     }
 
     private fun tryProxyRequest(request: Request, settings: com.mubox.app.model.AppSettings): GitHubRelease? {
@@ -207,9 +207,9 @@ object AppUpdateChecker {
         }
     }
 
-    private fun tryDirectRequest(request: Request): GitHubRelease? {
+    private fun tryDirectRequest(context: Context, request: Request): GitHubRelease? {
         return try {
-            getDirectClient().newCall(request).execute().use { response ->
+            getDirectClient(context).newCall(request).execute().use { response ->
                 parseReleaseResponse(response, "Direct")
             }
         } catch (e: Exception) {
@@ -228,8 +228,12 @@ object AppUpdateChecker {
         return gson.fromJson(json, GitHubRelease::class.java)
     }
 
-    private fun getDirectClient(): OkHttpClient {
-        return NetworkClient.createClientWithTimeout(
+    private fun getDirectClient(context: Context): OkHttpClient {
+        // 直连必须绑物理网络绕开 TUN：全局模式下普通直连的 socket 无 protect、
+        // 又未被 VPN Builder 排除，会被自身隧道捕获，与代理尝试同路失败
+        // （规则模式靠分流判直连才显得正常）。
+        return NetworkClient.createBypassClientWithTimeout(
+            context = context,
             connectTimeoutSeconds = 15,
             readTimeoutSeconds = 20,
             writeTimeoutSeconds = 20,

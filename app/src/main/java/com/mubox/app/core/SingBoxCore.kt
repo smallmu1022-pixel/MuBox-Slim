@@ -601,14 +601,17 @@ class SingBoxCore private constructor(internal val context: Context) {
         allOutbounds: List<Outbound> = emptyList(),
         dnsConfig: DnsConfig? = null,
         timeoutOverrideMs: Int? = null,
-        trafficKind: LatencyProbeTrafficKind = LatencyProbeTrafficKind.BACKGROUND_PROBE
+        trafficKind: LatencyProbeTrafficKind = LatencyProbeTrafficKind.BACKGROUND_PROBE,
+        methodOverride: LatencyTestMethod? = null
     ): Long = withContext(Dispatchers.IO) {
         val settings = SettingsRepository.getInstance(context).settings.first()
             .let { currentSettings ->
-                timeoutOverrideMs
-                    ?.takeIf { it > 0 }
-                    ?.let { currentSettings.copy(latencyTestTimeout = it) }
-                    ?: currentSettings
+                val timeout = timeoutOverrideMs?.takeIf { it > 0 } ?: currentSettings.latencyTestTimeout
+                currentSettings.copy(
+                    latencyTestTimeout = timeout,
+                    // 单节点测速的本次方式覆盖；不传时用设置里的默认方式（与批量测速同一口径）
+                    latencyTestMethod = methodOverride ?: currentSettings.latencyTestMethod
+                )
             }
 
         val dependencyOutbounds = if (allOutbounds.isNotEmpty()) {

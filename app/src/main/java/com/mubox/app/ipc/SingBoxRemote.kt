@@ -1013,8 +1013,10 @@ object SingBoxRemote {
     /**
      * 把批量临时实例测速委托给 :bg 进程执行，结果经 [onResult] 逐个回传。
      *
-     * @return true 表示请求已送达并由服务进程执行（回执超时也视为已执行，不再回退，
-     *   避免本地重复测速）；false 表示未能送达（未绑定/发送失败），调用方应回退本地执行。
+     * @return true 表示服务进程已执行且至少回传一条结果（中途断连/回执超时但已有
+     *   部分结果时同样算已执行，避免本地重复整批测速）；false 表示未真正执行——
+     *   未绑定/发送失败，或 finished 回执到达但零结果（服务进程未执行）、回执超时
+     *   且零结果、断连且零结果——调用方应回退本地执行。
      */
     suspend fun testOutboundsLatencyInService(
         outbounds: List<Outbound>,
@@ -1038,12 +1040,13 @@ object SingBoxRemote {
     /**
      * 单节点版的服务进程测速委托。
      *
-     * @return 节点延迟；null 表示未能送达，调用方应回退本地执行。
+     * @return 节点延迟；null 表示未送达/未真正执行，调用方应回退本地执行。
      */
     suspend fun testOutboundLatencyInService(
         outbound: Outbound,
         allOutbounds: List<Outbound>,
-        dnsConfig: DnsConfig?
+        dnsConfig: DnsConfig?,
+        methodOverride: LatencyTestMethod? = null
     ): Long? {
         var result: Long? = null
         val handled = runLatencyTestInService(
@@ -1051,7 +1054,8 @@ object SingBoxRemote {
                 single = true,
                 outbounds = listOf(outbound),
                 allOutbounds = allOutbounds,
-                dnsConfig = dnsConfig
+                dnsConfig = dnsConfig,
+                methodOverride = methodOverride?.name
             )
         ) { _, latency -> result = latency }
         return if (handled) result ?: -1L else null
@@ -1077,17 +1081,39 @@ object SingBoxRemote {
             return false
         }
 
-        // 已送达：等完成回执。超时只记日志并按已执行返回，避免本地重复执行同一批测速；
-        // 中途断连且已有部分结果回传时同理，只有毫无结果才让调用方回退本地。
+        // 已送达：等完成回执。只有真正收到至少一条结果才算已执行：finished 到达
+        // 但零结果（服务进程未真正执行，vc37 空单缺陷）、回执超时且零结果、断连且
+        // 零结果，一律按未送达返回，让调用方回退本地执行；断连/超时但已有部分
+        // 结果时保留已执行语义，避免本地重复整批测速。
         val completed = withTimeoutOrNull(LATENCY_TEST_REMOTE_TIMEOUT_MS) {
             pending.finished.await()
         }
-        if (completed == null) {
-            Log.w(TAG, "latency test IPC timed out: requestId=$requestId")
-            pendingLatencyTests.remove(requestId)
-            return true
+        return when {
+            completed == null -> {
+                Log.w(
+                    TAG,
+                    "latency test IPC timed out: requestId=$requestId, " +
+                        "deliveredAny=${pending.deliveredAny}"
+                )
+                pendingLatencyTests.remove(requestId)
+                pending.deliveredAny
+            }
+            completed == false -> {
+                if (!pending.deliveredAny) {
+                    Log.w(TAG, "latency test IPC disconnected with no results: requestId=$requestId")
+                }
+                pending.deliveredAny
+            }
+            pending.deliveredAny -> true
+            else -> {
+                Log.w(
+                    TAG,
+                    "latency test IPC finished with zero results, treating as not delivered: " +
+                        "requestId=$requestId"
+                )
+                false
+            }
         }
-        return completed || pending.deliveredAny
     }
 
     fun hotReloadConfig(configContent: String): Int {
