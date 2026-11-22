@@ -14,1663 +14,13 @@
 
     <issue
         id="InlinedApi"
-        message="Field requires API level 26 (current min is 24): `android.provider.Settings#ACTION_MANAGE_UNKNOWN_APP_SOURCES`"
-        errorLine1="            Settings.ACTION_MANAGE_UNKNOWN_APP_SOURCES,"
-        errorLine2="            ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
-        <location
-            file="src/main/java/com/mubox/app/utils/AppUpdater.kt"
-            line="136"
-            column="13"/>
-    </issue>
-
-    <issue
-        id="InlinedApi"
-        message="Field requires API level 37 (current min is 24): `android.Manifest.permission#ACCESS_LOCAL_NETWORK`"
+        message="Field requires API level 37 (current min is 36): `android.Manifest.permission#ACCESS_LOCAL_NETWORK`"
         errorLine1="    const val ACCESS_LOCAL_NETWORK = Manifest.permission.ACCESS_LOCAL_NETWORK"
         errorLine2="                                     ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
         <location
             file="src/main/java/com/mubox/app/utils/LocalNetworkPermission.kt"
             line="19"
             column="38"/>
-    </issue>
-
-    <issue
-        id="InlinedApi"
-        message="Field requires API level 34 (current min is 29): `android.content.pm.ServiceInfo#FOREGROUND_SERVICE_TYPE_SPECIAL_USE`"
-        errorLine1="        startForeground(RootTransparentForegroundService.NOTIFICATION_ID, notification, ServiceInfo.FOREGROUND_SERVICE_TYPE_SPECIAL_USE)"
-        errorLine2="                                                                                        ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
-        <location
-            file="src/main/java/com/mubox/app/service/root/runtime/RootTransparentForegroundRuntime.kt"
-            line="610"
-            column="89"/>
-    </issue>
-
-    <issue
-        id="NewApi"
-        message="Call requires API level 26, or core library desugaring (current min is 24): `java.io.File#toPath`"
-        errorLine1="                check(!Files.isSymbolicLink(directory.toPath())) {"
-        errorLine2="                                                      ~~~~~~">
-        <location
-            file="src/main/java/com/mubox/app/repository/configrepo/ConfigRepositoryPart5.kt"
-            line="843"
-            column="55"/>
-    </issue>
-
-    <issue
-        id="NewApi"
-        message="Call requires API level 26, or core library desugaring (current min is 24): `java.nio.file.Files#isSymbolicLink`"
-        errorLine1="                check(!Files.isSymbolicLink(directory.toPath())) {"
-        errorLine2="                             ~~~~~~~~~~~~~~">
-        <location
-            file="src/main/java/com/mubox/app/repository/configrepo/ConfigRepositoryPart5.kt"
-            line="843"
-            column="30"/>
-    </issue>
-
-    <issue
-        id="NewApi"
-        message="Call requires API level 26, or core library desugaring (current min is 24): `java.util.Base64#getEncoder`"
-        errorLine1="                val encoded = Base64.getEncoder()"
-        errorLine2="                                     ~~~~~~~~~~">
-        <location
-            file="src/main/java/com/mubox/app/repository/configrepo/LanSubscriptionHttpFetcher.kt"
-            line="234"
-            column="38"/>
-    </issue>
-
-    <issue
-        id="NewApi"
-        message="Call requires API level 26, or core library desugaring (current min is 24): `java.util.Base64.Encoder#encodeToString`"
-        errorLine1="                    .encodeToString(userInfo.toByteArray(Charsets.UTF_8))"
-        errorLine2="                     ~~~~~~~~~~~~~~">
-        <location
-            file="src/main/java/com/mubox/app/repository/configrepo/LanSubscriptionHttpFetcher.kt"
-            line="235"
-            column="22"/>
-    </issue>
-
-    <issue
-        id="NewApi"
-        message="Call requires API level 26, or core library desugaring (current min is 24): `java.io.File#toPath`"
-        errorLine1="    check(!Files.isSymbolicLink(sidecarFile.toPath()) &amp;&amp; !Files.isSymbolicLink(manifestFile.toPath())) {"
-        errorLine2="                                            ~~~~~~">
-        <location
-            file="src/main/java/com/mubox/app/service/root/runtime/MuBoxRootServiceRuntime.kt"
-            line="594"
-            column="45"/>
-    </issue>
-
-    <issue
-        id="NewApi"
-        message="Call requires API level 26, or core library desugaring (current min is 24): `java.io.File#toPath`"
-        errorLine1="    check(!Files.isSymbolicLink(sidecarFile.toPath()) &amp;&amp; !Files.isSymbolicLink(manifestFile.toPath())) {"
-        errorLine2="                                                                                            ~~~~~~">
-        <location
-            file="src/main/java/com/mubox/app/service/root/runtime/MuBoxRootServiceRuntime.kt"
-            line="594"
-            column="93"/>
-    </issue>
-
-    <issue
-        id="NewApi"
-        message="Call requires API level 26, or core library desugaring (current min is 24): `java.nio.file.Files#isSymbolicLink`"
-        errorLine1="    check(!Files.isSymbolicLink(sidecarFile.toPath()) &amp;&amp; !Files.isSymbolicLink(manifestFile.toPath())) {"
-        errorLine2="                 ~~~~~~~~~~~~~~">
-        <location
-            file="src/main/java/com/mubox/app/service/root/runtime/MuBoxRootServiceRuntime.kt"
-            line="594"
-            column="18"/>
-    </issue>
-
-    <issue
-        id="NewApi"
-        message="Call requires API level 26, or core library desugaring (current min is 24): `java.nio.file.Files#isSymbolicLink`"
-        errorLine1="    check(!Files.isSymbolicLink(sidecarFile.toPath()) &amp;&amp; !Files.isSymbolicLink(manifestFile.toPath())) {"
-        errorLine2="                                                                ~~~~~~~~~~~~~~">
-        <location
-            file="src/main/java/com/mubox/app/service/root/runtime/MuBoxRootServiceRuntime.kt"
-            line="594"
-            column="65"/>
-    </issue>
-
-    <issue
-        id="NewApi"
-        message="Call requires API level 26, or core library desugaring (current min is 24): `java.io.File#toPath`"
-        errorLine1="        check(!Files.isSymbolicLink(file.toPath())) {"
-        errorLine2="                                         ~~~~~~">
-        <location
-            file="src/main/java/com/mubox/app/service/root/runtime/MuBoxRootServiceRuntime.kt"
-            line="659"
-            column="42"/>
-    </issue>
-
-    <issue
-        id="NewApi"
-        message="Call requires API level 26, or core library desugaring (current min is 24): `java.nio.file.Files#isSymbolicLink`"
-        errorLine1="        check(!Files.isSymbolicLink(file.toPath())) {"
-        errorLine2="                     ~~~~~~~~~~~~~~">
-        <location
-            file="src/main/java/com/mubox/app/service/root/runtime/MuBoxRootServiceRuntime.kt"
-            line="659"
-            column="22"/>
-    </issue>
-
-    <issue
-        id="NewApi"
-        message="Call requires API level 26, or core library desugaring (current min is 24): `java.io.File#toPath`"
-        errorLine1="        check(!Files.isSymbolicLink(parent.toPath())) {"
-        errorLine2="                                           ~~~~~~">
-        <location
-            file="src/main/java/com/mubox/app/service/root/runtime/MuBoxRootServiceRuntime.kt"
-            line="664"
-            column="44"/>
-    </issue>
-
-    <issue
-        id="NewApi"
-        message="Call requires API level 26, or core library desugaring (current min is 24): `java.nio.file.Files#isSymbolicLink`"
-        errorLine1="        check(!Files.isSymbolicLink(parent.toPath())) {"
-        errorLine2="                     ~~~~~~~~~~~~~~">
-        <location
-            file="src/main/java/com/mubox/app/service/root/runtime/MuBoxRootServiceRuntime.kt"
-            line="664"
-            column="22"/>
-    </issue>
-
-    <issue
-        id="NewApi"
-        message="Call requires API level 29 (current min is 24): `android.net.ConnectivityManager#getConnectionOwnerUid`"
-        errorLine1="                val uid = cm.getConnectionOwnerUid("
-        errorLine2="                             ~~~~~~~~~~~~~~~~~~~~~">
-        <location
-            file="src/main/java/com/mubox/app/service/manager/PlatformInterfaceImpl.kt"
-            line="588"
-            column="30"/>
-    </issue>
-
-    <issue
-        id="NewApi"
-        message="Call requires API level 26, or core library desugaring (current min is 24): `java.io.File#toPath`"
-        errorLine1="        val rootPath = runtimeDirectory.toPath()"
-        errorLine2="                                        ~~~~~~">
-        <location
-            file="src/main/java/com/mubox/app/service/root/RootArtifactSnapshotStore.kt"
-            line="79"
-            column="41"/>
-    </issue>
-
-    <issue
-        id="NewApi"
-        message="Call requires API level 26, or core library desugaring (current min is 24): `java.nio.file.Files#isSymbolicLink`"
-        errorLine1="        check(!runtimeDirectory.exists() || !Files.isSymbolicLink(rootPath)) {"
-        errorLine2="                                                   ~~~~~~~~~~~~~~">
-        <location
-            file="src/main/java/com/mubox/app/service/root/RootArtifactSnapshotStore.kt"
-            line="80"
-            column="52"/>
-    </issue>
-
-    <issue
-        id="NewApi"
-        message="Call requires API level 26, or core library desugaring (current min is 24): `java.io.File#toPath`"
-        errorLine1="        check(root.isDirectory &amp;&amp; !Files.isSymbolicLink(root.toPath())) {"
-        errorLine2="                                                             ~~~~~~">
-        <location
-            file="src/main/java/com/mubox/app/service/root/RootArtifactSnapshotStore.kt"
-            line="85"
-            column="62"/>
-    </issue>
-
-    <issue
-        id="NewApi"
-        message="Call requires API level 26, or core library desugaring (current min is 24): `java.nio.file.Files#isSymbolicLink`"
-        errorLine1="        check(root.isDirectory &amp;&amp; !Files.isSymbolicLink(root.toPath())) {"
-        errorLine2="                                         ~~~~~~~~~~~~~~">
-        <location
-            file="src/main/java/com/mubox/app/service/root/RootArtifactSnapshotStore.kt"
-            line="85"
-            column="42"/>
-    </issue>
-
-    <issue
-        id="NewApi"
-        message="Call requires API level 26, or core library desugaring (current min is 24): `java.io.File#toPath`"
-        errorLine1="        check(!rawDirectory.exists() || !Files.isSymbolicLink(rawDirectory.toPath())) {"
-        errorLine2="                                                                           ~~~~~~">
-        <location
-            file="src/main/java/com/mubox/app/service/root/RootArtifactSnapshotStore.kt"
-            line="90"
-            column="76"/>
-    </issue>
-
-    <issue
-        id="NewApi"
-        message="Call requires API level 26, or core library desugaring (current min is 24): `java.nio.file.Files#isSymbolicLink`"
-        errorLine1="        check(!rawDirectory.exists() || !Files.isSymbolicLink(rawDirectory.toPath())) {"
-        errorLine2="                                               ~~~~~~~~~~~~~~">
-        <location
-            file="src/main/java/com/mubox/app/service/root/RootArtifactSnapshotStore.kt"
-            line="90"
-            column="48"/>
-    </issue>
-
-    <issue
-        id="NewApi"
-        message="Call requires API level 26, or core library desugaring (current min is 24): `java.io.File#toPath`"
-        errorLine1="        check(directory.isDirectory &amp;&amp; !Files.isSymbolicLink(directory.toPath())) {"
-        errorLine2="                                                                       ~~~~~~">
-        <location
-            file="src/main/java/com/mubox/app/service/root/RootArtifactSnapshotStore.kt"
-            line="96"
-            column="72"/>
-    </issue>
-
-    <issue
-        id="NewApi"
-        message="Call requires API level 26, or core library desugaring (current min is 24): `java.nio.file.Files#isSymbolicLink`"
-        errorLine1="        check(directory.isDirectory &amp;&amp; !Files.isSymbolicLink(directory.toPath())) {"
-        errorLine2="                                              ~~~~~~~~~~~~~~">
-        <location
-            file="src/main/java/com/mubox/app/service/root/RootArtifactSnapshotStore.kt"
-            line="96"
-            column="47"/>
-    </issue>
-
-    <issue
-        id="NewApi"
-        message="Call requires API level 26, or core library desugaring (current min is 24): `java.io.File#toPath`"
-        errorLine1="            check(!Files.isSymbolicLink(temp.toPath())) { &quot;Root snapshot temporary file is a symbolic link&quot; }"
-        errorLine2="                                             ~~~~~~">
-        <location
-            file="src/main/java/com/mubox/app/service/root/RootArtifactSnapshotStore.kt"
-            line="106"
-            column="46"/>
-    </issue>
-
-    <issue
-        id="NewApi"
-        message="Call requires API level 26, or core library desugaring (current min is 24): `java.nio.file.Files#isSymbolicLink`"
-        errorLine1="            check(!Files.isSymbolicLink(temp.toPath())) { &quot;Root snapshot temporary file is a symbolic link&quot; }"
-        errorLine2="                         ~~~~~~~~~~~~~~">
-        <location
-            file="src/main/java/com/mubox/app/service/root/RootArtifactSnapshotStore.kt"
-            line="106"
-            column="26"/>
-    </issue>
-
-    <issue
-        id="NewApi"
-        message="Call requires API level 26, or core library desugaring (current min is 24): `java.io.File#toPath`"
-        errorLine1="        check(root.isDirectory &amp;&amp; !Files.isSymbolicLink(root.toPath())) {"
-        errorLine2="                                                             ~~~~~~">
-        <location
-            file="src/main/java/com/mubox/app/service/root/RootArtifactSnapshotStore.kt"
-            line="119"
-            column="62"/>
-    </issue>
-
-    <issue
-        id="NewApi"
-        message="Call requires API level 26, or core library desugaring (current min is 24): `java.nio.file.Files#isSymbolicLink`"
-        errorLine1="        check(root.isDirectory &amp;&amp; !Files.isSymbolicLink(root.toPath())) {"
-        errorLine2="                                         ~~~~~~~~~~~~~~">
-        <location
-            file="src/main/java/com/mubox/app/service/root/RootArtifactSnapshotStore.kt"
-            line="119"
-            column="42"/>
-    </issue>
-
-    <issue
-        id="NewApi"
-        message="Call requires API level 26, or core library desugaring (current min is 24): `java.io.File#toPath`"
-        errorLine1="            if (!child.isDirectory || Files.isSymbolicLink(child.toPath())) return@forEach"
-        errorLine2="                                                                 ~~~~~~">
-        <location
-            file="src/main/java/com/mubox/app/service/root/RootArtifactSnapshotStore.kt"
-            line="123"
-            column="66"/>
-    </issue>
-
-    <issue
-        id="NewApi"
-        message="Call requires API level 26, or core library desugaring (current min is 24): `java.nio.file.Files#isSymbolicLink`"
-        errorLine1="            if (!child.isDirectory || Files.isSymbolicLink(child.toPath())) return@forEach"
-        errorLine2="                                            ~~~~~~~~~~~~~~">
-        <location
-            file="src/main/java/com/mubox/app/service/root/RootArtifactSnapshotStore.kt"
-            line="123"
-            column="45"/>
-    </issue>
-
-    <issue
-        id="NewApi"
-        message="Call requires API level 26, or core library desugaring (current min is 24): `java.io.File#toPath`"
-        errorLine1="                    !Files.isSymbolicLink(it.toPath()) &amp;&amp; it.isFile"
-        errorLine2="                                             ~~~~~~">
-        <location
-            file="src/main/java/com/mubox/app/service/root/RootArtifactSnapshotStore.kt"
-            line="130"
-            column="46"/>
-    </issue>
-
-    <issue
-        id="NewApi"
-        message="Call requires API level 26, or core library desugaring (current min is 24): `java.nio.file.Files#isSymbolicLink`"
-        errorLine1="                    !Files.isSymbolicLink(it.toPath()) &amp;&amp; it.isFile"
-        errorLine2="                           ~~~~~~~~~~~~~~">
-        <location
-            file="src/main/java/com/mubox/app/service/root/RootArtifactSnapshotStore.kt"
-            line="130"
-            column="28"/>
-    </issue>
-
-    <issue
-        id="NewApi"
-        message="Call requires API level 26, or core library desugaring (current min is 24): `java.io.File#toPath`"
-        errorLine1="        check(!Files.isSymbolicLink(target.toPath())) { &quot;Root snapshot file cannot be a symbolic link&quot; }"
-        errorLine2="                                           ~~~~~~">
-        <location
-            file="src/main/java/com/mubox/app/service/root/RootArtifactSnapshotStore.kt"
-            line="141"
-            column="44"/>
-    </issue>
-
-    <issue
-        id="NewApi"
-        message="Call requires API level 26, or core library desugaring (current min is 24): `java.nio.file.Files#isSymbolicLink`"
-        errorLine1="        check(!Files.isSymbolicLink(target.toPath())) { &quot;Root snapshot file cannot be a symbolic link&quot; }"
-        errorLine2="                     ~~~~~~~~~~~~~~">
-        <location
-            file="src/main/java/com/mubox/app/service/root/RootArtifactSnapshotStore.kt"
-            line="141"
-            column="22"/>
-    </issue>
-
-    <issue
-        id="NewApi"
-        message="Call requires API level 26, or core library desugaring (current min is 24): `java.nio.file.Files#move`"
-        errorLine1="                    Files.move("
-        errorLine2="                          ~~~~">
-        <location
-            file="src/main/java/com/mubox/app/service/root/RootArtifactSnapshotStore.kt"
-            line="152"
-            column="27"/>
-    </issue>
-
-    <issue
-        id="NewApi"
-        message="Call requires API level 26, or core library desugaring (current min is 24): `java.io.File#toPath`"
-        errorLine1="                        temp.toPath(),"
-        errorLine2="                             ~~~~~~">
-        <location
-            file="src/main/java/com/mubox/app/service/root/RootArtifactSnapshotStore.kt"
-            line="153"
-            column="30"/>
-    </issue>
-
-    <issue
-        id="NewApi"
-        message="Call requires API level 26, or core library desugaring (current min is 24): `java.io.File#toPath`"
-        errorLine1="                        target.toPath(),"
-        errorLine2="                               ~~~~~~">
-        <location
-            file="src/main/java/com/mubox/app/service/root/RootArtifactSnapshotStore.kt"
-            line="154"
-            column="32"/>
-    </issue>
-
-    <issue
-        id="NewApi"
-        message="Field requires API level 26, or core library desugaring (current min is 24): `java.nio.file.StandardCopyOption#ATOMIC_MOVE`"
-        errorLine1="                        java.nio.file.StandardCopyOption.ATOMIC_MOVE"
-        errorLine2="                        ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
-        <location
-            file="src/main/java/com/mubox/app/service/root/RootArtifactSnapshotStore.kt"
-            line="155"
-            column="25"/>
-    </issue>
-
-    <issue
-        id="NewApi"
-        message="Call requires API level 26, or core library desugaring (current min is 24): `java.io.File#toPath`"
-        errorLine1="                    Files.move(temp.toPath(), target.toPath())"
-        errorLine2="                                    ~~~~~~">
-        <location
-            file="src/main/java/com/mubox/app/service/root/RootArtifactSnapshotStore.kt"
-            line="158"
-            column="37"/>
-    </issue>
-
-    <issue
-        id="NewApi"
-        message="Call requires API level 26, or core library desugaring (current min is 24): `java.io.File#toPath`"
-        errorLine1="                    Files.move(temp.toPath(), target.toPath())"
-        errorLine2="                                                     ~~~~~~">
-        <location
-            file="src/main/java/com/mubox/app/service/root/RootArtifactSnapshotStore.kt"
-            line="158"
-            column="54"/>
-    </issue>
-
-    <issue
-        id="NewApi"
-        message="Call requires API level 26, or core library desugaring (current min is 24): `java.nio.file.Files#move`"
-        errorLine1="                    Files.move(temp.toPath(), target.toPath())"
-        errorLine2="                          ~~~~">
-        <location
-            file="src/main/java/com/mubox/app/service/root/RootArtifactSnapshotStore.kt"
-            line="158"
-            column="27"/>
-    </issue>
-
-    <issue
-        id="NewApi"
-        message="Call requires API level 26, or core library desugaring (current min is 24): `java.io.File#toPath`"
-        errorLine1="                    FileChannel.open(directory.toPath()).use { channel -> channel.force(true) }"
-        errorLine2="                                               ~~~~~~">
-        <location
-            file="src/main/java/com/mubox/app/service/root/RootArtifactSnapshotStore.kt"
-            line="161"
-            column="48"/>
-    </issue>
-
-    <issue
-        id="NewApi"
-        message="Call requires API level 26, or core library desugaring (current min is 24): `java.nio.channels.FileChannel#open`"
-        errorLine1="                    FileChannel.open(directory.toPath()).use { channel -> channel.force(true) }"
-        errorLine2="                                ~~~~">
-        <location
-            file="src/main/java/com/mubox/app/service/root/RootArtifactSnapshotStore.kt"
-            line="161"
-            column="33"/>
-    </issue>
-
-    <issue
-        id="NewApi"
-        message="Method reference requires API level 26 (current min is 24): `Process::isAlive`"
-        errorLine1="        val processes = synchronized(activeProcesses) { activeProcesses.filter(Process::isAlive) }"
-        errorLine2="                                                                               ~~~~~~~~~~~~~~~~">
-        <location
-            file="src/main/java/com/mubox/app/service/root/netfilter/RootCommandExecutor.kt"
-            line="292"
-            column="80"/>
-    </issue>
-
-    <issue
-        id="NewApi"
-        message="Call requires API level 26 (current min is 24): `java.lang.Process#destroyForcibly`"
-        errorLine1="            runCatching { process.destroyForcibly() }"
-        errorLine2="                                  ~~~~~~~~~~~~~~~">
-        <location
-            file="src/main/java/com/mubox/app/service/root/netfilter/RootCommandExecutor.kt"
-            line="295"
-            column="35"/>
-    </issue>
-
-    <issue
-        id="NewApi"
-        message="Call requires API level 26 (current min is 24): `java.lang.Process#waitFor`"
-        errorLine1="        if (!process.waitFor(commandTimeoutMs, TimeUnit.MILLISECONDS)) {"
-        errorLine2="                     ~~~~~~~">
-        <location
-            file="src/main/java/com/mubox/app/service/root/netfilter/RootCommandExecutor.kt"
-            line="365"
-            column="22"/>
-    </issue>
-
-    <issue
-        id="NewApi"
-        message="Call requires API level 26 (current min is 24): `java.lang.Process#waitFor`"
-        errorLine1="            if (!process.waitFor(PROCESS_DESTROY_GRACE_MS, TimeUnit.MILLISECONDS)) {"
-        errorLine2="                         ~~~~~~~">
-        <location
-            file="src/main/java/com/mubox/app/service/root/netfilter/RootCommandExecutor.kt"
-            line="367"
-            column="26"/>
-    </issue>
-
-    <issue
-        id="NewApi"
-        message="Call requires API level 26 (current min is 24): `java.lang.Process#destroyForcibly`"
-        errorLine1="                process.destroyForcibly()"
-        errorLine2="                        ~~~~~~~~~~~~~~~">
-        <location
-            file="src/main/java/com/mubox/app/service/root/netfilter/RootCommandExecutor.kt"
-            line="368"
-            column="25"/>
-    </issue>
-
-    <issue
-        id="NewApi"
-        message="Call requires API level 26 (current min is 24): `java.lang.Process#waitFor`"
-        errorLine1="                process.waitFor(PROCESS_DESTROY_GRACE_MS, TimeUnit.MILLISECONDS)"
-        errorLine2="                        ~~~~~~~">
-        <location
-            file="src/main/java/com/mubox/app/service/root/netfilter/RootCommandExecutor.kt"
-            line="369"
-            column="25"/>
-    </issue>
-
-    <issue
-        id="NewApi"
-        message="Call requires API level 26, or core library desugaring (current min is 24): `java.io.File#toPath`"
-        errorLine1="        if (Files.isSymbolicLink(file.toPath()) || Files.isSymbolicLink(markerFile.toPath())) return false"
-        errorLine2="                                      ~~~~~~">
-        <location
-            file="src/main/java/com/mubox/app/repository/RootGenerationStore.kt"
-            line="163"
-            column="39"/>
-    </issue>
-
-    <issue
-        id="NewApi"
-        message="Call requires API level 26, or core library desugaring (current min is 24): `java.io.File#toPath`"
-        errorLine1="        if (Files.isSymbolicLink(file.toPath()) || Files.isSymbolicLink(markerFile.toPath())) return false"
-        errorLine2="                                                                                   ~~~~~~">
-        <location
-            file="src/main/java/com/mubox/app/repository/RootGenerationStore.kt"
-            line="163"
-            column="84"/>
-    </issue>
-
-    <issue
-        id="NewApi"
-        message="Call requires API level 26, or core library desugaring (current min is 24): `java.nio.file.Files#isSymbolicLink`"
-        errorLine1="        if (Files.isSymbolicLink(file.toPath()) || Files.isSymbolicLink(markerFile.toPath())) return false"
-        errorLine2="                  ~~~~~~~~~~~~~~">
-        <location
-            file="src/main/java/com/mubox/app/repository/RootGenerationStore.kt"
-            line="163"
-            column="19"/>
-    </issue>
-
-    <issue
-        id="NewApi"
-        message="Call requires API level 26, or core library desugaring (current min is 24): `java.nio.file.Files#isSymbolicLink`"
-        errorLine1="        if (Files.isSymbolicLink(file.toPath()) || Files.isSymbolicLink(markerFile.toPath())) return false"
-        errorLine2="                                                         ~~~~~~~~~~~~~~">
-        <location
-            file="src/main/java/com/mubox/app/repository/RootGenerationStore.kt"
-            line="163"
-            column="58"/>
-    </issue>
-
-    <issue
-        id="NewApi"
-        message="Call requires API level 26, or core library desugaring (current min is 24): `java.io.File#toPath`"
-        errorLine1="        check(!Files.isSymbolicLink(target.toPath())) { &quot;Root generation path cannot be a symbolic link&quot; }"
-        errorLine2="                                           ~~~~~~">
-        <location
-            file="src/main/java/com/mubox/app/repository/RootGenerationStore.kt"
-            line="205"
-            column="44"/>
-    </issue>
-
-    <issue
-        id="NewApi"
-        message="Call requires API level 26, or core library desugaring (current min is 24): `java.nio.file.Files#isSymbolicLink`"
-        errorLine1="        check(!Files.isSymbolicLink(target.toPath())) { &quot;Root generation path cannot be a symbolic link&quot; }"
-        errorLine2="                     ~~~~~~~~~~~~~~">
-        <location
-            file="src/main/java/com/mubox/app/repository/RootGenerationStore.kt"
-            line="205"
-            column="22"/>
-    </issue>
-
-    <issue
-        id="NewApi"
-        message="Call requires API level 26, or core library desugaring (current min is 24): `java.io.File#toPath`"
-        errorLine1="            !Files.isSymbolicLink(child.toPath()) &amp;&amp; child.isFile &amp;&amp;"
-        errorLine2="                                        ~~~~~~">
-        <location
-            file="src/main/java/com/mubox/app/repository/RootGenerationStore.kt"
-            line="208"
-            column="41"/>
-    </issue>
-
-    <issue
-        id="NewApi"
-        message="Call requires API level 26, or core library desugaring (current min is 24): `java.nio.file.Files#isSymbolicLink`"
-        errorLine1="            !Files.isSymbolicLink(child.toPath()) &amp;&amp; child.isFile &amp;&amp;"
-        errorLine2="                   ~~~~~~~~~~~~~~">
-        <location
-            file="src/main/java/com/mubox/app/repository/RootGenerationStore.kt"
-            line="208"
-            column="20"/>
-    </issue>
-
-    <issue
-        id="NewApi"
-        message="Call requires API level 26, or core library desugaring (current min is 24): `java.io.File#toPath`"
-        errorLine1="            check(!Files.isSymbolicLink(child.toPath())) {"
-        errorLine2="                                              ~~~~~~">
-        <location
-            file="src/main/java/com/mubox/app/repository/RootGenerationStore.kt"
-            line="231"
-            column="47"/>
-    </issue>
-
-    <issue
-        id="NewApi"
-        message="Call requires API level 26, or core library desugaring (current min is 24): `java.nio.file.Files#isSymbolicLink`"
-        errorLine1="            check(!Files.isSymbolicLink(child.toPath())) {"
-        errorLine2="                         ~~~~~~~~~~~~~~">
-        <location
-            file="src/main/java/com/mubox/app/repository/RootGenerationStore.kt"
-            line="231"
-            column="26"/>
-    </issue>
-
-    <issue
-        id="NewApi"
-        message="Call requires API level 26, or core library desugaring (current min is 24): `java.io.File#toPath`"
-        errorLine1="        if (Files.isSymbolicLink(file.toPath())) return null"
-        errorLine2="                                      ~~~~~~">
-        <location
-            file="src/main/java/com/mubox/app/repository/RootGenerationStore.kt"
-            line="249"
-            column="39"/>
-    </issue>
-
-    <issue
-        id="NewApi"
-        message="Call requires API level 26, or core library desugaring (current min is 24): `java.nio.file.Files#isSymbolicLink`"
-        errorLine1="        if (Files.isSymbolicLink(file.toPath())) return null"
-        errorLine2="                  ~~~~~~~~~~~~~~">
-        <location
-            file="src/main/java/com/mubox/app/repository/RootGenerationStore.kt"
-            line="249"
-            column="19"/>
-    </issue>
-
-    <issue
-        id="NewApi"
-        message="Call requires API level 26, or core library desugaring (current min is 24): `java.io.File#toPath`"
-        errorLine1="                check(!Files.isSymbolicLink(child.toPath())) {"
-        errorLine2="                                                  ~~~~~~">
-        <location
-            file="src/main/java/com/mubox/app/repository/RootGenerationStore.kt"
-            line="415"
-            column="51"/>
-    </issue>
-
-    <issue
-        id="NewApi"
-        message="Call requires API level 26, or core library desugaring (current min is 24): `java.nio.file.Files#isSymbolicLink`"
-        errorLine1="                check(!Files.isSymbolicLink(child.toPath())) {"
-        errorLine2="                             ~~~~~~~~~~~~~~">
-        <location
-            file="src/main/java/com/mubox/app/repository/RootGenerationStore.kt"
-            line="415"
-            column="30"/>
-    </issue>
-
-    <issue
-        id="NewApi"
-        message="Call requires API level 26, or core library desugaring (current min is 24): `java.io.File#toPath`"
-        errorLine1="        check(!Files.isSymbolicLink(file.toPath()) &amp;&amp; file.isFile)"
-        errorLine2="                                         ~~~~~~">
-        <location
-            file="src/main/java/com/mubox/app/repository/RootGenerationStore.kt"
-            line="437"
-            column="42"/>
-    </issue>
-
-    <issue
-        id="NewApi"
-        message="Call requires API level 26, or core library desugaring (current min is 24): `java.nio.file.Files#isSymbolicLink`"
-        errorLine1="        check(!Files.isSymbolicLink(file.toPath()) &amp;&amp; file.isFile)"
-        errorLine2="                     ~~~~~~~~~~~~~~">
-        <location
-            file="src/main/java/com/mubox/app/repository/RootGenerationStore.kt"
-            line="437"
-            column="22"/>
-    </issue>
-
-    <issue
-        id="NewApi"
-        message="Call requires API level 26, or core library desugaring (current min is 24): `java.nio.file.Files#move`"
-        errorLine1="                Files.move("
-        errorLine2="                      ~~~~">
-        <location
-            file="src/main/java/com/mubox/app/repository/RootGenerationStore.kt"
-            line="477"
-            column="23"/>
-    </issue>
-
-    <issue
-        id="NewApi"
-        message="Call requires API level 26, or core library desugaring (current min is 24): `java.io.File#toPath`"
-        errorLine1="                    temp.toPath(),"
-        errorLine2="                         ~~~~~~">
-        <location
-            file="src/main/java/com/mubox/app/repository/RootGenerationStore.kt"
-            line="478"
-            column="26"/>
-    </issue>
-
-    <issue
-        id="NewApi"
-        message="Call requires API level 26, or core library desugaring (current min is 24): `java.io.File#toPath`"
-        errorLine1="                    target.toPath(),"
-        errorLine2="                           ~~~~~~">
-        <location
-            file="src/main/java/com/mubox/app/repository/RootGenerationStore.kt"
-            line="479"
-            column="28"/>
-    </issue>
-
-    <issue
-        id="NewApi"
-        message="Field requires API level 26, or core library desugaring (current min is 24): `java.nio.file.StandardCopyOption#REPLACE_EXISTING`"
-        errorLine1="                    StandardCopyOption.REPLACE_EXISTING,"
-        errorLine2="                    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
-        <location
-            file="src/main/java/com/mubox/app/repository/RootGenerationStore.kt"
-            line="480"
-            column="21"/>
-    </issue>
-
-    <issue
-        id="NewApi"
-        message="Field requires API level 26, or core library desugaring (current min is 24): `java.nio.file.StandardCopyOption#ATOMIC_MOVE`"
-        errorLine1="                    StandardCopyOption.ATOMIC_MOVE"
-        errorLine2="                    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
-        <location
-            file="src/main/java/com/mubox/app/repository/RootGenerationStore.kt"
-            line="481"
-            column="21"/>
-    </issue>
-
-    <issue
-        id="NewApi"
-        message="Call requires API level 26, or core library desugaring (current min is 24): `java.io.File#toPath`"
-        errorLine1="                Files.move(temp.toPath(), target.toPath(), StandardCopyOption.REPLACE_EXISTING)"
-        errorLine2="                                ~~~~~~">
-        <location
-            file="src/main/java/com/mubox/app/repository/RootGenerationStore.kt"
-            line="484"
-            column="33"/>
-    </issue>
-
-    <issue
-        id="NewApi"
-        message="Call requires API level 26, or core library desugaring (current min is 24): `java.io.File#toPath`"
-        errorLine1="                Files.move(temp.toPath(), target.toPath(), StandardCopyOption.REPLACE_EXISTING)"
-        errorLine2="                                                 ~~~~~~">
-        <location
-            file="src/main/java/com/mubox/app/repository/RootGenerationStore.kt"
-            line="484"
-            column="50"/>
-    </issue>
-
-    <issue
-        id="NewApi"
-        message="Call requires API level 26, or core library desugaring (current min is 24): `java.nio.file.Files#move`"
-        errorLine1="                Files.move(temp.toPath(), target.toPath(), StandardCopyOption.REPLACE_EXISTING)"
-        errorLine2="                      ~~~~">
-        <location
-            file="src/main/java/com/mubox/app/repository/RootGenerationStore.kt"
-            line="484"
-            column="23"/>
-    </issue>
-
-    <issue
-        id="NewApi"
-        message="Field requires API level 26, or core library desugaring (current min is 24): `java.nio.file.StandardCopyOption#REPLACE_EXISTING`"
-        errorLine1="                Files.move(temp.toPath(), target.toPath(), StandardCopyOption.REPLACE_EXISTING)"
-        errorLine2="                                                           ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
-        <location
-            file="src/main/java/com/mubox/app/repository/RootGenerationStore.kt"
-            line="484"
-            column="60"/>
-    </issue>
-
-    <issue
-        id="NewApi"
-        message="Call requires API level 26, or core library desugaring (current min is 24): `java.io.File#toPath`"
-        errorLine1="                    FileChannel.open(parent.toPath()).use { channel -> channel.force(true) }"
-        errorLine2="                                            ~~~~~~">
-        <location
-            file="src/main/java/com/mubox/app/repository/RootGenerationStore.kt"
-            line="488"
-            column="45"/>
-    </issue>
-
-    <issue
-        id="NewApi"
-        message="Call requires API level 26, or core library desugaring (current min is 24): `java.nio.channels.FileChannel#open`"
-        errorLine1="                    FileChannel.open(parent.toPath()).use { channel -> channel.force(true) }"
-        errorLine2="                                ~~~~">
-        <location
-            file="src/main/java/com/mubox/app/repository/RootGenerationStore.kt"
-            line="488"
-            column="33"/>
-    </issue>
-
-    <issue
-        id="NewApi"
-        message="Call requires API level 26, or core library desugaring (current min is 24): `java.io.File#toPath`"
-        errorLine1="        check(file != null &amp;&amp; !Files.isSymbolicLink(file.toPath())) {"
-        errorLine2="                                                         ~~~~~~">
-        <location
-            file="src/main/java/com/mubox/app/repository/RootGenerationStore.kt"
-            line="510"
-            column="58"/>
-    </issue>
-
-    <issue
-        id="NewApi"
-        message="Call requires API level 26, or core library desugaring (current min is 24): `java.nio.file.Files#isSymbolicLink`"
-        errorLine1="        check(file != null &amp;&amp; !Files.isSymbolicLink(file.toPath())) {"
-        errorLine2="                                     ~~~~~~~~~~~~~~">
-        <location
-            file="src/main/java/com/mubox/app/repository/RootGenerationStore.kt"
-            line="510"
-            column="38"/>
-    </issue>
-
-    <issue
-        id="NewApi"
-        message="Call requires API level 26, or core library desugaring (current min is 24): `java.io.File#toPath`"
-        errorLine1="        check(confDirectory.isDirectory &amp;&amp; !Files.isSymbolicLink(confDirectory.toPath())) {"
-        errorLine2="                                                                               ~~~~~~">
-        <location
-            file="src/main/java/com/mubox/app/service/root/RootIpv6PrivacyGuard.kt"
-            line="97"
-            column="80"/>
-    </issue>
-
-    <issue
-        id="NewApi"
-        message="Call requires API level 26, or core library desugaring (current min is 24): `java.nio.file.Files#isSymbolicLink`"
-        errorLine1="        check(confDirectory.isDirectory &amp;&amp; !Files.isSymbolicLink(confDirectory.toPath())) {"
-        errorLine2="                                                  ~~~~~~~~~~~~~~">
-        <location
-            file="src/main/java/com/mubox/app/service/root/RootIpv6PrivacyGuard.kt"
-            line="97"
-            column="51"/>
-    </issue>
-
-    <issue
-        id="NewApi"
-        message="Call requires API level 26, or core library desugaring (current min is 24): `java.io.File#toPath`"
-        errorLine1="        check(directory.isDirectory &amp;&amp; !Files.isSymbolicLink(directory.toPath())) {"
-        errorLine2="                                                                       ~~~~~~">
-        <location
-            file="src/main/java/com/mubox/app/service/root/RootIpv6PrivacyGuard.kt"
-            line="145"
-            column="72"/>
-    </issue>
-
-    <issue
-        id="NewApi"
-        message="Call requires API level 26, or core library desugaring (current min is 24): `java.nio.file.Files#isSymbolicLink`"
-        errorLine1="        check(directory.isDirectory &amp;&amp; !Files.isSymbolicLink(directory.toPath())) {"
-        errorLine2="                                              ~~~~~~~~~~~~~~">
-        <location
-            file="src/main/java/com/mubox/app/service/root/RootIpv6PrivacyGuard.kt"
-            line="145"
-            column="47"/>
-    </issue>
-
-    <issue
-        id="NewApi"
-        message="Call requires API level 26, or core library desugaring (current min is 24): `java.io.File#toPath`"
-        errorLine1="        check(file.isFile &amp;&amp; !Files.isSymbolicLink(file.toPath())) {"
-        errorLine2="                                                        ~~~~~~">
-        <location
-            file="src/main/java/com/mubox/app/service/root/RootIpv6PrivacyGuard.kt"
-            line="149"
-            column="57"/>
-    </issue>
-
-    <issue
-        id="NewApi"
-        message="Call requires API level 26, or core library desugaring (current min is 24): `java.nio.file.Files#isSymbolicLink`"
-        errorLine1="        check(file.isFile &amp;&amp; !Files.isSymbolicLink(file.toPath())) {"
-        errorLine2="                                    ~~~~~~~~~~~~~~">
-        <location
-            file="src/main/java/com/mubox/app/service/root/RootIpv6PrivacyGuard.kt"
-            line="149"
-            column="37"/>
-    </issue>
-
-    <issue
-        id="NewApi"
-        message="Call requires API level 26, or core library desugaring (current min is 24): `java.io.File#toPath`"
-        errorLine1="        check(stateFile.isFile &amp;&amp; !Files.isSymbolicLink(stateFile.toPath())) {"
-        errorLine2="                                                                  ~~~~~~">
-        <location
-            file="src/main/java/com/mubox/app/service/root/RootIpv6PrivacyGuard.kt"
-            line="157"
-            column="67"/>
-    </issue>
-
-    <issue
-        id="NewApi"
-        message="Call requires API level 26, or core library desugaring (current min is 24): `java.nio.file.Files#isSymbolicLink`"
-        errorLine1="        check(stateFile.isFile &amp;&amp; !Files.isSymbolicLink(stateFile.toPath())) {"
-        errorLine2="                                         ~~~~~~~~~~~~~~">
-        <location
-            file="src/main/java/com/mubox/app/service/root/RootIpv6PrivacyGuard.kt"
-            line="157"
-            column="42"/>
-    </issue>
-
-    <issue
-        id="NewApi"
-        message="Call requires API level 26, or core library desugaring (current min is 24): `java.io.File#toPath`"
-        errorLine1="        check(parent.isDirectory &amp;&amp; !Files.isSymbolicLink(parent.toPath())) {"
-        errorLine2="                                                                 ~~~~~~">
-        <location
-            file="src/main/java/com/mubox/app/service/root/RootIpv6PrivacyGuard.kt"
-            line="192"
-            column="66"/>
-    </issue>
-
-    <issue
-        id="NewApi"
-        message="Call requires API level 26, or core library desugaring (current min is 24): `java.nio.file.Files#isSymbolicLink`"
-        errorLine1="        check(parent.isDirectory &amp;&amp; !Files.isSymbolicLink(parent.toPath())) {"
-        errorLine2="                                           ~~~~~~~~~~~~~~">
-        <location
-            file="src/main/java/com/mubox/app/service/root/RootIpv6PrivacyGuard.kt"
-            line="192"
-            column="44"/>
-    </issue>
-
-    <issue
-        id="NewApi"
-        message="Call requires API level 26, or core library desugaring (current min is 24): `java.nio.file.Files#move`"
-        errorLine1="                Files.move("
-        errorLine2="                      ~~~~">
-        <location
-            file="src/main/java/com/mubox/app/service/root/RootIpv6PrivacyGuard.kt"
-            line="209"
-            column="23"/>
-    </issue>
-
-    <issue
-        id="NewApi"
-        message="Call requires API level 26, or core library desugaring (current min is 24): `java.io.File#toPath`"
-        errorLine1="                    temp.toPath(),"
-        errorLine2="                         ~~~~~~">
-        <location
-            file="src/main/java/com/mubox/app/service/root/RootIpv6PrivacyGuard.kt"
-            line="210"
-            column="26"/>
-    </issue>
-
-    <issue
-        id="NewApi"
-        message="Call requires API level 26, or core library desugaring (current min is 24): `java.io.File#toPath`"
-        errorLine1="                    stateFile.toPath(),"
-        errorLine2="                              ~~~~~~">
-        <location
-            file="src/main/java/com/mubox/app/service/root/RootIpv6PrivacyGuard.kt"
-            line="211"
-            column="31"/>
-    </issue>
-
-    <issue
-        id="NewApi"
-        message="Field requires API level 26, or core library desugaring (current min is 24): `java.nio.file.StandardCopyOption#ATOMIC_MOVE`"
-        errorLine1="                    StandardCopyOption.ATOMIC_MOVE,"
-        errorLine2="                    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
-        <location
-            file="src/main/java/com/mubox/app/service/root/RootIpv6PrivacyGuard.kt"
-            line="212"
-            column="21"/>
-    </issue>
-
-    <issue
-        id="NewApi"
-        message="Field requires API level 26, or core library desugaring (current min is 24): `java.nio.file.StandardCopyOption#REPLACE_EXISTING`"
-        errorLine1="                    StandardCopyOption.REPLACE_EXISTING"
-        errorLine2="                    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
-        <location
-            file="src/main/java/com/mubox/app/service/root/RootIpv6PrivacyGuard.kt"
-            line="213"
-            column="21"/>
-    </issue>
-
-    <issue
-        id="NewApi"
-        message="Call requires API level 26, or core library desugaring (current min is 24): `java.io.File#toPath`"
-        errorLine1="                Files.move(temp.toPath(), stateFile.toPath(), StandardCopyOption.REPLACE_EXISTING)"
-        errorLine2="                                ~~~~~~">
-        <location
-            file="src/main/java/com/mubox/app/service/root/RootIpv6PrivacyGuard.kt"
-            line="216"
-            column="33"/>
-    </issue>
-
-    <issue
-        id="NewApi"
-        message="Call requires API level 26, or core library desugaring (current min is 24): `java.io.File#toPath`"
-        errorLine1="                Files.move(temp.toPath(), stateFile.toPath(), StandardCopyOption.REPLACE_EXISTING)"
-        errorLine2="                                                    ~~~~~~">
-        <location
-            file="src/main/java/com/mubox/app/service/root/RootIpv6PrivacyGuard.kt"
-            line="216"
-            column="53"/>
-    </issue>
-
-    <issue
-        id="NewApi"
-        message="Call requires API level 26, or core library desugaring (current min is 24): `java.nio.file.Files#move`"
-        errorLine1="                Files.move(temp.toPath(), stateFile.toPath(), StandardCopyOption.REPLACE_EXISTING)"
-        errorLine2="                      ~~~~">
-        <location
-            file="src/main/java/com/mubox/app/service/root/RootIpv6PrivacyGuard.kt"
-            line="216"
-            column="23"/>
-    </issue>
-
-    <issue
-        id="NewApi"
-        message="Field requires API level 26, or core library desugaring (current min is 24): `java.nio.file.StandardCopyOption#REPLACE_EXISTING`"
-        errorLine1="                Files.move(temp.toPath(), stateFile.toPath(), StandardCopyOption.REPLACE_EXISTING)"
-        errorLine2="                                                              ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
-        <location
-            file="src/main/java/com/mubox/app/service/root/RootIpv6PrivacyGuard.kt"
-            line="216"
-            column="63"/>
-    </issue>
-
-    <issue
-        id="NewApi"
-        message="Call requires API level 26, or core library desugaring (current min is 24): `java.io.File#toPath`"
-        errorLine1="                fd.absoluteFile.toPath().let { path ->"
-        errorLine2="                                ~~~~~~">
-        <location
-            file="src/main/java/com/mubox/app/service/root/RootListenerVerifier.kt"
-            line="93"
-            column="33"/>
-    </issue>
-
-    <issue
-        id="NewApi"
-        message="Call requires API level 26, or core library desugaring (current min is 24): `java.nio.file.Files#readSymbolicLink`"
-        errorLine1="                    runCatching { java.nio.file.Files.readSymbolicLink(path).toString() }"
-        errorLine2="                                                      ~~~~~~~~~~~~~~~~">
-        <location
-            file="src/main/java/com/mubox/app/service/root/RootListenerVerifier.kt"
-            line="94"
-            column="55"/>
-    </issue>
-
-    <issue
-        id="NewApi"
-        message="Call requires API level 26, or core library desugaring (current min is 24): `java.io.File#toPath`"
-        errorLine1="        check(!Files.isSymbolicLink(file.toPath())) { &quot;Root netfilter owner file cannot be a symbolic link&quot; }"
-        errorLine2="                                         ~~~~~~">
-        <location
-            file="src/main/java/com/mubox/app/service/root/RootNetfilterOwnership.kt"
-            line="186"
-            column="42"/>
-    </issue>
-
-    <issue
-        id="NewApi"
-        message="Call requires API level 26, or core library desugaring (current min is 24): `java.nio.file.Files#isSymbolicLink`"
-        errorLine1="        check(!Files.isSymbolicLink(file.toPath())) { &quot;Root netfilter owner file cannot be a symbolic link&quot; }"
-        errorLine2="                     ~~~~~~~~~~~~~~">
-        <location
-            file="src/main/java/com/mubox/app/service/root/RootNetfilterOwnership.kt"
-            line="186"
-            column="22"/>
-    </issue>
-
-    <issue
-        id="NewApi"
-        message="Call requires API level 26, or core library desugaring (current min is 24): `java.io.File#toPath`"
-        errorLine1="        check(!Files.isSymbolicLink(file.toPath())) { &quot;Root netfilter owner file cannot be a symbolic link&quot; }"
-        errorLine2="                                         ~~~~~~">
-        <location
-            file="src/main/java/com/mubox/app/service/root/RootNetfilterOwnership.kt"
-            line="300"
-            column="42"/>
-    </issue>
-
-    <issue
-        id="NewApi"
-        message="Call requires API level 26, or core library desugaring (current min is 24): `java.nio.file.Files#isSymbolicLink`"
-        errorLine1="        check(!Files.isSymbolicLink(file.toPath())) { &quot;Root netfilter owner file cannot be a symbolic link&quot; }"
-        errorLine2="                     ~~~~~~~~~~~~~~">
-        <location
-            file="src/main/java/com/mubox/app/service/root/RootNetfilterOwnership.kt"
-            line="300"
-            column="22"/>
-    </issue>
-
-    <issue
-        id="NewApi"
-        message="Call requires API level 26, or core library desugaring (current min is 24): `java.io.File#toPath`"
-        errorLine1="        check(!Files.isSymbolicLink(parent.toPath())) {"
-        errorLine2="                                           ~~~~~~">
-        <location
-            file="src/main/java/com/mubox/app/service/root/RootNetfilterOwnership.kt"
-            line="301"
-            column="44"/>
-    </issue>
-
-    <issue
-        id="NewApi"
-        message="Call requires API level 26, or core library desugaring (current min is 24): `java.nio.file.Files#isSymbolicLink`"
-        errorLine1="        check(!Files.isSymbolicLink(parent.toPath())) {"
-        errorLine2="                     ~~~~~~~~~~~~~~">
-        <location
-            file="src/main/java/com/mubox/app/service/root/RootNetfilterOwnership.kt"
-            line="301"
-            column="22"/>
-    </issue>
-
-    <issue
-        id="NewApi"
-        message="Call requires API level 26, or core library desugaring (current min is 24): `java.nio.file.Files#move`"
-        errorLine1="            Files.move("
-        errorLine2="                  ~~~~">
-        <location
-            file="src/main/java/com/mubox/app/service/root/RootNetfilterOwnership.kt"
-            line="312"
-            column="19"/>
-    </issue>
-
-    <issue
-        id="NewApi"
-        message="Call requires API level 26, or core library desugaring (current min is 24): `java.io.File#toPath`"
-        errorLine1="                temp.toPath(),"
-        errorLine2="                     ~~~~~~">
-        <location
-            file="src/main/java/com/mubox/app/service/root/RootNetfilterOwnership.kt"
-            line="313"
-            column="22"/>
-    </issue>
-
-    <issue
-        id="NewApi"
-        message="Call requires API level 26, or core library desugaring (current min is 24): `java.io.File#toPath`"
-        errorLine1="                file.toPath(),"
-        errorLine2="                     ~~~~~~">
-        <location
-            file="src/main/java/com/mubox/app/service/root/RootNetfilterOwnership.kt"
-            line="314"
-            column="22"/>
-    </issue>
-
-    <issue
-        id="NewApi"
-        message="Field requires API level 26, or core library desugaring (current min is 24): `java.nio.file.StandardCopyOption#REPLACE_EXISTING`"
-        errorLine1="                StandardCopyOption.REPLACE_EXISTING,"
-        errorLine2="                ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
-        <location
-            file="src/main/java/com/mubox/app/service/root/RootNetfilterOwnership.kt"
-            line="315"
-            column="17"/>
-    </issue>
-
-    <issue
-        id="NewApi"
-        message="Field requires API level 26, or core library desugaring (current min is 24): `java.nio.file.StandardCopyOption#ATOMIC_MOVE`"
-        errorLine1="                StandardCopyOption.ATOMIC_MOVE"
-        errorLine2="                ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
-        <location
-            file="src/main/java/com/mubox/app/service/root/RootNetfilterOwnership.kt"
-            line="316"
-            column="17"/>
-    </issue>
-
-    <issue
-        id="NewApi"
-        message="Call requires API level 26, or core library desugaring (current min is 24): `java.io.File#toPath`"
-        errorLine1="            runCatching { FileChannel.open(parent.toPath()).use { channel -> channel.force(true) } }"
-        errorLine2="                                                  ~~~~~~">
-        <location
-            file="src/main/java/com/mubox/app/service/root/RootNetfilterOwnership.kt"
-            line="318"
-            column="51"/>
-    </issue>
-
-    <issue
-        id="NewApi"
-        message="Call requires API level 26, or core library desugaring (current min is 24): `java.nio.channels.FileChannel#open`"
-        errorLine1="            runCatching { FileChannel.open(parent.toPath()).use { channel -> channel.force(true) } }"
-        errorLine2="                                      ~~~~">
-        <location
-            file="src/main/java/com/mubox/app/service/root/RootNetfilterOwnership.kt"
-            line="318"
-            column="39"/>
-    </issue>
-
-    <issue
-        id="NewApi"
-        message="Call requires API level 26, or core library desugaring (current min is 24): `java.io.File#toPath`"
-        errorLine1="                Files.move(temp.toPath(), file.toPath(), StandardCopyOption.REPLACE_EXISTING)"
-        errorLine2="                                ~~~~~~">
-        <location
-            file="src/main/java/com/mubox/app/service/root/RootNetfilterOwnership.kt"
-            line="325"
-            column="33"/>
-    </issue>
-
-    <issue
-        id="NewApi"
-        message="Call requires API level 26, or core library desugaring (current min is 24): `java.io.File#toPath`"
-        errorLine1="                Files.move(temp.toPath(), file.toPath(), StandardCopyOption.REPLACE_EXISTING)"
-        errorLine2="                                               ~~~~~~">
-        <location
-            file="src/main/java/com/mubox/app/service/root/RootNetfilterOwnership.kt"
-            line="325"
-            column="48"/>
-    </issue>
-
-    <issue
-        id="NewApi"
-        message="Call requires API level 26, or core library desugaring (current min is 24): `java.nio.file.Files#move`"
-        errorLine1="                Files.move(temp.toPath(), file.toPath(), StandardCopyOption.REPLACE_EXISTING)"
-        errorLine2="                      ~~~~">
-        <location
-            file="src/main/java/com/mubox/app/service/root/RootNetfilterOwnership.kt"
-            line="325"
-            column="23"/>
-    </issue>
-
-    <issue
-        id="NewApi"
-        message="Field requires API level 26, or core library desugaring (current min is 24): `java.nio.file.StandardCopyOption#REPLACE_EXISTING`"
-        errorLine1="                Files.move(temp.toPath(), file.toPath(), StandardCopyOption.REPLACE_EXISTING)"
-        errorLine2="                                                         ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
-        <location
-            file="src/main/java/com/mubox/app/service/root/RootNetfilterOwnership.kt"
-            line="325"
-            column="58"/>
-    </issue>
-
-    <issue
-        id="NewApi"
-        message="Call requires API level 26, or core library desugaring (current min is 24): `java.io.File#toPath`"
-        errorLine1="        check(!Files.isSymbolicLink(stagingFile.toPath())) {"
-        errorLine2="                                                ~~~~~~">
-        <location
-            file="src/main/java/com/mubox/app/service/root/RootNetfilterOwnership.kt"
-            line="566"
-            column="49"/>
-    </issue>
-
-    <issue
-        id="NewApi"
-        message="Call requires API level 26, or core library desugaring (current min is 24): `java.nio.file.Files#isSymbolicLink`"
-        errorLine1="        check(!Files.isSymbolicLink(stagingFile.toPath())) {"
-        errorLine2="                     ~~~~~~~~~~~~~~">
-        <location
-            file="src/main/java/com/mubox/app/service/root/RootNetfilterOwnership.kt"
-            line="566"
-            column="22"/>
-    </issue>
-
-    <issue
-        id="NewApi"
-        message="Call requires API level 26, or core library desugaring (current min is 24): `java.io.File#toPath`"
-        errorLine1="            check(!Files.isSymbolicLink(file.toPath())) {"
-        errorLine2="                                             ~~~~~~">
-        <location
-            file="src/main/java/com/mubox/app/service/root/RootNetfilterOwnership.kt"
-            line="574"
-            column="46"/>
-    </issue>
-
-    <issue
-        id="NewApi"
-        message="Call requires API level 26, or core library desugaring (current min is 24): `java.nio.file.Files#isSymbolicLink`"
-        errorLine1="            check(!Files.isSymbolicLink(file.toPath())) {"
-        errorLine2="                         ~~~~~~~~~~~~~~">
-        <location
-            file="src/main/java/com/mubox/app/service/root/RootNetfilterOwnership.kt"
-            line="574"
-            column="26"/>
-    </issue>
-
-    <issue
-        id="NewApi"
-        message="Call requires API level 26, or core library desugaring (current min is 24): `java.io.File#toPath`"
-        errorLine1="        check(!Files.isSymbolicLink(ownerFile.toPath())) { &quot;Root owner file cannot be a symbolic link&quot; }"
-        errorLine2="                                              ~~~~~~">
-        <location
-            file="src/main/java/com/mubox/app/service/root/RootNetfilterOwnership.kt"
-            line="582"
-            column="47"/>
-    </issue>
-
-    <issue
-        id="NewApi"
-        message="Call requires API level 26, or core library desugaring (current min is 24): `java.nio.file.Files#isSymbolicLink`"
-        errorLine1="        check(!Files.isSymbolicLink(ownerFile.toPath())) { &quot;Root owner file cannot be a symbolic link&quot; }"
-        errorLine2="                     ~~~~~~~~~~~~~~">
-        <location
-            file="src/main/java/com/mubox/app/service/root/RootNetfilterOwnership.kt"
-            line="582"
-            column="22"/>
-    </issue>
-
-    <issue
-        id="NewApi"
-        message="Call requires API level 26, or core library desugaring (current min is 24): `java.io.File#toPath`"
-        errorLine1="        check(!Files.isSymbolicLink(stagingFile.toPath())) {"
-        errorLine2="                                                ~~~~~~">
-        <location
-            file="src/main/java/com/mubox/app/service/root/RootNetfilterOwnership.kt"
-            line="583"
-            column="49"/>
-    </issue>
-
-    <issue
-        id="NewApi"
-        message="Call requires API level 26, or core library desugaring (current min is 24): `java.nio.file.Files#isSymbolicLink`"
-        errorLine1="        check(!Files.isSymbolicLink(stagingFile.toPath())) {"
-        errorLine2="                     ~~~~~~~~~~~~~~">
-        <location
-            file="src/main/java/com/mubox/app/service/root/RootNetfilterOwnership.kt"
-            line="583"
-            column="22"/>
-    </issue>
-
-    <issue
-        id="NewApi"
-        message="Call requires API level 26, or core library desugaring (current min is 24): `java.io.File#toPath`"
-        errorLine1="        check(!Files.isSymbolicLink(rootDirectory.toPath())) {"
-        errorLine2="                                                  ~~~~~~">
-        <location
-            file="src/main/java/com/mubox/app/service/root/RootNetfilterOwnership.kt"
-            line="600"
-            column="51"/>
-    </issue>
-
-    <issue
-        id="NewApi"
-        message="Call requires API level 26, or core library desugaring (current min is 24): `java.nio.file.Files#isSymbolicLink`"
-        errorLine1="        check(!Files.isSymbolicLink(rootDirectory.toPath())) {"
-        errorLine2="                     ~~~~~~~~~~~~~~">
-        <location
-            file="src/main/java/com/mubox/app/service/root/RootNetfilterOwnership.kt"
-            line="600"
-            column="22"/>
-    </issue>
-
-    <issue
-        id="NewApi"
-        message="Call requires API level 26, or core library desugaring (current min is 24): `java.io.File#toPath`"
-        errorLine1="        check(!Files.isSymbolicLink(legacyScanMarker.toPath())) { &quot;Root legacy marker cannot be a symbolic link&quot; }"
-        errorLine2="                                                     ~~~~~~">
-        <location
-            file="src/main/java/com/mubox/app/service/root/RootNetfilterOwnership.kt"
-            line="659"
-            column="54"/>
-    </issue>
-
-    <issue
-        id="NewApi"
-        message="Call requires API level 26, or core library desugaring (current min is 24): `java.nio.file.Files#isSymbolicLink`"
-        errorLine1="        check(!Files.isSymbolicLink(legacyScanMarker.toPath())) { &quot;Root legacy marker cannot be a symbolic link&quot; }"
-        errorLine2="                     ~~~~~~~~~~~~~~">
-        <location
-            file="src/main/java/com/mubox/app/service/root/RootNetfilterOwnership.kt"
-            line="659"
-            column="22"/>
-    </issue>
-
-    <issue
-        id="NewApi"
-        message="Call requires API level 26, or core library desugaring (current min is 24): `java.io.File#toPath`"
-        errorLine1="        check(!Files.isSymbolicLink(rootDirectory.toPath())) {"
-        errorLine2="                                                  ~~~~~~">
-        <location
-            file="src/main/java/com/mubox/app/service/root/RootNetfilterOwnership.kt"
-            line="664"
-            column="51"/>
-    </issue>
-
-    <issue
-        id="NewApi"
-        message="Call requires API level 26, or core library desugaring (current min is 24): `java.nio.file.Files#isSymbolicLink`"
-        errorLine1="        check(!Files.isSymbolicLink(rootDirectory.toPath())) {"
-        errorLine2="                     ~~~~~~~~~~~~~~">
-        <location
-            file="src/main/java/com/mubox/app/service/root/RootNetfilterOwnership.kt"
-            line="664"
-            column="22"/>
-    </issue>
-
-    <issue
-        id="NewApi"
-        message="Call requires API level 26, or core library desugaring (current min is 24): `java.io.File#toPath`"
-        errorLine1="        check(!Files.isSymbolicLink(legacyScanMarker.toPath())) { &quot;Root legacy marker cannot be a symbolic link&quot; }"
-        errorLine2="                                                     ~~~~~~">
-        <location
-            file="src/main/java/com/mubox/app/service/root/RootNetfilterOwnership.kt"
-            line="668"
-            column="54"/>
-    </issue>
-
-    <issue
-        id="NewApi"
-        message="Call requires API level 26, or core library desugaring (current min is 24): `java.nio.file.Files#isSymbolicLink`"
-        errorLine1="        check(!Files.isSymbolicLink(legacyScanMarker.toPath())) { &quot;Root legacy marker cannot be a symbolic link&quot; }"
-        errorLine2="                     ~~~~~~~~~~~~~~">
-        <location
-            file="src/main/java/com/mubox/app/service/root/RootNetfilterOwnership.kt"
-            line="668"
-            column="22"/>
-    </issue>
-
-    <issue
-        id="NewApi"
-        message="Call requires API level 26, or core library desugaring (current min is 24): `java.io.File#toPath`"
-        errorLine1="            check(!Files.isSymbolicLink(conflictFile.toPath()))"
-        errorLine2="                                                     ~~~~~~">
-        <location
-            file="src/main/java/com/mubox/app/service/root/RootNetfilterOwnership.kt"
-            line="674"
-            column="54"/>
-    </issue>
-
-    <issue
-        id="NewApi"
-        message="Call requires API level 26, or core library desugaring (current min is 24): `java.nio.file.Files#isSymbolicLink`"
-        errorLine1="            check(!Files.isSymbolicLink(conflictFile.toPath()))"
-        errorLine2="                         ~~~~~~~~~~~~~~">
-        <location
-            file="src/main/java/com/mubox/app/service/root/RootNetfilterOwnership.kt"
-            line="674"
-            column="26"/>
-    </issue>
-
-    <issue
-        id="NewApi"
-        message="Call requires API level 26 (current min is 24): `android.system.Os#setsockoptInt`"
-        errorLine1="                    Os.setsockoptInt("
-        errorLine2="                       ~~~~~~~~~~~~~">
-        <location
-            file="src/main/java/com/mubox/app/service/root/RootPlatformInterface.kt"
-            line="67"
-            column="24"/>
-    </issue>
-
-    <issue
-        id="NewApi"
-        message="Call requires API level 26 (current min is 24): `java.lang.Process#isAlive`"
-        errorLine1="        check(process.isAlive) { &quot;Root watchdog exited during startup&quot; }"
-        errorLine2="                      ~~~~~~~">
-        <location
-            file="src/main/java/com/mubox/app/service/root/RootWatchdogInstaller.kt"
-            line="67"
-            column="23"/>
-    </issue>
-
-    <issue
-        id="NewApi"
-        message="Call requires API level 26, or core library desugaring (current min is 24): `java.io.File#toPath`"
-        errorLine1="        check(!Files.isSymbolicLink(runtimeDir.toPath())) { &quot;Root watchdog directory cannot be a symbolic link&quot; }"
-        errorLine2="                                               ~~~~~~">
-        <location
-            file="src/main/java/com/mubox/app/service/root/RootWatchdogInstaller.kt"
-            line="127"
-            column="48"/>
-    </issue>
-
-    <issue
-        id="NewApi"
-        message="Call requires API level 26, or core library desugaring (current min is 24): `java.nio.file.Files#isSymbolicLink`"
-        errorLine1="        check(!Files.isSymbolicLink(runtimeDir.toPath())) { &quot;Root watchdog directory cannot be a symbolic link&quot; }"
-        errorLine2="                     ~~~~~~~~~~~~~~">
-        <location
-            file="src/main/java/com/mubox/app/service/root/RootWatchdogInstaller.kt"
-            line="127"
-            column="22"/>
-    </issue>
-
-    <issue
-        id="NewApi"
-        message="Call requires API level 26, or core library desugaring (current min is 24): `java.io.File#toPath`"
-        errorLine1="        if (!sessionFile.isFile || Files.isSymbolicLink(sessionFile.toPath())) return"
-        errorLine2="                                                                    ~~~~~~">
-        <location
-            file="src/main/java/com/mubox/app/service/root/RootWatchdogInstaller.kt"
-            line="169"
-            column="69"/>
-    </issue>
-
-    <issue
-        id="NewApi"
-        message="Call requires API level 26, or core library desugaring (current min is 24): `java.nio.file.Files#isSymbolicLink`"
-        errorLine1="        if (!sessionFile.isFile || Files.isSymbolicLink(sessionFile.toPath())) return"
-        errorLine2="                                         ~~~~~~~~~~~~~~">
-        <location
-            file="src/main/java/com/mubox/app/service/root/RootWatchdogInstaller.kt"
-            line="169"
-            column="42"/>
-    </issue>
-
-    <issue
-        id="NewApi"
-        message="Call requires API level 26, or core library desugaring (current min is 24): `java.io.File#toPath`"
-        errorLine1="            check(!Files.isSymbolicLink(file.toPath())) { &quot;Root watchdog runtime file is a symbolic link: $name&quot; }"
-        errorLine2="                                             ~~~~~~">
-        <location
-            file="src/main/java/com/mubox/app/service/root/RootWatchdogInstaller.kt"
-            line="174"
-            column="46"/>
-    </issue>
-
-    <issue
-        id="NewApi"
-        message="Call requires API level 26, or core library desugaring (current min is 24): `java.nio.file.Files#isSymbolicLink`"
-        errorLine1="            check(!Files.isSymbolicLink(file.toPath())) { &quot;Root watchdog runtime file is a symbolic link: $name&quot; }"
-        errorLine2="                         ~~~~~~~~~~~~~~">
-        <location
-            file="src/main/java/com/mubox/app/service/root/RootWatchdogInstaller.kt"
-            line="174"
-            column="26"/>
-    </issue>
-
-    <issue
-        id="NewApi"
-        message="Call requires API level 26 (current min is 24): `java.lang.Process#destroyForcibly`"
-        errorLine1="        process.destroyForcibly()"
-        errorLine2="                ~~~~~~~~~~~~~~~">
-        <location
-            file="src/main/java/com/mubox/app/service/root/RootWatchdogInstaller.kt"
-            line="211"
-            column="17"/>
-    </issue>
-
-    <issue
-        id="NewApi"
-        message="Call requires API level 26 (current min is 24): `java.lang.Process#waitFor`"
-        errorLine1="        runCatching { process.waitFor(PROCESS_REAP_WAIT_MS, TimeUnit.MILLISECONDS) }"
-        errorLine2="                              ~~~~~~~">
-        <location
-            file="src/main/java/com/mubox/app/service/root/RootWatchdogInstaller.kt"
-            line="212"
-            column="31"/>
-    </issue>
-
-    <issue
-        id="NewApi"
-        message="Call requires API level 26 (current min is 24): `java.lang.Process#isAlive`"
-        errorLine1="        val watchdogAlive = watchdogProcess?.isAlive == true"
-        errorLine2="                                             ~~~~~~~">
-        <location
-            file="src/main/java/com/mubox/app/service/root/RootWatchdogInstaller.kt"
-            line="243"
-            column="46"/>
-    </issue>
-
-    <issue
-        id="NewApi"
-        message="Call requires API level 26, or core library desugaring (current min is 24): `java.io.File#toPath`"
-        errorLine1="        check(!Files.isSymbolicLink(parent.toPath()) &amp;&amp; parent.isDirectory) {"
-        errorLine2="                                           ~~~~~~">
-        <location
-            file="src/main/java/com/mubox/app/service/root/RootWatchdogInstaller.kt"
-            line="252"
-            column="44"/>
-    </issue>
-
-    <issue
-        id="NewApi"
-        message="Call requires API level 26, or core library desugaring (current min is 24): `java.nio.file.Files#isSymbolicLink`"
-        errorLine1="        check(!Files.isSymbolicLink(parent.toPath()) &amp;&amp; parent.isDirectory) {"
-        errorLine2="                     ~~~~~~~~~~~~~~">
-        <location
-            file="src/main/java/com/mubox/app/service/root/RootWatchdogInstaller.kt"
-            line="252"
-            column="22"/>
-    </issue>
-
-    <issue
-        id="NewApi"
-        message="Call requires API level 26, or core library desugaring (current min is 24): `java.io.File#toPath`"
-        errorLine1="        check(!Files.isSymbolicLink(target.toPath()) &amp;&amp; (!target.exists() || target.isFile)) {"
-        errorLine2="                                           ~~~~~~">
-        <location
-            file="src/main/java/com/mubox/app/service/root/RootWatchdogInstaller.kt"
-            line="255"
-            column="44"/>
-    </issue>
-
-    <issue
-        id="NewApi"
-        message="Call requires API level 26, or core library desugaring (current min is 24): `java.nio.file.Files#isSymbolicLink`"
-        errorLine1="        check(!Files.isSymbolicLink(target.toPath()) &amp;&amp; (!target.exists() || target.isFile)) {"
-        errorLine2="                     ~~~~~~~~~~~~~~">
-        <location
-            file="src/main/java/com/mubox/app/service/root/RootWatchdogInstaller.kt"
-            line="255"
-            column="22"/>
-    </issue>
-
-    <issue
-        id="NewApi"
-        message="Call requires API level 26, or core library desugaring (current min is 24): `java.io.File#toPath`"
-        errorLine1="        check(!Files.isSymbolicLink(target.toPath()) &amp;&amp; (!target.exists() || target.isFile)) {"
-        errorLine2="                                           ~~~~~~">
-        <location
-            file="src/main/java/com/mubox/app/service/root/RootWatchdogInstaller.kt"
-            line="272"
-            column="44"/>
-    </issue>
-
-    <issue
-        id="NewApi"
-        message="Call requires API level 26, or core library desugaring (current min is 24): `java.nio.file.Files#isSymbolicLink`"
-        errorLine1="        check(!Files.isSymbolicLink(target.toPath()) &amp;&amp; (!target.exists() || target.isFile)) {"
-        errorLine2="                     ~~~~~~~~~~~~~~">
-        <location
-            file="src/main/java/com/mubox/app/service/root/RootWatchdogInstaller.kt"
-            line="272"
-            column="22"/>
     </issue>
 
     <issue
@@ -1682,83 +32,6 @@
             file="src/main/java/com/mubox/app/service/root/RootPlatformInterface.kt"
             line="33"
             column="13"/>
-    </issue>
-
-    <issue
-        id="UnusedAttribute"
-        message="Attribute `enableOnBackInvokedCallback` is only used in API level 33 and higher (current min is 31)"
-        errorLine1="        android:enableOnBackInvokedCallback=&quot;true&quot;"
-        errorLine2="        ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
-        <location
-            file="src/main/AndroidManifest.xml"
-            line="28"
-            column="9"/>
-    </issue>
-
-    <issue
-        id="UnusedAttribute"
-        message="Attribute `shortcutId` is only used in API level 25 and higher (current min is 24)"
-        errorLine1="        android:shortcutId=&quot;toggle_vpn&quot;"
-        errorLine2="        ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
-        <location
-            file="src/main/res/xml/shortcuts.xml"
-            line="4"
-            column="9"/>
-    </issue>
-
-    <issue
-        id="UnusedAttribute"
-        message="Attribute `shortcutShortLabel` is only used in API level 25 and higher (current min is 24)"
-        errorLine1="        android:shortcutShortLabel=&quot;@string/shortcut_toggle_vpn_short&quot;"
-        errorLine2="        ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
-        <location
-            file="src/main/res/xml/shortcuts.xml"
-            line="7"
-            column="9"/>
-    </issue>
-
-    <issue
-        id="UnusedAttribute"
-        message="Attribute `shortcutLongLabel` is only used in API level 25 and higher (current min is 24)"
-        errorLine1="        android:shortcutLongLabel=&quot;@string/shortcut_toggle_vpn&quot;>"
-        errorLine2="        ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
-        <location
-            file="src/main/res/xml/shortcuts.xml"
-            line="8"
-            column="9"/>
-    </issue>
-
-    <issue
-        id="UnusedAttribute"
-        message="Attribute `shortcutId` is only used in API level 25 and higher (current min is 24)"
-        errorLine1="        android:shortcutId=&quot;switch_node&quot;"
-        errorLine2="        ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
-        <location
-            file="src/main/res/xml/shortcuts.xml"
-            line="15"
-            column="9"/>
-    </issue>
-
-    <issue
-        id="UnusedAttribute"
-        message="Attribute `shortcutShortLabel` is only used in API level 25 and higher (current min is 24)"
-        errorLine1="        android:shortcutShortLabel=&quot;@string/shortcut_switch_node_short&quot;"
-        errorLine2="        ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
-        <location
-            file="src/main/res/xml/shortcuts.xml"
-            line="18"
-            column="9"/>
-    </issue>
-
-    <issue
-        id="UnusedAttribute"
-        message="Attribute `shortcutLongLabel` is only used in API level 25 and higher (current min is 24)"
-        errorLine1="        android:shortcutLongLabel=&quot;@string/shortcut_switch_node&quot;>"
-        errorLine2="        ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
-        <location
-            file="src/main/res/xml/shortcuts.xml"
-            line="19"
-            column="9"/>
     </issue>
 
     <issue
@@ -2463,6 +736,728 @@
             file="src/main/java/com/mubox/app/service/manager/CoreManager.kt"
             line="231"
             column="9"/>
+    </issue>
+
+    <issue
+        id="ObsoleteSdkInt"
+        message="Unnecessary; `SDK_INT` is always >= 31"
+        errorLine1="        tools:targetApi=&quot;31&quot;>"
+        errorLine2="        ~~~~~~~~~~~~~~~~~~~~">
+        <location
+            file="src/main/AndroidManifest.xml"
+            line="39"
+            column="9"/>
+    </issue>
+
+    <issue
+        id="ObsoleteSdkInt"
+        message="Unnecessary; `SDK_INT` is always >= 36"
+        errorLine1="            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {"
+        errorLine2="                ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
+        <location
+            file="src/main/java/com/mubox/app/utils/AppUpdateChecker.kt"
+            line="140"
+            column="17"/>
+    </issue>
+
+    <issue
+        id="ObsoleteSdkInt"
+        message="Unnecessary; `SDK_INT` is never &lt; 36"
+        errorLine1="        return Build.VERSION.SDK_INT &lt; Build.VERSION_CODES.TIRAMISU ||"
+        errorLine2="               ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
+        <location
+            file="src/main/java/com/mubox/app/utils/AppUpdateChecker.kt"
+            line="327"
+            column="16"/>
+    </issue>
+
+    <issue
+        id="ObsoleteSdkInt"
+        message="Unnecessary; `SDK_INT` is always >= 36"
+        errorLine1="        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {"
+        errorLine2="            ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
+        <location
+            file="src/main/java/com/mubox/app/utils/AppUpdateChecker.kt"
+            line="335"
+            column="13"/>
+    </issue>
+
+    <issue
+        id="ObsoleteSdkInt"
+        message="Unnecessary; `SDK_INT` is never &lt; 36"
+        errorLine1="        return Build.VERSION.SDK_INT &lt; Build.VERSION_CODES.O ||"
+        errorLine2="               ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
+        <location
+            file="src/main/java/com/mubox/app/utils/AppUpdater.kt"
+            line="130"
+            column="16"/>
+    </issue>
+
+    <issue
+        id="ObsoleteSdkInt"
+        message="Unnecessary; `SDK_INT` is never &lt; 36"
+        errorLine1="    if (Build.VERSION.SDK_INT &lt; Build.VERSION_CODES.Q) return null"
+        errorLine2="        ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
+        <location
+            file="src/main/java/com/mubox/app/repository/configrepo/ConfigRepositoryPart1.kt"
+            line="58"
+            column="9"/>
+    </issue>
+
+    <issue
+        id="ObsoleteSdkInt"
+        message="Unnecessary; `SDK_INT` is always >= 36"
+        errorLine1="    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {"
+        errorLine2="        ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
+        <location
+            file="src/main/java/com/mubox/app/repository/configrepo/ConfigRepositoryPart4.kt"
+            line="280"
+            column="9"/>
+    </issue>
+
+    <issue
+        id="ObsoleteSdkInt"
+        message="Unnecessary; `SDK_INT` is always >= 36"
+        errorLine1="                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O &amp;&amp; tagsChanged) {"
+        errorLine2="                    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
+        <location
+            file="src/main/java/com/mubox/app/repository/configrepo/ConfigRepositoryPart4.kt"
+            line="680"
+            column="21"/>
+    </issue>
+
+    <issue
+        id="ObsoleteSdkInt"
+        message="Unnecessary; `SDK_INT` is never &lt; 36"
+        errorLine1="    if (Build.VERSION.SDK_INT &lt; Build.VERSION_CODES.O) {"
+        errorLine2="        ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
+        <location
+            file="src/main/java/com/mubox/app/repository/configrepo/ConfigRepositoryStatics1.kt"
+            line="582"
+            column="9"/>
+    </issue>
+
+    <issue
+        id="ObsoleteSdkInt"
+        message="Unnecessary; `SDK_INT` is always >= 26"
+        errorLine1="@TargetApi(Build.VERSION_CODES.O)"
+        errorLine2="~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
+        <location
+            file="src/main/java/com/mubox/app/repository/configrepo/ConfigRepositoryStatics1.kt"
+            line="594"
+            column="1"/>
+    </issue>
+
+    <issue
+        id="ObsoleteSdkInt"
+        message="Unnecessary; `SDK_INT` is always >= 36"
+        errorLine1="        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {"
+        errorLine2="            ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
+        <location
+            file="src/main/java/com/mubox/app/viewmodel/DashboardViewModel.kt"
+            line="802"
+            column="13"/>
+    </issue>
+
+    <issue
+        id="ObsoleteSdkInt"
+        message="Unnecessary; `SDK_INT` is always >= 36"
+        errorLine1="                Build.VERSION.SDK_INT >= 31 -> {"
+        errorLine2="                ~~~~~~~~~~~~~~~~~~~~~~~~~~~">
+        <location
+            file="src/main/java/com/mubox/app/utils/DefaultNetworkListener.kt"
+            line="212"
+            column="17"/>
+    </issue>
+
+    <issue
+        id="ObsoleteSdkInt"
+        message="Unnecessary; `Build.VERSION.SDK_INT >= 26` is never true here"
+        errorLine1="                Build.VERSION.SDK_INT >= 26 -> {"
+        errorLine2="                ~~~~~~~~~~~~~~~~~~~~~~~~~~~">
+        <location
+            file="src/main/java/com/mubox/app/utils/DefaultNetworkListener.kt"
+            line="215"
+            column="17"/>
+    </issue>
+
+    <issue
+        id="ObsoleteSdkInt"
+        message="Unnecessary; `SDK_INT` is always >= 36"
+        errorLine1="        val versionCode = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {"
+        errorLine2="                              ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
+        <location
+            file="src/main/java/com/mubox/app/repository/DiagnosticArchiveRepository.kt"
+            line="211"
+            column="31"/>
+    </issue>
+
+    <issue
+        id="ObsoleteSdkInt"
+        message="Unnecessary; `SDK_INT` is always >= 36"
+        errorLine1="        return if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {"
+        errorLine2="                   ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
+        <location
+            file="src/main/java/com/mubox/app/repository/DiagnosticArchiveRepository.kt"
+            line="248"
+            column="20"/>
+    </issue>
+
+    <issue
+        id="ObsoleteSdkInt"
+        message="Unnecessary; `SDK_INT` is always >= 29"
+        errorLine1="    @RequiresApi(Build.VERSION_CODES.Q)"
+        errorLine2="    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
+        <location
+            file="src/main/java/com/mubox/app/repository/DiagnosticArchiveRepository.kt"
+            line="255"
+            column="5"/>
+    </issue>
+
+    <issue
+        id="ObsoleteSdkInt"
+        message="Unnecessary; `SDK_INT` is always >= 36"
+        errorLine1="    private fun currentProcessName(): String = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {"
+        errorLine2="                                                   ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
+        <location
+            file="src/main/java/com/mubox/app/utils/perf/DiagnosticResourceSampler.kt"
+            line="565"
+            column="52"/>
+    </issue>
+
+    <issue
+        id="ObsoleteSdkInt"
+        message="Unnecessary; `SDK_INT` is always >= 36"
+        errorLine1="                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {"
+        errorLine2="                    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
+        <location
+            file="src/main/java/com/mubox/app/service/manager/ForeignVpnMonitor.kt"
+            line="102"
+            column="21"/>
+    </issue>
+
+    <issue
+        id="ObsoleteSdkInt"
+        message="Unnecessary; `SDK_INT` is never &lt; 36"
+        errorLine1="            Build.VERSION.SDK_INT &lt; Build.VERSION_CODES.R || caps.ownerUid == ownerUid"
+        errorLine2="            ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
+        <location
+            file="src/main/java/com/mubox/app/service/manager/ForeignVpnMonitor.kt"
+            line="119"
+            column="13"/>
+    </issue>
+
+    <issue
+        id="ObsoleteSdkInt"
+        message="Unnecessary; `SDK_INT` is always >= 36"
+        errorLine1="        val supportsOwnerUid = Build.VERSION.SDK_INT >= Build.VERSION_CODES.R"
+        errorLine2="                               ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
+        <location
+            file="src/main/java/com/mubox/app/service/manager/ForeignVpnMonitor.kt"
+            line="297"
+            column="32"/>
+    </issue>
+
+    <issue
+        id="ObsoleteSdkInt"
+        message="Unnecessary; `SDK_INT` is always >= 36"
+        errorLine1="        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {"
+        errorLine2="            ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
+        <location
+            file="src/main/java/com/mubox/app/ui/components/FullScreenDialogPage.kt"
+            line="405"
+            column="13"/>
+    </issue>
+
+    <issue
+        id="ObsoleteSdkInt"
+        message="Unnecessary; `SDK_INT` is never &lt; 36"
+        errorLine1="    if (Build.VERSION.SDK_INT &lt; Build.VERSION_CODES.S) return"
+        errorLine2="        ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
+        <location
+            file="src/main/java/com/mubox/app/ui/theme/LiquidGlassMenuControls.kt"
+            line="62"
+            column="9"/>
+    </issue>
+
+    <issue
+        id="ObsoleteSdkInt"
+        message="Unnecessary; `SDK_INT` is always >= 36"
+        errorLine1="                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {"
+        errorLine2="                    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
+        <location
+            file="src/main/java/com/mubox/app/ui/theme/LiquidGlassTheme.kt"
+            line="430"
+            column="21"/>
+    </issue>
+
+    <issue
+        id="ObsoleteSdkInt"
+        message="Unnecessary; `SDK_INT` is always >= 36"
+        errorLine1="        return Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q"
+        errorLine2="               ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
+        <location
+            file="src/main/java/com/mubox/app/core/LocalResolverImpl.kt"
+            line="24"
+            column="16"/>
+    </issue>
+
+    <issue
+        id="ObsoleteSdkInt"
+        message="Unnecessary; `SDK_INT` is always >= 36"
+        errorLine1="            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {"
+        errorLine2="                ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
+        <location
+            file="src/main/java/com/mubox/app/core/LocalResolverImpl.kt"
+            line="35"
+            column="17"/>
+    </issue>
+
+    <issue
+        id="ObsoleteSdkInt"
+        message="Unnecessary; `SDK_INT` is never &lt; 36"
+        errorLine1="        if (Build.VERSION.SDK_INT &lt; Build.VERSION_CODES.Q) {"
+        errorLine2="            ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
+        <location
+            file="src/main/java/com/mubox/app/core/LocalResolverImpl.kt"
+            line="44"
+            column="13"/>
+    </issue>
+
+    <issue
+        id="ObsoleteSdkInt"
+        message="Unnecessary; `SDK_INT` is always >= 29"
+        errorLine1="    @TargetApi(Build.VERSION_CODES.Q)"
+        errorLine2="    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
+        <location
+            file="src/main/java/com/mubox/app/core/LocalResolverImpl.kt"
+            line="59"
+            column="5"/>
+    </issue>
+
+    <issue
+        id="ObsoleteSdkInt"
+        message="Unnecessary; `SDK_INT` is always >= 29"
+        errorLine1="    @TargetApi(Build.VERSION_CODES.Q)"
+        errorLine2="    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
+        <location
+            file="src/main/java/com/mubox/app/core/LocalResolverImpl.kt"
+            line="126"
+            column="5"/>
+    </issue>
+
+    <issue
+        id="ObsoleteSdkInt"
+        message="Unnecessary; `SDK_INT` is always >= 36"
+        errorLine1="    if (Build.VERSION.SDK_INT == 0 || Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {"
+        errorLine2="                                      ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
+        <location
+            file="src/main/java/com/mubox/app/repository/LogRepository.kt"
+            line="237"
+            column="39"/>
+    </issue>
+
+    <issue
+        id="ObsoleteSdkInt"
+        message="Unnecessary; `SDK_INT` is always >= 36"
+        errorLine1="        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {"
+        errorLine2="            ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
+        <location
+            file="src/main/java/com/mubox/app/MainActivity.kt"
+            line="120"
+            column="13"/>
+    </issue>
+
+    <issue
+        id="ObsoleteSdkInt"
+        message="Unnecessary; `SDK_INT` is always >= 36"
+        errorLine1="        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {"
+        errorLine2="            ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
+        <location
+            file="src/main/java/com/mubox/app/MainActivity.kt"
+            line="151"
+            column="13"/>
+    </issue>
+
+    <issue
+        id="ObsoleteSdkInt"
+        message="Unnecessary; `SDK_INT` is always >= 36"
+        errorLine1="            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {"
+        errorLine2="                ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
+        <location
+            file="src/main/java/com/mubox/app/service/manager/NetworkAutoSwitchManager.kt"
+            line="69"
+            column="17"/>
+    </issue>
+
+    <issue
+        id="ObsoleteSdkInt"
+        message="Unnecessary; `SDK_INT` is always >= 36"
+        errorLine1="        val transportSsid = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {"
+        errorLine2="                                ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
+        <location
+            file="src/main/java/com/mubox/app/service/manager/NetworkAutoSwitchManager.kt"
+            line="168"
+            column="33"/>
+    </issue>
+
+    <issue
+        id="ObsoleteSdkInt"
+        message="Unnecessary; `SDK_INT` is always >= 36"
+        errorLine1="            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {"
+        errorLine2="                ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
+        <location
+            file="src/main/java/com/mubox/app/receiver/PackageRemovedReceiver.kt"
+            line="84"
+            column="17"/>
+    </issue>
+
+    <issue
+        id="ObsoleteSdkInt"
+        message="Unnecessary; `SDK_INT` is never &lt; 36"
+        errorLine1="        if (Build.VERSION.SDK_INT &lt; Build.VERSION_CODES.Q) {"
+        errorLine2="            ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
+        <location
+            file="src/main/java/com/mubox/app/service/manager/PlatformInterfaceImpl.kt"
+            line="645"
+            column="13"/>
+    </issue>
+
+    <issue
+        id="ObsoleteSdkInt"
+        message="Unnecessary; `SDK_INT` is never &lt; 36"
+        errorLine1="    if (Build.VERSION.SDK_INT &lt; Build.VERSION_CODES.O) return"
+        errorLine2="        ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
+        <location
+            file="src/main/java/com/mubox/app/service/ProxyOnlyNotification.kt"
+            line="18"
+            column="9"/>
+    </issue>
+
+    <issue
+        id="ObsoleteSdkInt"
+        message="Unnecessary; `SDK_INT` is always >= 36"
+        errorLine1="    val builder = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {"
+        errorLine2="                      ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
+        <location
+            file="src/main/java/com/mubox/app/service/ProxyOnlyNotification.kt"
+            line="57"
+            column="23"/>
+    </issue>
+
+    <issue
+        id="ObsoleteSdkInt"
+        message="Unnecessary; `SDK_INT` is always >= 36"
+        errorLine1="            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.UPSIDE_DOWN_CAKE) {"
+        errorLine2="                ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
+        <location
+            file="src/main/java/com/mubox/app/service/ProxyOnlyService.kt"
+            line="605"
+            column="17"/>
+    </issue>
+
+    <issue
+        id="ObsoleteSdkInt"
+        message="Unnecessary; `SDK_INT` is always >= 36"
+        errorLine1="                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.UPSIDE_DOWN_CAKE) {"
+        errorLine2="                    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
+        <location
+            file="src/main/java/com/mubox/app/service/ProxyOnlyService.kt"
+            line="628"
+            column="21"/>
+    </issue>
+
+    <issue
+        id="ObsoleteSdkInt"
+        message="Unnecessary; `SDK_INT` is never &lt; 36"
+        errorLine1="        if (Build.VERSION.SDK_INT &lt; Build.VERSION_CODES.Q) return ConnectionOwner()"
+        errorLine2="            ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
+        <location
+            file="src/main/java/com/mubox/app/service/proxy/ProxyPlatformInterface.kt"
+            line="56"
+            column="13"/>
+    </issue>
+
+    <issue
+        id="ObsoleteSdkInt"
+        message="Unnecessary; `SDK_INT` is always >= 36"
+        errorLine1="        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {"
+        errorLine2="            ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
+        <location
+            file="src/main/java/com/mubox/app/ui/scanner/QrScannerActivity.kt"
+            line="56"
+            column="13"/>
+    </issue>
+
+    <issue
+        id="ObsoleteSdkInt"
+        message="Unnecessary; `SDK_INT` is always >= 36"
+        errorLine1="    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {"
+        errorLine2="        ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
+        <location
+            file="src/main/java/com/mubox/app/service/root/runtime/RootTransparentForegroundRuntime.kt"
+            line="410"
+            column="9"/>
+    </issue>
+
+    <issue
+        id="ObsoleteSdkInt"
+        message="Unnecessary; `SDK_INT` is always >= 36"
+        errorLine1="    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {"
+        errorLine2="        ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
+        <location
+            file="src/main/java/com/mubox/app/service/root/runtime/RootTransparentForegroundRuntime.kt"
+            line="609"
+            column="9"/>
+    </issue>
+
+    <issue
+        id="ObsoleteSdkInt"
+        message="Unnecessary; `SDK_INT` is never &lt; 36"
+        errorLine1="        if (Build.VERSION.SDK_INT &lt; Build.VERSION_CODES.O) {"
+        errorLine2="            ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
+        <location
+            file="src/main/java/com/mubox/app/repository/RuleSetRepository.kt"
+            line="601"
+            column="13"/>
+    </issue>
+
+    <issue
+        id="ObsoleteSdkInt"
+        message="Unnecessary; `SDK_INT` is always >= 26"
+        errorLine1="    @TargetApi(Build.VERSION_CODES.O)"
+        errorLine2="    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
+        <location
+            file="src/main/java/com/mubox/app/repository/RuleSetRepository.kt"
+            line="622"
+            column="5"/>
+    </issue>
+
+    <issue
+        id="ObsoleteSdkInt"
+        message="Unnecessary; `SDK_INT` is always >= 36"
+        errorLine1="    return if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {"
+        errorLine2="               ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
+        <location
+            file="src/main/java/com/mubox/app/service/vpn/SingBoxCommandRuntime.kt"
+            line="177"
+            column="16"/>
+    </issue>
+
+    <issue
+        id="ObsoleteSdkInt"
+        message="Unnecessary; `SDK_INT` is always >= 36"
+        errorLine1="            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {"
+        errorLine2="                ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
+        <location
+            file="src/main/java/com/mubox/app/service/vpn/SingBoxCommandRuntime.kt"
+            line="269"
+            column="17"/>
+    </issue>
+
+    <issue
+        id="ObsoleteSdkInt"
+        message="Unnecessary; `SDK_INT` is always >= 36"
+        errorLine1="        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.UPSIDE_DOWN_CAKE) {"
+        errorLine2="            ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
+        <location
+            file="src/main/java/com/mubox/app/service/vpn/SingBoxControlRuntime.kt"
+            line="443"
+            column="13"/>
+    </issue>
+
+    <issue
+        id="ObsoleteSdkInt"
+        message="Unnecessary; `SDK_INT` is always >= 36"
+        errorLine1="    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {"
+        errorLine2="        ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
+        <location
+            file="src/main/java/com/mubox/app/service/vpn/SingBoxControlRuntime.kt"
+            line="800"
+            column="9"/>
+    </issue>
+
+    <issue
+        id="ObsoleteSdkInt"
+        message="Unnecessary; `SDK_INT` is always >= 36"
+        errorLine1="    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {"
+        errorLine2="        ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
+        <location
+            file="src/main/java/com/mubox/app/service/vpn/SingBoxFailoverRuntime.kt"
+            line="583"
+            column="9"/>
+    </issue>
+
+    <issue
+        id="ObsoleteSdkInt"
+        message="Unnecessary; `SDK_INT` is always >= 36"
+        errorLine1="            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {"
+        errorLine2="                ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
+        <location
+            file="src/main/java/com/mubox/app/ui/theme/Theme.kt"
+            line="84"
+            column="17"/>
+    </issue>
+
+    <issue
+        id="ObsoleteSdkInt"
+        message="Unnecessary; `SDK_INT` is always >= 36"
+        errorLine1="    if (Build.VERSION.SDK_INT == 0 || Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {"
+        errorLine2="                                      ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
+        <location
+            file="src/main/java/com/mubox/app/repository/TrafficRepository.kt"
+            line="451"
+            column="39"/>
+    </issue>
+
+    <issue
+        id="ObsoleteSdkInt"
+        message="Unnecessary; `SDK_INT` is always >= 26"
+        errorLine1="@TargetApi(Build.VERSION_CODES.O)"
+        errorLine2="~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
+        <location
+            file="src/main/java/com/mubox/app/repository/TrafficRepository.kt"
+            line="462"
+            column="1"/>
+    </issue>
+
+    <issue
+        id="ObsoleteSdkInt"
+        message="Unnecessary; `SDK_INT` is always >= 36"
+        errorLine1="            val packageInfo = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {"
+        errorLine2="                                  ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
+        <location
+            file="src/main/java/com/mubox/app/utils/VersionInfo.kt"
+            line="13"
+            column="35"/>
+    </issue>
+
+    <issue
+        id="ObsoleteSdkInt"
+        message="Unnecessary; `SDK_INT` is always >= 36"
+        errorLine1="            val packageInfo = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {"
+        errorLine2="                                  ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
+        <location
+            file="src/main/java/com/mubox/app/utils/VersionInfo.kt"
+            line="31"
+            column="35"/>
+    </issue>
+
+    <issue
+        id="ObsoleteSdkInt"
+        message="Unnecessary; `SDK_INT` is always >= 36"
+        errorLine1="            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {"
+        errorLine2="                ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
+        <location
+            file="src/main/java/com/mubox/app/utils/VersionInfo.kt"
+            line="40"
+            column="17"/>
+    </issue>
+
+    <issue
+        id="ObsoleteSdkInt"
+        message="Unnecessary; `SDK_INT` is always >= 36"
+        errorLine1="        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {"
+        errorLine2="            ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
+        <location
+            file="src/main/java/com/mubox/app/service/notification/VpnNotificationManager.kt"
+            line="91"
+            column="13"/>
+    </issue>
+
+    <issue
+        id="ObsoleteSdkInt"
+        message="Unnecessary; `SDK_INT` is always >= 36"
+        errorLine1="        return if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {"
+        errorLine2="                   ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
+        <location
+            file="src/main/java/com/mubox/app/service/notification/VpnNotificationManager.kt"
+            line="335"
+            column="20"/>
+    </issue>
+
+    <issue
+        id="ObsoleteSdkInt"
+        message="Unnecessary; `SDK_INT` is always >= 36"
+        errorLine1="            val component = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {"
+        errorLine2="                                ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
+        <location
+            file="src/main/java/com/mubox/app/manager/VpnServiceManager.kt"
+            line="611"
+            column="33"/>
+    </issue>
+
+    <issue
+        id="ObsoleteSdkInt"
+        message="Unnecessary; `SDK_INT` is always >= 36"
+        errorLine1="                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {"
+        errorLine2="                    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
+        <location
+            file="src/main/java/com/mubox/app/service/VpnTileService.kt"
+            line="256"
+            column="21"/>
+    </issue>
+
+    <issue
+        id="ObsoleteSdkInt"
+        message="Unnecessary; `SDK_INT` is always >= 36"
+        errorLine1="        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.UPSIDE_DOWN_CAKE) {"
+        errorLine2="            ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
+        <location
+            file="src/main/java/com/mubox/app/service/VpnTileService.kt"
+            line="277"
+            column="13"/>
+    </issue>
+
+    <issue
+        id="ObsoleteSdkInt"
+        message="Unnecessary; `SDK_INT` is always >= 36"
+        errorLine1="        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {"
+        errorLine2="            ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
+        <location
+            file="src/main/java/com/mubox/app/service/tun/VpnTunManager.kt"
+            line="407"
+            column="13"/>
+    </issue>
+
+    <issue
+        id="ObsoleteSdkInt"
+        message="Unnecessary; `SDK_INT` is never &lt; 36"
+        errorLine1="        if (Build.VERSION.SDK_INT &lt; Build.VERSION_CODES.Q) return null"
+        errorLine2="            ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
+        <location
+            file="src/main/java/com/mubox/app/service/tun/VpnTunManager.kt"
+            line="473"
+            column="13"/>
+    </issue>
+
+    <issue
+        id="ObsoleteSdkInt"
+        message="Unnecessary; `SDK_INT` is always >= 36"
+        errorLine1="        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {"
+        errorLine2="            ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
+        <location
+            file="src/main/java/com/mubox/app/service/tun/VpnTunManager.kt"
+            line="706"
+            column="13"/>
+    </issue>
+
+    <issue
+        id="ObsoleteSdkInt"
+        message="Unnecessary; `SDK_INT` is never &lt; 36"
+        errorLine1="        if (Build.VERSION.SDK_INT &lt; Build.VERSION_CODES.Q) return null to false"
+        errorLine2="            ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
+        <location
+            file="src/main/java/com/mubox/app/service/tun/VpnTunManager.kt"
+            line="723"
+            column="13"/>
+    </issue>
+
+    <issue
+        id="ObsoleteSdkInt"
+        message="This folder configuration (`v26`) is unnecessary; `minSdkVersion` is 36.0. Merge all the resources in this folder into `mipmap-anydpi`.">
+        <location
+            file="src/main/res/mipmap-anydpi-v26"/>
     </issue>
 
     <issue
