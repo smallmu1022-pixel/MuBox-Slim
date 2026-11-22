@@ -16,6 +16,7 @@ import com.mubox.app.service.RuleSetAutoUpdateWorker
 import com.mubox.app.service.SubscriptionAutoUpdateWorker
 import com.mubox.app.service.VpnKeepaliveWorker
 import com.mubox.app.service.manager.NetworkAutoSwitchManager
+import com.mubox.app.utils.AppUpdater
 import com.mubox.app.utils.DefaultNetworkListener
 import com.mubox.app.utils.LocaleHelper
 import com.tencent.mmkv.MMKV
@@ -102,6 +103,7 @@ class SingBoxApplication : Application(), Configuration.Provider {
 
         applicationScope.launch(Dispatchers.IO) {
             cleanupOrphanedTempFiles()
+            AppUpdater.clearStaleUpdateFiles(this@SingBoxApplication)
         }
     }
 

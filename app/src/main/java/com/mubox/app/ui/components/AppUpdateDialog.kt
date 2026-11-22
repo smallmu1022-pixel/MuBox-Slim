@@ -25,10 +25,8 @@ import androidx.compose.ui.unit.dp
 import com.mubox.app.utils.AppUpdater
 import com.mubox.app.utils.UpdateCheckResult
 import kotlinx.coroutines.CancellationException
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
 import java.io.File
 
 private sealed interface UpdatePhase {
@@ -68,17 +66,8 @@ fun AppUpdateDialog(
                 val apk = AppUpdater.downloadApk(context, asset) { downloaded, total ->
                     phase = UpdatePhase.Downloading(downloaded, total)
                 }
-                phase = UpdatePhase.Verifying
-                val expected = AppUpdater.expectedSha256(asset)
-                val verified = expected == null ||
-                    withContext(Dispatchers.IO) { AppUpdater.sha256Hex(apk) }
-                        .equals(expected, ignoreCase = true)
-                if (!verified) {
-                    apk.delete()
-                    phase = UpdatePhase.Failed("安装包校验失败，已删除，请重试")
-                } else {
-                    phase = UpdatePhase.Ready(apk, expected != null)
-                }
+                // 校验已在下载层完成：不过会自动删包回退直连重试，最终失败抛异常走下面 catch
+                phase = UpdatePhase.Ready(apk, AppUpdater.expectedSha256(asset) != null)
             } catch (e: CancellationException) {
                 phase = UpdatePhase.Info
             } catch (e: Exception) {

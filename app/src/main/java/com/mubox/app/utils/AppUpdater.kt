@@ -30,6 +30,15 @@ object AppUpdater {
         return File(context.cacheDir, "updates").apply { mkdirs() }
     }
 
+    /** 校验失败专用异常：文案直接给用户看（弹窗原样显示）。 */
+    class UpdateVerificationException : IOException("安装包校验失败，已删除，请重试")
+
+    /**
+     * 下载并校验：VPN 在跑时先走本机代理口，下载报错或校验不过（字节数对不上 /
+     * SHA-256 对不上）都删掉重走直连再试一次；直连仍校验不过才抛
+     * [UpdateVerificationException]。全局模式下代理通道实测会把更新包下坏，
+     * 校验必须在下载层做完、失败要能触发回退（2026-11-22 vc34 真机实测）。
+     */
     suspend fun downloadApk(
         context: Context,
         asset: AppUpdateChecker.ReleaseAsset,
@@ -37,12 +46,43 @@ object AppUpdater {
     ): File {
         val settings = SettingsRepository.getInstance(context).settings.first()
         val useProxy = VpnStateStore.getActive() && settings.proxyPort > 0
-        return try {
-            downloadWithClient(context, asset, proxyPort = if (useProxy) settings.proxyPort else null, onProgress)
-        } catch (e: IOException) {
-            if (!useProxy) throw e
-            // 代理口下载失败时回退直连再试一次
-            downloadWithClient(context, asset, proxyPort = null, onProgress)
+        val attempts: List<Int?> = if (useProxy) listOf(settings.proxyPort, null) else listOf(null)
+        var lastError: IOException? = null
+        for (proxyPort in attempts) {
+            val file = try {
+                downloadWithClient(context, asset, proxyPort = proxyPort, onProgress)
+            } catch (e: IOException) {
+                lastError = e
+                continue
+            }
+            if (verifyDownloaded(asset, file)) {
+                return file
+            }
+            file.delete()
+            lastError = UpdateVerificationException()
+        }
+        throw lastError ?: UpdateVerificationException()
+    }
+
+    /** 字节数与发布摘要双重校验；无摘要时只查字节数，资产没给大小时跳过大小项。 */
+    private suspend fun verifyDownloaded(asset: AppUpdateChecker.ReleaseAsset, file: File): Boolean {
+        if (asset.size > 0 && file.length() != asset.size) return false
+        val expected = expectedSha256(asset) ?: return true
+        val actual = withContext(Dispatchers.IO) { sha256Hex(file) }
+        return actual.equals(expected, ignoreCase = true)
+    }
+
+    /**
+     * 清理更新缓存：装完的 APK 与中断的 .part 不再常驻。只删 24 小时前的文件，
+     * 避免误删刚下完、正等系统安装器读取的包。启动时调用。
+     */
+    fun clearStaleUpdateFiles(context: Context) {
+        val files = File(context.cacheDir, "updates").listFiles() ?: return
+        val cutoff = System.currentTimeMillis() - 24 * 60 * 60 * 1000L
+        for (file in files) {
+            if (file.isFile && file.lastModified() < cutoff) {
+                file.delete()
+            }
         }
     }
 
