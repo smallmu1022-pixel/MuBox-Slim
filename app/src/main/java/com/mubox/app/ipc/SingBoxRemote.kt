@@ -12,8 +12,12 @@ import android.os.Looper
 import android.os.Build
 import android.os.SystemClock
 import android.util.Log
+import com.google.gson.Gson
 import com.mubox.app.aidl.ISingBoxService
 import com.mubox.app.aidl.ISingBoxServiceCallback
+import com.mubox.app.model.DnsConfig
+import com.mubox.app.model.LatencyTestMethod
+import com.mubox.app.model.Outbound
 import com.mubox.app.service.ServiceState
 import java.util.concurrent.ConcurrentHashMap
 import java.util.concurrent.ConcurrentLinkedQueue
@@ -116,6 +120,23 @@ object SingBoxRemote {
 
     private val urlTestRequestId = AtomicLong(0L)
     private val pendingUrlTestRequests = ConcurrentHashMap<Long, CompletableDeferred<Int?>>()
+
+    // 批量测速的单批最长执行时间远超单节点 urltest，放宽到 15 分钟；
+    // 服务进程消亡时由断连清理直接置 false，不会真的等满。
+    private const val LATENCY_TEST_REMOTE_TIMEOUT_MS = 15 * 60 * 1000L
+
+    private class PendingLatencyTest(
+        val onResult: (tag: String, latency: Long) -> Unit
+    ) {
+        val finished = CompletableDeferred<Boolean>()
+
+        @Volatile
+        var deliveredAny: Boolean = false
+    }
+
+    private val latencyTestGson = Gson()
+    private val latencyTestRequestId = AtomicLong(0L)
+    private val pendingLatencyTests = ConcurrentHashMap<Long, PendingLatencyTest>()
     private val stateGenerationGate = StateGenerationGate()
 
     @Volatile
@@ -172,6 +193,18 @@ object SingBoxRemote {
         override fun onUrlTestNodeDelayResult(requestId: Long, delay: Int) {
             pendingUrlTestRequests.remove(requestId)?.complete(delay.takeIf { it > 0 })
         }
+
+        override fun onLatencyTestResult(requestId: Long, tag: String?, latency: Long) {
+            val pending = pendingLatencyTests[requestId] ?: return
+            if (tag != null) {
+                pending.deliveredAny = true
+                runCatching { pending.onResult(tag, latency) }
+            }
+        }
+
+        override fun onLatencyTestFinished(requestId: Long) {
+            pendingLatencyTests.remove(requestId)?.finished?.complete(true)
+        }
     }
 
     private fun startPendingRecovery(
@@ -200,6 +233,11 @@ object SingBoxRemote {
     private fun clearPendingUrlTestRequests() {
         pendingUrlTestRequests.values.forEach { it.complete(null) }
         pendingUrlTestRequests.clear()
+    }
+
+    private fun clearPendingLatencyTests() {
+        pendingLatencyTests.values.forEach { it.finished.complete(false) }
+        pendingLatencyTests.clear()
     }
 
     private fun updateState(
@@ -521,6 +559,7 @@ object SingBoxRemote {
         bindingInProgress = false
         callbackRegistered = false
         clearPendingUrlTestRequests()
+        clearPendingLatencyTests()
     }
 
     private val conn = object : ServiceConnection {
@@ -562,6 +601,7 @@ object SingBoxRemote {
             bindingInProgress = false
             stopReadinessFreshnessWatchdog()
             clearPendingUrlTestRequests()
+            clearPendingLatencyTests()
 
             val ctx = contextRef?.get()
             val systemVpn = ctx != null && hasSystemVpn(ctx)
@@ -968,6 +1008,86 @@ object SingBoxRemote {
         } finally {
             pendingUrlTestRequests.remove(requestId)
         }
+    }
+
+    /**
+     * 把批量临时实例测速委托给 :bg 进程执行，结果经 [onResult] 逐个回传。
+     *
+     * @return true 表示请求已送达并由服务进程执行（回执超时也视为已执行，不再回退，
+     *   避免本地重复测速）；false 表示未能送达（未绑定/发送失败），调用方应回退本地执行。
+     */
+    suspend fun testOutboundsLatencyInService(
+        outbounds: List<Outbound>,
+        allOutbounds: List<Outbound>,
+        dnsConfig: DnsConfig?,
+        methodOverride: LatencyTestMethod?,
+        onResult: (tag: String, latency: Long) -> Unit
+    ): Boolean {
+        return runLatencyTestInService(
+            LatencyTestRequest(
+                single = false,
+                outbounds = outbounds,
+                allOutbounds = allOutbounds,
+                dnsConfig = dnsConfig,
+                methodOverride = methodOverride?.name
+            ),
+            onResult
+        )
+    }
+
+    /**
+     * 单节点版的服务进程测速委托。
+     *
+     * @return 节点延迟；null 表示未能送达，调用方应回退本地执行。
+     */
+    suspend fun testOutboundLatencyInService(
+        outbound: Outbound,
+        allOutbounds: List<Outbound>,
+        dnsConfig: DnsConfig?
+    ): Long? {
+        var result: Long? = null
+        val handled = runLatencyTestInService(
+            LatencyTestRequest(
+                single = true,
+                outbounds = listOf(outbound),
+                allOutbounds = allOutbounds,
+                dnsConfig = dnsConfig
+            )
+        ) { _, latency -> result = latency }
+        return if (handled) result ?: -1L else null
+    }
+
+    private suspend fun runLatencyTestInService(
+        request: LatencyTestRequest,
+        onResult: (tag: String, latency: Long) -> Unit
+    ): Boolean {
+        val s = service ?: return false
+        if (!connectionActive || !bound) return false
+
+        val requestId = latencyTestRequestId.incrementAndGet()
+        val pending = PendingLatencyTest(onResult)
+        pendingLatencyTests[requestId] = pending
+
+        try {
+            s.requestLatencyTest(requestId, latencyTestGson.toJson(request))
+        } catch (e: Exception) {
+            // 含载荷过大（TransactionTooLargeException）等发送失败：未送达，回退本地。
+            Log.w(TAG, "latency test IPC dispatch failed: requestId=$requestId", e)
+            pendingLatencyTests.remove(requestId)
+            return false
+        }
+
+        // 已送达：等完成回执。超时只记日志并按已执行返回，避免本地重复执行同一批测速；
+        // 中途断连且已有部分结果回传时同理，只有毫无结果才让调用方回退本地。
+        val completed = withTimeoutOrNull(LATENCY_TEST_REMOTE_TIMEOUT_MS) {
+            pending.finished.await()
+        }
+        if (completed == null) {
+            Log.w(TAG, "latency test IPC timed out: requestId=$requestId")
+            pendingLatencyTests.remove(requestId)
+            return true
+        }
+        return completed || pending.deliveredAny
     }
 
     fun hotReloadConfig(configContent: String): Int {

@@ -15,4 +15,6 @@ interface ISingBoxService {
     int hotReloadConfig(String configContent);
 
     oneway void requestUrlTestNodeDelay(long requestId, String groupTag, String nodeTag, int timeoutMs);
+
+    oneway void requestLatencyTest(long requestId, String requestJson);
 }

@@ -6,7 +6,10 @@ import android.os.Looper
 import android.os.RemoteCallbackList
 import android.os.SystemClock
 import android.util.Log
+import com.google.gson.Gson
 import com.mubox.app.aidl.ISingBoxServiceCallback
+import com.mubox.app.core.SingBoxCore
+import com.mubox.app.model.LatencyTestMethod
 import com.mubox.app.repository.*
 import com.mubox.app.repository.LogRepository
 import com.mubox.app.service.ProxyOnlyService
@@ -154,6 +157,8 @@ object SingBoxIpcHub {
     private val logRepo by lazy { LogRepository.getInstance() }
     private val ipcScope = CoroutineScope(SupervisorJob() + Dispatchers.IO)
     private val pendingUrlTestJobs = ConcurrentHashMap<Long, kotlinx.coroutines.Job>()
+    private val pendingLatencyTestJobs = ConcurrentHashMap<Long, kotlinx.coroutines.Job>()
+    private val latencyTestGson = Gson()
 
     private fun log(msg: String) {
         Log.i(TAG, msg)
@@ -669,6 +674,76 @@ object SingBoxIpcHub {
     fun requestUrlTestNodeDelayResult(requestId: Long, delay: Int) {
         broadcastCallbacks { callback ->
             callback.onUrlTestNodeDelayResult(requestId, delay)
+        }
+    }
+
+    /**
+     * 在 :bg 进程内执行 UI 委托的临时实例测速（与自动故障转移测速同路径）。
+     * 本进程内 SingBoxService.instance 非空，测速平台的 protect 真实可用，
+     * 不会被主 TUN 回环捕获；结果逐个回传，结束时发 finished 回执。
+     */
+    fun requestLatencyTest(requestId: Long, requestJson: String) {
+        val context = serviceRef?.get()
+        if (context == null) {
+            broadcastLatencyTestFinished(requestId)
+            return
+        }
+        pendingLatencyTestJobs.remove(requestId)?.cancel()
+        val job = ipcScope.launch {
+            try {
+                val request = runCatching {
+                    latencyTestGson.fromJson(requestJson, LatencyTestRequest::class.java)
+                }.getOrNull()
+                if (request == null || request.outbounds.isEmpty()) {
+                    Log.w(TAG, "requestLatencyTest: invalid payload requestId=$requestId")
+                    return@launch
+                }
+                val core = SingBoxCore.getInstance(context)
+                if (request.single) {
+                    val target = request.outbounds.first()
+                    val latency = runCatching {
+                        core.testOutboundLatency(
+                            outbound = target,
+                            allOutbounds = request.allOutbounds,
+                            dnsConfig = request.dnsConfig
+                        )
+                    }.getOrElse {
+                        Log.w(TAG, "requestLatencyTest single failed: requestId=$requestId", it)
+                        -1L
+                    }
+                    broadcastLatencyTestResult(requestId, target.tag, latency)
+                } else {
+                    core.testOutboundsLatency(
+                        outbounds = request.outbounds,
+                        allOutbounds = request.allOutbounds,
+                        dnsConfig = request.dnsConfig,
+                        methodOverride = request.methodOverride?.let { name ->
+                            LatencyTestMethod.entries.firstOrNull { it.name == name }
+                        }
+                    ) { tag, latency ->
+                        broadcastLatencyTestResult(requestId, tag, latency)
+                    }
+                }
+            } catch (e: Exception) {
+                if (e is kotlinx.coroutines.CancellationException) throw e
+                Log.w(TAG, "requestLatencyTest failed: requestId=$requestId", e)
+            } finally {
+                broadcastLatencyTestFinished(requestId)
+            }
+        }
+        pendingLatencyTestJobs[requestId] = job
+        job.invokeOnCompletion { pendingLatencyTestJobs.remove(requestId) }
+    }
+
+    fun broadcastLatencyTestResult(requestId: Long, tag: String, latency: Long) {
+        broadcastCallbacks { callback ->
+            callback.onLatencyTestResult(requestId, tag, latency)
+        }
+    }
+
+    fun broadcastLatencyTestFinished(requestId: Long) {
+        broadcastCallbacks { callback ->
+            callback.onLatencyTestFinished(requestId)
         }
     }
 

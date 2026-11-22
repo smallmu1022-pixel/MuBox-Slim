@@ -100,6 +100,10 @@ class VpnTileService : TileService() {
         }
 
         override fun onUrlTestNodeDelayResult(requestId: Long, delay: Int) = Unit
+
+        override fun onLatencyTestResult(requestId: Long, tag: String?, latency: Long) = Unit
+
+        override fun onLatencyTestFinished(requestId: Long) = Unit
     }
 
     private fun applyRemoteStateSnapshot(snapshot: VpnStateStore.RuntimeStateSnapshot): Boolean {

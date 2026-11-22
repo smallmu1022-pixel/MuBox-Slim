@@ -19,18 +19,19 @@ internal class TestPlatformInterface(private val context: Context) : PlatformInt
     override fun autoDetectInterfaceControl(fd: Int) {
         val service = com.mubox.app.service.SingBoxService.instance
         if (service != null) {
-            try {
-                val protected = service.protect(fd)
-                if (!protected) {
-                    Log.w(TEST_PLATFORM_TAG, "Failed to protect socket fd=$fd, continuing anyway")
-                } else {
-                    Log.d(TEST_PLATFORM_TAG, "autoDetectInterfaceControl: protected fd=$fd")
-                }
-            } catch (e: Exception) {
-                Log.w(TEST_PLATFORM_TAG, "Socket protection error for fd=$fd: ${e.message}")
+            // 与主平台 PlatformInterfaceImpl 对齐：protect 是防 TUN 回环捕获的主防线，
+            // 失败必须让本次连接失败，不能只打日志继续（继续走默认路由会被自身 TUN 回环）。
+            // 本平台只在 :bg 进程内运行时 instance 才非空，protect 才真实可用。
+            val protected = service.protect(fd)
+            if (!protected) {
+                Log.e(TEST_PLATFORM_TAG, "autoDetectInterfaceControl: protect($fd) failed")
+                throw java.io.IOException("VpnService.protect($fd) failed")
             }
+            Log.d(TEST_PLATFORM_TAG, "autoDetectInterfaceControl: protected fd=$fd")
         }
 
+        // 第二防线：把 fd 绑到物理网络。服务实例不可用（VPN 未运行）时只剩这一条，
+        // 此时本就没有 TUN 捕获，绑定失败维持打日志继续的回退行为。
         try {
             val network = selectPhysicalNetwork()
             if (network != null) {

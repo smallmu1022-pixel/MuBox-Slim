@@ -59,6 +59,14 @@ class SingBoxIpcService : Service() {
             }
             SingBoxIpcHub.requestUrlTestNodeDelay(requestId, groupTag, nodeTag, timeoutMs)
         }
+
+        override fun requestLatencyTest(requestId: Long, requestJson: String?) {
+            if (requestJson.isNullOrBlank()) {
+                SingBoxIpcHub.broadcastLatencyTestFinished(requestId)
+                return
+            }
+            SingBoxIpcHub.requestLatencyTest(requestId, requestJson)
+        }
     }
 
     override fun attachBaseContext(newBase: Context) {

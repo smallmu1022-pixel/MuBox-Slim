@@ -5,8 +5,10 @@ package com.mubox.app.repository
 import android.util.Log
 import com.mubox.app.R
 import com.mubox.app.database.entity.ProfileEntity
+import com.mubox.app.ipc.SingBoxRemote
 import com.mubox.app.ipc.VpnStateStore
 import com.mubox.app.model.*
+import com.mubox.app.service.ServiceState
 import com.mubox.app.model.PingResultCode
 import java.io.File
 import java.nio.file.Files
@@ -227,7 +229,21 @@ internal suspend fun ConfigRepository.testNodeLatency(nodeId: String): Long {
                         return@withContext -1L
                     }
                     val allOutbounds = runtimeContext.outbounds
-                    val latency = singBoxCore.testOutboundLatency(
+                    // 与批量测速同一口径：VPN 连接时委托 :bg 进程执行，避免临时实例出站
+                    // 被自身 TUN 回环捕获；未送达（服务不可用）时回退本地执行。
+                    // 本函数也被 :bg 的 IPC Hub 调用，那边 isMainProcess 为 false，直接走本地。
+                    val remoteLatency = if (
+                        isMainProcess && SingBoxRemote.state.value == ServiceState.RUNNING
+                    ) {
+                        SingBoxRemote.testOutboundLatencyInService(
+                            outbound = fixedOutbound,
+                            allOutbounds = allOutbounds,
+                            dnsConfig = runtimeContext.dnsConfig
+                        )
+                    } else {
+                        null
+                    }
+                    val latency = remoteLatency ?: singBoxCore.testOutboundLatency(
                         fixedOutbound,
                         allOutbounds,
                         runtimeContext.dnsConfig

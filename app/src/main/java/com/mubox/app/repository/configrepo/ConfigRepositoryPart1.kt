@@ -12,8 +12,10 @@ import com.mubox.app.core.SingBoxCore
 import com.mubox.app.database.entity.ActiveStateEntity
 import com.mubox.app.database.entity.NodeLatencyEntity
 import com.mubox.app.database.entity.ProfileEntity
+import com.mubox.app.ipc.SingBoxRemote
 import com.mubox.app.ipc.VpnStateStore
 import com.mubox.app.model.*
+import com.mubox.app.service.ServiceState
 import com.mubox.app.model.PingResultCode
 import com.mubox.app.service.tun.VpnTunManager
 import com.mubox.app.utils.NetworkClient
@@ -837,16 +839,35 @@ internal suspend fun ConfigRepository.testRegularOutboundsLatency(
 
     infos.groupBy { it.dnsConfig to it.allOutbounds }.forEach { (runtime, groupedInfos) ->
         val infoByTag = groupedInfos.associateBy { ConfigRepository.buildLatencyProbeTag(it.nodeId) }
-        singBoxCore.testOutboundsLatency(
-            outbounds = groupedInfos.map { info ->
-                info.outbound.copy(tag = ConfigRepository.buildLatencyProbeTag(info.nodeId))
-            },
-            allOutbounds = runtime.second,
-            dnsConfig = runtime.first,
-            methodOverride = methodOverride
-        ) { tag, latency ->
-            val info = infoByTag[tag] ?: return@testOutboundsLatency
-            recordLatencyResult(info, latency, results, onNodeComplete)
+        val probeOutbounds = groupedInfos.map { info ->
+            info.outbound.copy(tag = ConfigRepository.buildLatencyProbeTag(info.nodeId))
+        }
+        val onProbeResult: (tag: String, latency: Long) -> Unit = { tag, latency ->
+            val info = infoByTag[tag]
+            if (info != null) {
+                recordLatencyResult(info, latency, results, onNodeComplete)
+            }
+        }
+        // VPN 连接时，主进程临时测速实例的出站会被自身 TUN 回环捕获（protect 跨进程不可用），
+        // 整批超时；此时委托 :bg 进程执行同一测速（与故障转移测速同路径，protect 有效）。
+        // 服务不可用/未送达时回退本地执行——VPN 未连接时本就走本地，行为不变。
+        val handledInService = isMainProcess &&
+            SingBoxRemote.state.value == ServiceState.RUNNING &&
+            SingBoxRemote.testOutboundsLatencyInService(
+                outbounds = probeOutbounds,
+                allOutbounds = runtime.second,
+                dnsConfig = runtime.first,
+                methodOverride = methodOverride,
+                onResult = onProbeResult
+            )
+        if (!handledInService) {
+            singBoxCore.testOutboundsLatency(
+                outbounds = probeOutbounds,
+                allOutbounds = runtime.second,
+                dnsConfig = runtime.first,
+                methodOverride = methodOverride,
+                onResult = onProbeResult
+            )
         }
     }
 }

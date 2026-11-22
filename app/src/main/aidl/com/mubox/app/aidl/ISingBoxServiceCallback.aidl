@@ -9,4 +9,6 @@ oneway interface ISingBoxServiceCallback {
         long generation
     );
     void onUrlTestNodeDelayResult(long requestId, int delay);
+    void onLatencyTestResult(long requestId, String tag, long latency);
+    void onLatencyTestFinished(long requestId);
 }
