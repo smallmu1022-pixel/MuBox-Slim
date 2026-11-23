@@ -1,0 +1,100 @@
+name: "CodeQL"
+
+on:
+  push:
+    branches: ["main"]
+  pull_request:
+    branches: ["main"]
+  schedule:
+    - cron: "30 3 * * 1"
+
+permissions:
+  security-events: write
+  contents: read
+  actions: read
+
+jobs:
+  analyze:
+    name: Analyze (java-kotlin)
+    runs-on: ubuntu-latest
+    timeout-minutes: 120
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup JDK 17
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: "17"
+
+      - name: Setup Go 1.26.11
+        uses: actions/setup-go@v5
+        with:
+          go-version: "1.26.11"
+          cache: false
+
+      - name: Setup Android NDK
+        uses: nttld/setup-ndk@v1
+        id: setup-ndk
+        with:
+          ndk-version: r28c
+          add-to-path: true
+
+      - name: Initialize CodeQL
+        uses: github/codeql-action/init@v4
+        with:
+          languages: java-kotlin
+          build-mode: manual
+
+      - name: Checkout sing-box v1.14.4 (libbox.aar compile scaffold)
+        uses: actions/checkout@v4
+        with:
+          repository: SagerNet/sing-box
+          ref: v1.14.4
+          path: sing-box
+
+      - name: Install gomobile v0.1.12 (sagernet fork)
+        env:
+          ANDROID_NDK_HOME: ${{ steps.setup-ndk.outputs.ndk-path }}
+        run: |
+          go install github.com/sagernet/gomobile/cmd/gomobile@v0.1.12
+          gomobile init
+
+      - name: Build libbox.aar (arm64 only, scaffold)
+        working-directory: sing-box
+        env:
+          ANDROID_NDK_HOME: ${{ steps.setup-ndk.outputs.ndk-path }}
+          CGO_ENABLED: "1"
+        run: |
+          gomobile bind \
+            -o libbox.aar \
+            -target android/arm64 \
+            -androidapi 24 \
+            -javapkg=io.nekohasekai \
+            -libname=box \
+            -trimpath \
+            -buildvcs=false \
+            -ldflags "-X github.com/sagernet/sing-box/constant.Version=1.14.4 -X runtime.godebugDefault=multipathtcp=0,tlssha1=1 -checklinkname=0 -s -w -buildid=" \
+            -tags "with_gvisor,with_quic,with_utls,with_clash_api,badlinkname,tfogo_checklinkname0" \
+            ./experimental/libbox
+
+      - name: Decode binary assets from base64 sidecars
+        run: |
+          mkdir -p app/src/main/res/drawable-xxxhdpi
+          base64 -d v101-assets/halo_cat.webp.b64 > app/src/main/res/drawable-xxxhdpi/halo_cat.webp
+          base64 -d v101-assets/ic_launcher_foreground.png.b64 > app/src/main/res/drawable-xxxhdpi/ic_launcher_foreground.png
+          mkdir -p gradle/wrapper
+          base64 -d v101-assets/gradle-wrapper.jar.b64 > gradle/wrapper/gradle-wrapper.jar
+
+      - name: Place libbox.aar and build app (manual build)
+        run: |
+          mkdir -p app/libs
+          cp sing-box/libbox.aar app/libs/libbox.aar
+          chmod +x ./gradlew
+          ./gradlew :app:assembleDebug -PabiOnly=arm64-v8a
+
+      - name: Perform CodeQL Analysis
+        uses: github/codeql-action/analyze@v4
+        with:
+          category: "/language:java-kotlin"
