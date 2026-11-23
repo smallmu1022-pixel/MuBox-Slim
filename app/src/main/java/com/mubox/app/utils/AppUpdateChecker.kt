@@ -28,6 +28,17 @@ object AppUpdateChecker {
     private const val TAG = "AppUpdateChecker"
 
     private const val GITHUB_API_URL = "https://api.github.com/repos/smallmu1022-pixel/MuBox-Slim/releases/latest"
+
+    // 主通道：发布资产里的 version.json 走 GitHub 网页下载固定跳转，不经 API、
+    // 没有按出口 IP 的 60 次/小时配额（API 未认证限流曾致检查静默失败）。
+    // API 路径保留为兜底（旧发布没有 version.json 时仍可检出）。
+    private const val MANIFEST_URL =
+        "https://github.com/smallmu1022-pixel/MuBox-Slim/releases/latest/download/version.json"
+    private const val LATEST_DOWNLOAD_BASE =
+        "https://github.com/smallmu1022-pixel/MuBox-Slim/releases/latest/download/"
+    private const val RELEASES_PAGE_URL =
+        "https://github.com/smallmu1022-pixel/MuBox-Slim/releases/latest"
+
     private const val CHANNEL_ID = "app_update"
     private const val NOTIFICATION_ID = 1001
 
@@ -62,19 +73,54 @@ object AppUpdateChecker {
         @SerializedName("digest") val digest: String?
     )
 
+    /** 发布时随 Release 附带的小清单（version.json），字段由发版流程生成。 */
+    data class VersionManifest(
+        @SerializedName("versionCode") val versionCode: Long,
+        @SerializedName("versionName") val versionName: String?,
+        @SerializedName("apkName") val apkName: String?,
+        @SerializedName("apkSize") val apkSize: Long?,
+        @SerializedName("apkSha256") val apkSha256: String?,
+        @SerializedName("notes") val notes: String?,
+        @SerializedName("releaseUrl") val releaseUrl: String?
+    )
+
+    /** 最近一次拉取失败的 HTTP 状态码（0 表示非 HTTP 层失败），仅用于归类报错文案。 */
+    @Volatile
+    private var lastFetchHttpCode: Int = 0
+
     /**
      * 只做检查并返回结果，不发通知。界面层据此弹内置更新弹窗。
      */
     suspend fun check(context: Context): UpdateCheckResult = withContext(Dispatchers.IO) {
         try {
+            lastFetchHttpCode = 0
             val currentVersion = getCurrentVersion(context)
             val currentVersionCode = getCurrentVersionCode(context)
             Log.d(TAG, "Current version: $currentVersion ($currentVersionCode)")
 
+            // 主通道：version.json（无 API 限流）。拿到就按 versionCode 判断，
+            // 不再走 API；拿不到（旧发布无此资产/网络失败）才回退 API 路径。
+            val manifest = fetchManifestWithFallback(context)
+            if (manifest != null) {
+                Log.d(TAG, "Manifest version: ${manifest.versionName} (${manifest.versionCode})")
+                return@withContext if (manifest.versionCode > currentVersionCode) {
+                    UpdateCheckResult.UpdateAvailable(
+                        currentVersion = currentVersion,
+                        latestVersion = manifest.versionName?.removePrefix("v") ?: currentVersion,
+                        latestVersionCode = manifest.versionCode,
+                        releaseUrl = manifest.releaseUrl ?: RELEASES_PAGE_URL,
+                        releaseNotes = cleanReleaseNotes(manifest.notes),
+                        asset = manifestAsset(manifest)
+                    )
+                } else {
+                    UpdateCheckResult.UpToDate(currentVersion)
+                }
+            }
+
             val release = fetchLatestReleaseWithFallback(context)
             if (release == null) {
                 Log.w(TAG, "Failed to fetch latest release")
-                return@withContext UpdateCheckResult.Error("Failed to fetch release info")
+                return@withContext UpdateCheckResult.Error(fetchFailureMessage())
             }
 
             val latestVersion = release.tagName.removePrefix("v")
@@ -104,7 +150,9 @@ object AppUpdateChecker {
             }
         } catch (e: Exception) {
             Log.e(TAG, "Error checking for updates", e)
-            return@withContext UpdateCheckResult.Error(e.message ?: "Unknown error")
+            return@withContext UpdateCheckResult.Error(
+                if (lastFetchHttpCode != 0) fetchFailureMessage() else "检查失败，请稍后再试"
+            )
         }
     }
 
@@ -195,6 +243,76 @@ object AppUpdateChecker {
         return proxyResult ?: tryDirectRequest(context, request)
     }
 
+    private suspend fun fetchManifestWithFallback(context: Context): VersionManifest? {
+        val request = Request.Builder()
+            .url(MANIFEST_URL)
+            .header("User-Agent", "MuBox-Android")
+            .build()
+
+        val settings = SettingsRepository.getInstance(context).settings.first()
+        val proxyText = tryProxyTextRequest(request, settings)
+        val text = proxyText ?: tryDirectTextRequest(context, request) ?: return null
+        return try {
+            gson.fromJson(text, VersionManifest::class.java)
+        } catch (e: Exception) {
+            Log.w(TAG, "Failed to parse version manifest", e)
+            null
+        }
+    }
+
+    private fun manifestAsset(manifest: VersionManifest): ReleaseAsset? {
+        val apkName = manifest.apkName?.takeIf { it.isNotBlank() } ?: return null
+        return ReleaseAsset(
+            name = apkName,
+            downloadUrl = LATEST_DOWNLOAD_BASE + apkName,
+            size = manifest.apkSize ?: 0L,
+            digest = manifest.apkSha256?.takeIf { it.isNotBlank() }?.let { "sha256:$it" }
+        )
+    }
+
+    /** 把最近一次拉取失败归类成用户能看懂的原因（手动检查时原样展示）。 */
+    private fun fetchFailureMessage(): String {
+        return when (lastFetchHttpCode) {
+            403, 429 -> "GitHub 请求过于频繁，请稍后再试"
+            404 -> "未找到发布信息"
+            in 500..599 -> "GitHub 服务暂时异常，请稍后再试"
+            0 -> "网络异常，请检查连接后重试"
+            else -> "检查失败（HTTP $lastFetchHttpCode）"
+        }
+    }
+
+    private fun tryProxyTextRequest(request: Request, settings: com.mubox.app.model.AppSettings): String? {
+        val proxyClient = getProxyClient(settings) ?: return null
+        return try {
+            proxyClient.newCall(request).execute().use { response ->
+                parseTextResponse(response, "Proxy")
+            }
+        } catch (e: Exception) {
+            Log.w(TAG, "Proxy manifest request failed: ${e.message}")
+            null
+        }
+    }
+
+    private fun tryDirectTextRequest(context: Context, request: Request): String? {
+        return try {
+            getDirectClient(context).newCall(request).execute().use { response ->
+                parseTextResponse(response, "Direct")
+            }
+        } catch (e: Exception) {
+            Log.e(TAG, "Direct manifest request also failed", e)
+            null
+        }
+    }
+
+    private fun parseTextResponse(response: Response, source: String): String? {
+        if (!response.isSuccessful) {
+            lastFetchHttpCode = response.code
+            Log.w(TAG, "$source manifest request failed with ${response.code}")
+            return null
+        }
+        return response.body.string()
+    }
+
     private fun tryProxyRequest(request: Request, settings: com.mubox.app.model.AppSettings): GitHubRelease? {
         val proxyClient = getProxyClient(settings) ?: return null
         return try {
@@ -220,6 +338,7 @@ object AppUpdateChecker {
 
     private fun parseReleaseResponse(response: Response, source: String): GitHubRelease? {
         if (!response.isSuccessful) {
+            lastFetchHttpCode = response.code
             Log.w(TAG, "$source request failed with ${response.code}")
             return null
         }

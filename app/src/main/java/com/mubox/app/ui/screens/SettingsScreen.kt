@@ -257,7 +257,7 @@ fun SettingsScreen(
                                 is com.mubox.app.utils.UpdateCheckResult.UpToDate ->
                                     android.widget.Toast.makeText(context, "已是最新版本", android.widget.Toast.LENGTH_SHORT).show()
                                 is com.mubox.app.utils.UpdateCheckResult.Error ->
-                                    android.widget.Toast.makeText(context, "检查失败，请稍后再试", android.widget.Toast.LENGTH_SHORT).show()
+                                    android.widget.Toast.makeText(context, "检查失败：${result.message}", android.widget.Toast.LENGTH_LONG).show()
                             }
                         }
                     }

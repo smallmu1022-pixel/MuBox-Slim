@@ -180,10 +180,13 @@ fun SingBoxApp() {
         if (isVpnRunningForUpdate) {
 
             kotlinx.coroutines.delay(1000L)
-            updateChecked = true
             val result = com.mubox.app.utils.AppUpdateChecker.check(context)
-            if (result is com.mubox.app.utils.UpdateCheckResult.UpdateAvailable) {
-                com.mubox.app.utils.UpdateUiEvents.post(result)
+            // 检查失败不标记完成：留给下面的兜底路径隔时重试，不再静默放弃。
+            if (result !is com.mubox.app.utils.UpdateCheckResult.Error) {
+                updateChecked = true
+                if (result is com.mubox.app.utils.UpdateCheckResult.UpdateAvailable) {
+                    com.mubox.app.utils.UpdateUiEvents.post(result)
+                }
             }
         }
     }
@@ -191,11 +194,19 @@ fun SingBoxApp() {
     LaunchedEffect(settings.autoCheckUpdate) {
         if (!settings.autoCheckUpdate) return@LaunchedEffect
         kotlinx.coroutines.delay(10000L)
-        if (!updateChecked) {
-            updateChecked = true
+        // 首次失败后最多再重试两次（90 秒、5 分钟），仍失败才等下次冷启动。
+        val retryDelaysMs = longArrayOf(0L, 90_000L, 300_000L)
+        for (delayMs in retryDelaysMs) {
+            if (updateChecked) break
+            if (delayMs > 0L) kotlinx.coroutines.delay(delayMs)
+            if (updateChecked) break
             val result = com.mubox.app.utils.AppUpdateChecker.check(context)
-            if (result is com.mubox.app.utils.UpdateCheckResult.UpdateAvailable) {
-                com.mubox.app.utils.UpdateUiEvents.post(result)
+            if (result !is com.mubox.app.utils.UpdateCheckResult.Error) {
+                updateChecked = true
+                if (result is com.mubox.app.utils.UpdateCheckResult.UpdateAvailable) {
+                    com.mubox.app.utils.UpdateUiEvents.post(result)
+                }
+                break
             }
         }
     }
