@@ -20,8 +20,6 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.rounded.Bolt
 import androidx.compose.material.icons.rounded.Refresh
-import androidx.compose.material3.DropdownMenu
-import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.Icon
 import androidx.compose.foundation.layout.size
 import androidx.compose.material3.IconButton
@@ -49,6 +47,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.navigation.NavController
 import com.mubox.app.ipc.SingBoxRemote
 import com.mubox.app.model.ConnectionState
+import com.mubox.app.model.LatencyTestMethod
 import com.mubox.app.model.PingDisplayText
 import com.mubox.app.model.RoutingMode
 import com.mubox.app.ui.navigation.Screen as AppScreen
@@ -137,7 +136,6 @@ fun DashboardScreen(
     var showModeDialog by remember { mutableStateOf(false) }
     val currentMode = stringResource(settings.routingMode.displayNameRes)
     var showUpdateDialog by remember { mutableStateOf(false) }
-    var showTestMenu by remember { mutableStateOf(false) }
     var showProfileDialog by remember { mutableStateOf(false) }
     var showNodeDialog by remember { mutableStateOf(false) }
     var lastConnectionState by remember { mutableStateOf<ConnectionState?>(null) }
@@ -461,61 +459,12 @@ fun DashboardScreen(
                         ) {
                             showUpdateDialog = true
                         }
-                        Box {
-                            QuickActionButton(
-                                Icons.Rounded.Bolt,
-                                stringResource(R.string.dashboard_latency_test)
-                            ) {
-                                showTestMenu = true
-                            }
-                            DropdownMenu(
-                                expanded = showTestMenu,
-                                onDismissRequest = { showTestMenu = false }
-                            ) {
-                                DropdownMenuItem(
-                                    text = {
-                                        Text(
-                                            text = "选择测速方式（本次）",
-                                            style = MaterialTheme.typography.bodySmall,
-                                            color = MaterialTheme.colorScheme.onSurfaceVariant
-                                        )
-                                    },
-                                    enabled = false,
-                                    onClick = {}
-                                )
-                                DropdownMenuItem(
-                                    text = {
-                                        Column {
-                                            Text(stringResource(com.mubox.app.model.LatencyTestMethod.URL_TEST.displayNameRes))
-                                            Text(
-                                                text = "经节点发真实请求，结果最准",
-                                                style = MaterialTheme.typography.bodySmall,
-                                                color = MaterialTheme.colorScheme.onSurfaceVariant
-                                            )
-                                        }
-                                    },
-                                    onClick = {
-                                        showTestMenu = false
-                                        viewModel.testAllNodesLatency(com.mubox.app.model.LatencyTestMethod.URL_TEST)
-                                    }
-                                )
-                                DropdownMenuItem(
-                                    text = {
-                                        Column {
-                                            Text(stringResource(com.mubox.app.model.LatencyTestMethod.TCP_PING.displayNameRes))
-                                            Text(
-                                                text = "直连握手，快；UDP 节点自动改走 URL",
-                                                style = MaterialTheme.typography.bodySmall,
-                                                color = MaterialTheme.colorScheme.onSurfaceVariant
-                                            )
-                                        }
-                                    },
-                                    onClick = {
-                                        showTestMenu = false
-                                        viewModel.testAllNodesLatency(com.mubox.app.model.LatencyTestMethod.TCP_PING)
-                                    }
-                                )
-                            }
+                        QuickActionButton(
+                            Icons.Rounded.Bolt,
+                            stringResource(R.string.dashboard_latency_test)
+                        ) {
+                            // TCP 节点走直连探测，UDP-only 节点由测速器自动回退到 URL 测试。
+                            viewModel.testAllNodesLatency(LatencyTestMethod.TCP_PING)
                         }
                     }
                 }

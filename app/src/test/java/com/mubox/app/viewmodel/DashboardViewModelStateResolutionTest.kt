@@ -417,8 +417,19 @@ class DashboardViewModelStateResolutionTest {
         val body = source.substringAfter("internal fun DashboardViewModel.startPingTestRuntime()")
             .substringBefore("internal fun DashboardViewModel.stopPingTestRuntime()")
 
-        assertTrue(body.contains("configRepository.testNodeLatency(targetNodeId)"))
+        assertTrue(body.contains("methodOverride = LatencyTestMethod.TCP_PING"))
+        assertTrue(body.contains("configRepository.testNodeLatency("))
         assertFalse(body.contains("configRepository.testAllNodesLatency"))
+    }
+
+    @Test
+    fun dashboardBatchLatencyActionUsesAutomaticProtocolMatchingWithoutMenu() {
+        val source = File("src/main/java/com/mubox/app/ui/screens/DashboardScreen.kt")
+            .readText(Charsets.UTF_8)
+
+        assertTrue(source.contains("viewModel.testAllNodesLatency(LatencyTestMethod.TCP_PING)"))
+        assertFalse(source.contains("showTestMenu"))
+        assertFalse(source.contains("DropdownMenu("))
     }
 
     @Test

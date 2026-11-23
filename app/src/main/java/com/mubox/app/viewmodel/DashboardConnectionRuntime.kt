@@ -11,6 +11,7 @@ import com.mubox.app.R
 import com.mubox.app.repository.*
 import com.mubox.app.model.ConnectionState
 import com.mubox.app.model.ConnectionStats
+import com.mubox.app.model.LatencyTestMethod
 import com.mubox.app.ipc.SingBoxRemote
 import com.mubox.app.service.VpnTileService
 import com.mubox.app.service.manager.VpnStopInitiator
@@ -80,7 +81,11 @@ internal fun DashboardViewModel.startPingTestRuntime() {
     pingTestJob = viewModelScope.launch {
         _isPingTesting.value = true
         try {
-            configRepository.testNodeLatency(targetNodeId)
+            // TCP 节点走直连探测；Hysteria2 等 UDP-only 节点会自动回退到 URL 测试。
+            configRepository.testNodeLatency(
+                targetNodeId,
+                methodOverride = LatencyTestMethod.TCP_PING
+            )
         } catch (e: Exception) {
             Log.e(DashboardViewModel.TAG, "Error during ping test", e)
         } finally {
