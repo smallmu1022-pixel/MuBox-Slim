@@ -40,7 +40,8 @@ data class PerAppPolicyUpdateResult(
     val revision: Long
 )
 
-class SettingsRepository(private val context: Context) {
+class SettingsRepository(context: Context) {
+    private val context: Context = context.applicationContext
 
     private val settingsStore = SettingsStore.getInstance(context)
 

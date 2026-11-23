@@ -17,6 +17,7 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.res.pluralStringResource
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
@@ -252,7 +253,7 @@ fun RoutingSettingsScreen(
                     SettingItem(title = stringResource(R.string.routing_settings_github_mirror), value = stringResource(settings.ghProxyMirror.displayNameRes), onClick = { showMirrorDialog = true })
                     SettingItem(
                         title = stringResource(R.string.routing_settings_subscription_timeout),
-                        value = stringResource(R.string.routing_settings_latency_test_timeout_s, settings.subscriptionUpdateTimeout),
+                        value = pluralStringResource(R.plurals.routing_settings_latency_test_timeout_s, settings.subscriptionUpdateTimeout, settings.subscriptionUpdateTimeout),
                         onClick = { showSubscriptionTimeoutDialog = true }
                     )
                 }
@@ -287,7 +288,7 @@ fun RoutingSettingsScreen(
                 StandardCard {
                     SettingItem(
                         title = stringResource(R.string.routing_settings_app_routing),
-                        value = stringResource(R.string.routing_settings_app_routing_rules, settings.appGroups.size),
+                        value = pluralStringResource(R.plurals.routing_settings_app_routing_rules, settings.appGroups.size, settings.appGroups.size),
                         onClick = { navController.navigate(Screen.AppRouting.route) }
                     )
                     val domainRuleCount = settings.customRules.count {
@@ -299,7 +300,7 @@ fun RoutingSettingsScreen(
                     }
                     SettingItem(
                         title = stringResource(R.string.routing_settings_domain_routing),
-                        value = stringResource(R.string.routing_settings_app_routing_rules, domainRuleCount),
+                        value = pluralStringResource(R.plurals.routing_settings_app_routing_rules, domainRuleCount, domainRuleCount),
                         onClick = { navController.navigate(Screen.DomainRules.route) }
                     )
                     SettingItem(title = stringResource(R.string.routing_settings_manage_rulesets), onClick = { navController.navigate(Screen.RuleSets.route) })

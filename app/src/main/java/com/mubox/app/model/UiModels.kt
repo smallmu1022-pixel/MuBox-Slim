@@ -86,7 +86,7 @@ data class BatchUpdateResult(
         return when {
             totalCount == 0 -> context.getString(R.string.update_status_no_subscription)
             failed == totalCount -> context.getString(R.string.update_status_failed)
-            successWithChanges > 0 && failed == 0 -> context.getString(R.string.update_status_success_changes, successWithChanges)
+            successWithChanges > 0 && failed == 0 -> context.resources.getQuantityString(R.plurals.update_status_success_changes, successWithChanges, successWithChanges)
             successNoChanges == totalCount -> context.getString(R.string.update_status_success_no_changes)
             failed > 0 -> context.getString(R.string.update_status_partial, successCount, failed)
             else -> context.getString(R.string.update_status_complete)

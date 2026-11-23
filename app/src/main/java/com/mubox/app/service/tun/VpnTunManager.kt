@@ -3,7 +3,7 @@
 import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
-import android.net.Uri
+import androidx.core.net.toUri
 import android.net.ConnectivityManager
 import android.net.Network
 import android.net.NetworkCapabilities
@@ -661,7 +661,7 @@ class VpnTunManager(
     }
 
     private fun resolveDefaultBrowserPackage(): String? {
-        val intent = Intent(Intent.ACTION_VIEW, Uri.parse("https://example.com"))
+        val intent = Intent(Intent.ACTION_VIEW, "https://example.com".toUri())
         return context.packageManager.resolveActivity(intent, PackageManager.MATCH_DEFAULT_ONLY)
             ?.activityInfo
             ?.packageName

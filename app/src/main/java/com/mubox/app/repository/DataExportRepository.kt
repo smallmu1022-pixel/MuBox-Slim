@@ -19,7 +19,8 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.SupervisorJob
 import java.io.File
 
-class DataExportRepository(private val context: Context) {
+class DataExportRepository(context: Context) {
+    private val context: Context = context.applicationContext
 
     companion object {
         private const val TAG = "DataExportRepository"

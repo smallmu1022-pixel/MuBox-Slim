@@ -24,7 +24,8 @@ import java.nio.file.Files
 import java.nio.file.StandardCopyOption
 import java.security.MessageDigest
 
-class RuleSetRepository(private val context: Context) {
+class RuleSetRepository(context: Context) {
+    private val context: Context = context.applicationContext
 
     companion object {
         private const val TAG = "RuleSetRepository"

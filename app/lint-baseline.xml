@@ -41,7 +41,7 @@
         errorLine2="        ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
         <location
             file="src/main/java/com/mubox/app/utils/LocaleHelper.kt"
-            line="62"
+            line="61"
             column="9"/>
     </issue>
 
@@ -52,7 +52,7 @@
         errorLine2="                                                          ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
         <location
             file="src/main/java/com/mubox/app/ui/screens/SettingsScreen.kt"
-            line="283"
+            line="284"
             column="59"/>
     </issue>
 
@@ -62,7 +62,7 @@
         errorLine1="distributionUrl=https\://downloads.gradle.org/distributions/gradle-9.6.1-bin.zip"
         errorLine2="                ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
         <location
-            file="$HOME/work/MuBox/MuBox/slim-src/gradle/wrapper/gradle-wrapper.properties"
+            file="$HOME/work/MuBox-Slim/MuBox-Slim/slim-src/gradle/wrapper/gradle-wrapper.properties"
             line="4"
             column="17"/>
     </issue>
@@ -321,61 +321,6 @@
     </issue>
 
     <issue
-        id="ModifierParameter"
-        message="Modifier parameter should be the first optional parameter"
-        errorLine1="    modifier: Modifier = Modifier"
-        errorLine2="    ~~~~~~~~">
-        <location
-            file="src/main/java/com/mubox/app/MainActivity.kt"
-            line="459"
-            column="5"/>
-    </issue>
-
-    <issue
-        id="ModifierParameter"
-        message="Modifier parameter should be the first optional parameter"
-        errorLine1="    modifier: Modifier = Modifier"
-        errorLine2="    ~~~~~~~~">
-        <location
-            file="src/main/java/com/mubox/app/ui/components/NodeCard.kt"
-            line="75"
-            column="5"/>
-    </issue>
-
-    <issue
-        id="ModifierParameter"
-        message="Modifier parameter should be the first optional parameter"
-        errorLine1="    modifier: Modifier = Modifier"
-        errorLine2="    ~~~~~~~~">
-        <location
-            file="src/main/java/com/mubox/app/ui/components/NodeCard.kt"
-            line="427"
-            column="5"/>
-    </issue>
-
-    <issue
-        id="ModifierParameter"
-        message="Modifier parameter should be the first optional parameter"
-        errorLine1="    modifier: Modifier = Modifier"
-        errorLine2="    ~~~~~~~~">
-        <location
-            file="src/main/java/com/mubox/app/ui/components/ProfileCard.kt"
-            line="161"
-            column="5"/>
-    </issue>
-
-    <issue
-        id="ModifierParameter"
-        message="Modifier parameter should be the first optional parameter"
-        errorLine1="    modifier: Modifier = Modifier"
-        errorLine2="    ~~~~~~~~">
-        <location
-            file="src/main/java/com/mubox/app/ui/screens/RuleSetsDialogs.kt"
-            line="116"
-            column="5"/>
-    </issue>
-
-    <issue
         id="DiscouragedApi"
         message="Fixed screen orientations will be ignored in most cases, starting from Android 16. Android is moving toward a model where apps are expected to adapt to various orientations, display sizes, and aspect ratios."
         errorLine1="            android:screenOrientation=&quot;fullSensor&quot;"
@@ -448,7 +393,7 @@
         errorLine2="    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
         <location
             file="src/main/java/com/mubox/app/repository/RuleSetRepository.kt"
-            line="622"
+            line="623"
             column="5"/>
     </issue>
 
@@ -459,96 +404,8 @@
         errorLine2="~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
         <location
             file="src/main/java/com/mubox/app/repository/TrafficRepository.kt"
-            line="462"
+            line="463"
             column="1"/>
-    </issue>
-
-    <issue
-        id="PluralsCandidate"
-        message="Formatting %d followed by words (&quot;minutes&quot;): This should probably be a plural rather than a string"
-        errorLine1="    &lt;string name=&quot;settings_ruleset_auto_update_enabled&quot;>Update every %d minutes&lt;/string>"
-        errorLine2="    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
-        <location
-            file="src/main/res/values-en/strings.xml"
-            line="123"
-            column="5"/>
-    </issue>
-
-    <issue
-        id="PluralsCandidate"
-        message="Formatting %d followed by words (&quot;minutes&quot;): This should probably be a plural rather than a string"
-        errorLine1="    &lt;string name=&quot;settings_update_interval_value&quot;>%d minutes&lt;/string>"
-        errorLine2="    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
-        <location
-            file="src/main/res/values-en/strings.xml"
-            line="126"
-            column="5"/>
-    </issue>
-
-    <issue
-        id="PluralsCandidate"
-        message="Formatting %d followed by words (&quot;seconds&quot;): This should probably be a plural rather than a string"
-        errorLine1="    &lt;string name=&quot;routing_settings_latency_test_timeout_s&quot;>%d seconds&lt;/string>"
-        errorLine2="    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
-        <location
-            file="src/main/res/values-en/strings.xml"
-            line="170"
-            column="5"/>
-    </issue>
-
-    <issue
-        id="PluralsCandidate"
-        message="Formatting %d followed by words (&quot;rules&quot;): This should probably be a plural rather than a string"
-        errorLine1="    &lt;string name=&quot;routing_settings_app_routing_rules&quot;>%d rules&lt;/string>"
-        errorLine2="    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
-        <location
-            file="src/main/res/values-en/strings.xml"
-            line="180"
-            column="5"/>
-    </issue>
-
-    <issue
-        id="PluralsCandidate"
-        message="Formatting %d followed by words (&quot;configured&quot;): This should probably be a plural rather than a string"
-        errorLine1="    &lt;string name=&quot;tun_settings_route_cidrs_configured&quot;>%d configured&lt;/string>"
-        errorLine2="    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
-        <location
-            file="src/main/res/values-en/strings.xml"
-            line="209"
-            column="5"/>
-    </issue>
-
-    <issue
-        id="PluralsCandidate"
-        message="Formatting %d followed by words (&quot;configured&quot;): This should probably be a plural rather than a string"
-        errorLine1="    &lt;string name=&quot;tun_settings_allowlist_configured&quot;>%d configured&lt;/string>"
-        errorLine2="    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
-        <location
-            file="src/main/res/values-en/strings.xml"
-            line="212"
-            column="5"/>
-    </issue>
-
-    <issue
-        id="PluralsCandidate"
-        message="Formatting %d followed by words (&quot;configured&quot;): This should probably be a plural rather than a string"
-        errorLine1="    &lt;string name=&quot;tun_settings_blocklist_configured&quot;>%d configured&lt;/string>"
-        errorLine2="    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
-        <location
-            file="src/main/res/values-en/strings.xml"
-            line="214"
-            column="5"/>
-    </issue>
-
-    <issue
-        id="PluralsCandidate"
-        message="Formatting %d followed by words (&quot;nodes&quot;): This should probably be a plural rather than a string"
-        errorLine1="    &lt;string name=&quot;custom_profile_selected_nodes&quot;>%d nodes total&lt;/string>"
-        errorLine2="    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
-        <location
-            file="src/main/res/values-en/strings.xml"
-            line="284"
-            column="5"/>
     </issue>
 
     <issue
@@ -558,7 +415,7 @@
         errorLine2="    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
         <location
             file="src/main/res/values-en/strings.xml"
-            line="334"
+            line="358"
             column="5"/>
     </issue>
 
@@ -569,29 +426,7 @@
         errorLine2="    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
         <location
             file="src/main/res/values-en/strings.xml"
-            line="335"
-            column="5"/>
-    </issue>
-
-    <issue
-        id="PluralsCandidate"
-        message="Formatting %d followed by words (&quot;selected&quot;): This should probably be a plural rather than a string"
-        errorLine1="    &lt;string name=&quot;rulesets_delete_batch_confirm&quot;>Are you sure you want to delete %d selected rule sets?&lt;/string>"
-        errorLine2="    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
-        <location
-            file="src/main/res/values-en/strings.xml"
-            line="474"
-            column="5"/>
-    </issue>
-
-    <issue
-        id="PluralsCandidate"
-        message="Formatting %d followed by words (&quot;nodes&quot;): This should probably be a plural rather than a string"
-        errorLine1="    &lt;string name=&quot;rulesets_nodes_count&quot;>%d nodes&lt;/string>"
-        errorLine2="    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
-        <location
-            file="src/main/res/values-en/strings.xml"
-            line="486"
+            line="359"
             column="5"/>
     </issue>
 
@@ -602,40 +437,7 @@
         errorLine2="    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
         <location
             file="src/main/res/values-en/strings.xml"
-            line="512"
-            column="5"/>
-    </issue>
-
-    <issue
-        id="PluralsCandidate"
-        message="Formatting %d followed by words (&quot;records&quot;): This should probably be a plural rather than a string"
-        errorLine1="    &lt;string name=&quot;diagnostics_resource_sampling_active&quot;>Sampling, %1$d records captured&lt;/string>"
-        errorLine2="    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
-        <location
-            file="src/main/res/values-en/strings.xml"
-            line="564"
-            column="5"/>
-    </issue>
-
-    <issue
-        id="PluralsCandidate"
-        message="Formatting %d followed by words (&quot;records&quot;): This should probably be a plural rather than a string"
-        errorLine1="    &lt;string name=&quot;diagnostics_resource_sampling_stopped&quot;>Stopped, %1$d records retained&lt;/string>"
-        errorLine2="    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
-        <location
-            file="src/main/res/values-en/strings.xml"
-            line="565"
-            column="5"/>
-    </issue>
-
-    <issue
-        id="PluralsCandidate"
-        message="Formatting %d followed by words (&quot;items&quot;): This should probably be a plural rather than a string"
-        errorLine1="    &lt;string name=&quot;import_count_items&quot;>%d items&lt;/string>"
-        errorLine2="    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
-        <location
-            file="src/main/res/values-en/strings.xml"
-            line="616"
+            line="542"
             column="5"/>
     </issue>
 
@@ -646,7 +448,7 @@
         errorLine2="    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
         <location
             file="src/main/res/values-en/strings.xml"
-            line="620"
+            line="659"
             column="5"/>
     </issue>
 
@@ -657,18 +459,7 @@
         errorLine2="    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
         <location
             file="src/main/res/values-en/strings.xml"
-            line="624"
-            column="5"/>
-    </issue>
-
-    <issue
-        id="PluralsCandidate"
-        message="Formatting %d followed by words (&quot;subscriptions&quot;): This should probably be a plural rather than a string"
-        errorLine1="    &lt;string name=&quot;update_status_success_changes&quot;>Update successful, %d subscriptions changed&lt;/string>"
-        errorLine2="    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
-        <location
-            file="src/main/res/values-en/strings.xml"
-            line="760"
+            line="663"
             column="5"/>
     </issue>
 
@@ -679,7 +470,7 @@
         errorLine2="    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
         <location
             file="src/main/res/values-en/strings.xml"
-            line="762"
+            line="804"
             column="5"/>
     </issue>
 
@@ -690,29 +481,7 @@
         errorLine2="    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
         <location
             file="src/main/res/values-en/strings.xml"
-            line="787"
-            column="5"/>
-    </issue>
-
-    <issue
-        id="PluralsCandidate"
-        message="Formatting %d followed by words (&quot;nodes&quot;): This should probably be a plural rather than a string"
-        errorLine1="    &lt;string name=&quot;subscription_update_success_no_changes&quot;>Update complete, no changes (%d nodes)&lt;/string>"
-        errorLine2="    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
-        <location
-            file="src/main/res/values-en/strings.xml"
-            line="788"
-            column="5"/>
-    </issue>
-
-    <issue
-        id="PluralsCandidate"
-        message="Formatting %d followed by words (&quot;selected&quot;): This should probably be a plural rather than a string"
-        errorLine1="    &lt;string name=&quot;rulesets_selection_mode&quot;>%d selected&lt;/string>"
-        errorLine2="    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
-        <location
-            file="src/main/res/values-en/strings.xml"
-            line="799"
+            line="829"
             column="5"/>
     </issue>
 
@@ -756,7 +525,7 @@
         errorLine2="                ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
         <location
             file="src/main/java/com/mubox/app/utils/AppUpdateChecker.kt"
-            line="146"
+            line="195"
             column="17"/>
     </issue>
 
@@ -767,7 +536,7 @@
         errorLine2="               ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
         <location
             file="src/main/java/com/mubox/app/utils/AppUpdateChecker.kt"
-            line="342"
+            line="466"
             column="16"/>
     </issue>
 
@@ -778,7 +547,7 @@
         errorLine2="            ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
         <location
             file="src/main/java/com/mubox/app/utils/AppUpdateChecker.kt"
-            line="350"
+            line="474"
             column="13"/>
     </issue>
 
@@ -789,7 +558,7 @@
         errorLine2="               ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
         <location
             file="src/main/java/com/mubox/app/utils/AppUpdater.kt"
-            line="194"
+            line="206"
             column="16"/>
     </issue>
 
@@ -855,7 +624,7 @@
         errorLine2="            ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
         <location
             file="src/main/java/com/mubox/app/viewmodel/DashboardViewModel.kt"
-            line="802"
+            line="803"
             column="13"/>
     </issue>
 
@@ -1064,7 +833,7 @@
         errorLine2="            ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
         <location
             file="src/main/java/com/mubox/app/MainActivity.kt"
-            line="120"
+            line="121"
             column="13"/>
     </issue>
 
@@ -1075,7 +844,7 @@
         errorLine2="            ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
         <location
             file="src/main/java/com/mubox/app/MainActivity.kt"
-            line="151"
+            line="152"
             column="13"/>
     </issue>
 
@@ -1086,7 +855,7 @@
         errorLine2="                ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
         <location
             file="src/main/java/com/mubox/app/service/manager/NetworkAutoSwitchManager.kt"
-            line="69"
+            line="70"
             column="17"/>
     </issue>
 
@@ -1097,7 +866,7 @@
         errorLine2="                                ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
         <location
             file="src/main/java/com/mubox/app/service/manager/NetworkAutoSwitchManager.kt"
-            line="168"
+            line="169"
             column="33"/>
     </issue>
 
@@ -1218,7 +987,7 @@
         errorLine2="            ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
         <location
             file="src/main/java/com/mubox/app/repository/RuleSetRepository.kt"
-            line="601"
+            line="602"
             column="13"/>
     </issue>
 
@@ -1229,7 +998,7 @@
         errorLine2="    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
         <location
             file="src/main/java/com/mubox/app/repository/RuleSetRepository.kt"
-            line="622"
+            line="623"
             column="5"/>
     </issue>
 
@@ -1306,7 +1075,7 @@
         errorLine2="                                      ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
         <location
             file="src/main/java/com/mubox/app/repository/TrafficRepository.kt"
-            line="451"
+            line="452"
             column="39"/>
     </issue>
 
@@ -1317,7 +1086,7 @@
         errorLine2="~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
         <location
             file="src/main/java/com/mubox/app/repository/TrafficRepository.kt"
-            line="462"
+            line="463"
             column="1"/>
     </issue>
 
@@ -1467,7 +1236,7 @@
         errorLine2="        ^">
         <location
             file="src/main/java/com/mubox/app/repository/ConfigRepository.kt"
-            line="312"
+            line="313"
             column="9"/>
     </issue>
 
@@ -1478,7 +1247,7 @@
         errorLine2="        ^">
         <location
             file="src/main/java/com/mubox/app/repository/DataExportRepository.kt"
-            line="30"
+            line="31"
             column="9"/>
     </issue>
 
@@ -1489,7 +1258,7 @@
         errorLine2="        ^">
         <location
             file="src/main/java/com/mubox/app/repository/InstalledAppsRepository.kt"
-            line="328"
+            line="329"
             column="9"/>
     </issue>
 
@@ -1500,7 +1269,7 @@
         errorLine2="    ^">
         <location
             file="src/main/java/com/mubox/app/service/root/RootServiceConnection.kt"
-            line="158"
+            line="159"
             column="5"/>
     </issue>
 
@@ -1511,7 +1280,7 @@
         errorLine2="        ^">
         <location
             file="src/main/java/com/mubox/app/repository/RuleSetRepository.kt"
-            line="47"
+            line="48"
             column="9"/>
     </issue>
 
@@ -1522,7 +1291,7 @@
         errorLine2="        ^">
         <location
             file="src/main/java/com/mubox/app/repository/SettingsRepository.kt"
-            line="731"
+            line="732"
             column="9"/>
     </issue>
 
@@ -1533,7 +1302,7 @@
         errorLine2="        ^">
         <location
             file="src/main/java/com/mubox/app/core/SingBoxCore.kt"
-            line="161"
+            line="162"
             column="9"/>
     </issue>
 
@@ -1544,7 +1313,7 @@
         errorLine2="        ^">
         <location
             file="src/main/java/com/mubox/app/repository/TrafficRepository.kt"
-            line="489"
+            line="491"
             column="9"/>
     </issue>
 
@@ -1610,7 +1379,7 @@
         errorLine2="            ~~~~~~~~~~~~~~~~~~~~~~~~~~">
         <location
             file="src/main/res/values/strings.xml"
-            line="186"
+            line="194"
             column="13"/>
     </issue>
 
@@ -1621,7 +1390,7 @@
         errorLine2="            ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
         <location
             file="src/main/res/values/strings.xml"
-            line="187"
+            line="195"
             column="13"/>
     </issue>
 
@@ -1632,7 +1401,7 @@
         errorLine2="            ~~~~~~~~~~~~~~~~~~~~~~~~">
         <location
             file="src/main/res/values/strings.xml"
-            line="194"
+            line="202"
             column="13"/>
     </issue>
 
@@ -1643,7 +1412,7 @@
         errorLine2="            ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
         <location
             file="src/main/res/values/strings.xml"
-            line="216"
+            line="230"
             column="13"/>
     </issue>
 
@@ -1654,7 +1423,7 @@
         errorLine2="            ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
         <location
             file="src/main/res/values/strings.xml"
-            line="262"
+            line="276"
             column="13"/>
     </issue>
 
@@ -1665,7 +1434,7 @@
         errorLine2="            ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
         <location
             file="src/main/res/values/strings.xml"
-            line="374"
+            line="390"
             column="13"/>
     </issue>
 
@@ -1676,7 +1445,7 @@
         errorLine2="            ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
         <location
             file="src/main/res/values/strings.xml"
-            line="376"
+            line="392"
             column="13"/>
     </issue>
 
@@ -1687,7 +1456,7 @@
         errorLine2="            ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
         <location
             file="src/main/res/values/strings.xml"
-            line="380"
+            line="396"
             column="13"/>
     </issue>
 
@@ -1698,7 +1467,7 @@
         errorLine2="            ~~~~~~~~~~~~~~~~~~~~~~~~~~~">
         <location
             file="src/main/res/values/strings.xml"
-            line="381"
+            line="397"
             column="13"/>
     </issue>
 
@@ -1709,7 +1478,7 @@
         errorLine2="            ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
         <location
             file="src/main/res/values/strings.xml"
-            line="382"
+            line="398"
             column="13"/>
     </issue>
 
@@ -1720,7 +1489,7 @@
         errorLine2="            ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
         <location
             file="src/main/res/values/strings.xml"
-            line="386"
+            line="402"
             column="13"/>
     </issue>
 
@@ -1731,7 +1500,7 @@
         errorLine2="            ~~~~~~~~~~~~~~~~~~~~~~~~~">
         <location
             file="src/main/res/values/strings.xml"
-            line="396"
+            line="412"
             column="13"/>
     </issue>
 
@@ -1742,7 +1511,7 @@
         errorLine2="            ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
         <location
             file="src/main/res/values/strings.xml"
-            line="397"
+            line="413"
             column="13"/>
     </issue>
 
@@ -1753,7 +1522,7 @@
         errorLine2="            ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
         <location
             file="src/main/res/values/strings.xml"
-            line="403"
+            line="419"
             column="13"/>
     </issue>
 
@@ -1764,7 +1533,7 @@
         errorLine2="            ~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
         <location
             file="src/main/res/values/strings.xml"
-            line="404"
+            line="420"
             column="13"/>
     </issue>
 
@@ -1775,7 +1544,7 @@
         errorLine2="            ~~~~~~~~~~~~~~~~~~~~~~~~~~~">
         <location
             file="src/main/res/values/strings.xml"
-            line="405"
+            line="421"
             column="13"/>
     </issue>
 
@@ -1786,7 +1555,7 @@
         errorLine2="            ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
         <location
             file="src/main/res/values/strings.xml"
-            line="408"
+            line="424"
             column="13"/>
     </issue>
 
@@ -1797,7 +1566,7 @@
         errorLine2="            ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
         <location
             file="src/main/res/values/strings.xml"
-            line="409"
+            line="425"
             column="13"/>
     </issue>
 
@@ -1808,7 +1577,7 @@
         errorLine2="            ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
         <location
             file="src/main/res/values/strings.xml"
-            line="410"
+            line="426"
             column="13"/>
     </issue>
 
@@ -1819,7 +1588,7 @@
         errorLine2="            ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
         <location
             file="src/main/res/values/strings.xml"
-            line="411"
+            line="427"
             column="13"/>
     </issue>
 
@@ -1830,7 +1599,7 @@
         errorLine2="            ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
         <location
             file="src/main/res/values/strings.xml"
-            line="412"
+            line="428"
             column="13"/>
     </issue>
 
@@ -1841,7 +1610,7 @@
         errorLine2="            ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
         <location
             file="src/main/res/values/strings.xml"
-            line="413"
+            line="429"
             column="13"/>
     </issue>
 
@@ -1852,7 +1621,7 @@
         errorLine2="            ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
         <location
             file="src/main/res/values/strings.xml"
-            line="414"
+            line="430"
             column="13"/>
     </issue>
 
@@ -1863,7 +1632,7 @@
         errorLine2="            ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
         <location
             file="src/main/res/values/strings.xml"
-            line="415"
+            line="431"
             column="13"/>
     </issue>
 
@@ -1874,7 +1643,7 @@
         errorLine2="            ~~~~~~~~~~~~~~~~~~~~~~">
         <location
             file="src/main/res/values/strings.xml"
-            line="416"
+            line="432"
             column="13"/>
     </issue>
 
@@ -1885,7 +1654,7 @@
         errorLine2="            ~~~~~~~~~~~~~~~~~~~~~~~~~~~">
         <location
             file="src/main/res/values/strings.xml"
-            line="417"
+            line="433"
             column="13"/>
     </issue>
 
@@ -1896,7 +1665,7 @@
         errorLine2="            ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
         <location
             file="src/main/res/values/strings.xml"
-            line="418"
+            line="434"
             column="13"/>
     </issue>
 
@@ -1907,7 +1676,7 @@
         errorLine2="            ~~~~~~~~~~~~~~~~~~~~~~~~~~~">
         <location
             file="src/main/res/values/strings.xml"
-            line="419"
+            line="435"
             column="13"/>
     </issue>
 
@@ -1918,7 +1687,7 @@
         errorLine2="            ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
         <location
             file="src/main/res/values/strings.xml"
-            line="423"
+            line="439"
             column="13"/>
     </issue>
 
@@ -1929,7 +1698,7 @@
         errorLine2="            ~~~~~~~~~~~~~~~~~~~~~~~~~~">
         <location
             file="src/main/res/values/strings.xml"
-            line="449"
+            line="465"
             column="13"/>
     </issue>
 
@@ -1940,7 +1709,7 @@
         errorLine2="            ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
         <location
             file="src/main/res/values/strings.xml"
-            line="468"
+            line="484"
             column="13"/>
     </issue>
 
@@ -1951,7 +1720,7 @@
         errorLine2="            ~~~~~~~~~~~~~~~~~~~~~~~~~~~">
         <location
             file="src/main/res/values/strings.xml"
-            line="626"
+            line="652"
             column="13"/>
     </issue>
 
@@ -1962,7 +1731,7 @@
         errorLine2="            ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
         <location
             file="src/main/res/values/strings.xml"
-            line="627"
+            line="653"
             column="13"/>
     </issue>
 
@@ -1973,7 +1742,7 @@
         errorLine2="            ~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
         <location
             file="src/main/res/values/strings.xml"
-            line="723"
+            line="749"
             column="13"/>
     </issue>
 
@@ -1984,899 +1753,8 @@
         errorLine2="            ~~~~~~~~~~~~~~~~~~~~~~~~~">
         <location
             file="src/main/res/values/strings.xml"
-            line="781"
+            line="809"
             column="13"/>
-    </issue>
-
-    <issue
-        id="TypographyEllipsis"
-        message="Replace &quot;...&quot; with ellipsis character (…, &amp;#8230;) ?"
-        errorLine1="    &lt;string name=&quot;common_loading&quot;>Loading...&lt;/string>"
-        errorLine2="                                  ~~~~~~~~~~">
-        <location
-            file="src/main/res/values-en/strings.xml"
-            line="48"
-            column="35"/>
-    </issue>
-
-    <issue
-        id="TypographyEllipsis"
-        message="Replace &quot;...&quot; with ellipsis character (…, &amp;#8230;) ?"
-        errorLine1="    &lt;string name=&quot;common_loading&quot;>加载中...&lt;/string>"
-        errorLine2="                                  ~~~~~~">
-        <location
-            file="src/main/res/values-zh/strings.xml"
-            line="48"
-            column="35"/>
-    </issue>
-
-    <issue
-        id="TypographyEllipsis"
-        message="Replace &quot;...&quot; with ellipsis character (…, &amp;#8230;) ?"
-        errorLine1="    &lt;string name=&quot;common_loading&quot;>加载中...&lt;/string>"
-        errorLine2="                                  ~~~~~~">
-        <location
-            file="src/main/res/values/strings.xml"
-            line="48"
-            column="35"/>
-    </issue>
-
-    <issue
-        id="TypographyEllipsis"
-        message="Replace &quot;...&quot; with ellipsis character (…, &amp;#8230;) ?"
-        errorLine1="    &lt;string name=&quot;connection_connecting&quot;>Connecting...&lt;/string>"
-        errorLine2="                                         ~~~~~~~~~~~~~">
-        <location
-            file="src/main/res/values-en/strings.xml"
-            line="67"
-            column="42"/>
-    </issue>
-
-    <issue
-        id="TypographyEllipsis"
-        message="Replace &quot;...&quot; with ellipsis character (…, &amp;#8230;) ?"
-        errorLine1="    &lt;string name=&quot;connection_connecting&quot;>连接中...&lt;/string>"
-        errorLine2="                                         ~~~~~~">
-        <location
-            file="src/main/res/values-zh/strings.xml"
-            line="67"
-            column="42"/>
-    </issue>
-
-    <issue
-        id="TypographyEllipsis"
-        message="Replace &quot;...&quot; with ellipsis character (…, &amp;#8230;) ?"
-        errorLine1="    &lt;string name=&quot;connection_connecting&quot;>连接中...&lt;/string>"
-        errorLine2="                                         ~~~~~~">
-        <location
-            file="src/main/res/values/strings.xml"
-            line="67"
-            column="42"/>
-    </issue>
-
-    <issue
-        id="TypographyEllipsis"
-        message="Replace &quot;...&quot; with ellipsis character (…, &amp;#8230;) ?"
-        errorLine1="    &lt;string name=&quot;connection_disconnecting&quot;>Disconnecting...&lt;/string>"
-        errorLine2="                                            ~~~~~~~~~~~~~~~~">
-        <location
-            file="src/main/res/values-en/strings.xml"
-            line="69"
-            column="45"/>
-    </issue>
-
-    <issue
-        id="TypographyEllipsis"
-        message="Replace &quot;...&quot; with ellipsis character (…, &amp;#8230;) ?"
-        errorLine1="    &lt;string name=&quot;connection_disconnecting&quot;>断开中...&lt;/string>"
-        errorLine2="                                            ~~~~~~">
-        <location
-            file="src/main/res/values-zh/strings.xml"
-            line="69"
-            column="45"/>
-    </issue>
-
-    <issue
-        id="TypographyEllipsis"
-        message="Replace &quot;...&quot; with ellipsis character (…, &amp;#8230;) ?"
-        errorLine1="    &lt;string name=&quot;connection_disconnecting&quot;>断开中...&lt;/string>"
-        errorLine2="                                            ~~~~~~">
-        <location
-            file="src/main/res/values/strings.xml"
-            line="69"
-            column="45"/>
-    </issue>
-
-    <issue
-        id="TypographyEllipsis"
-        message="Replace &quot;...&quot; with ellipsis character (…, &amp;#8230;) ?"
-        errorLine1="    &lt;string name=&quot;settings_updating&quot;>Downloading...&lt;/string>"
-        errorLine2="                                     ~~~~~~~~~~~~~~">
-        <location
-            file="src/main/res/values-en/strings.xml"
-            line="116"
-            column="38"/>
-    </issue>
-
-    <issue
-        id="TypographyEllipsis"
-        message="Replace &quot;...&quot; with ellipsis character (…, &amp;#8230;) ?"
-        errorLine1="    &lt;string name=&quot;settings_updating&quot;>正在下载...&lt;/string>"
-        errorLine2="                                     ~~~~~~~">
-        <location
-            file="src/main/res/values-zh/strings.xml"
-            line="116"
-            column="38"/>
-    </issue>
-
-    <issue
-        id="TypographyEllipsis"
-        message="Replace &quot;...&quot; with ellipsis character (…, &amp;#8230;) ?"
-        errorLine1="    &lt;string name=&quot;settings_updating&quot;>正在下载...&lt;/string>"
-        errorLine2="                                     ~~~~~~~">
-        <location
-            file="src/main/res/values/strings.xml"
-            line="116"
-            column="38"/>
-    </issue>
-
-    <issue
-        id="TypographyEllipsis"
-        message="Replace &quot;...&quot; with ellipsis character (…, &amp;#8230;) ?"
-        errorLine1="    &lt;string name=&quot;settings_preparing_update&quot;>Preparing update...&lt;/string>"
-        errorLine2="                                             ~~~~~~~~~~~~~~~~~~~">
-        <location
-            file="src/main/res/values-en/strings.xml"
-            line="117"
-            column="46"/>
-    </issue>
-
-    <issue
-        id="TypographyEllipsis"
-        message="Replace &quot;...&quot; with ellipsis character (…, &amp;#8230;) ?"
-        errorLine1="    &lt;string name=&quot;settings_preparing_update&quot;>准备更新...&lt;/string>"
-        errorLine2="                                             ~~~~~~~">
-        <location
-            file="src/main/res/values-zh/strings.xml"
-            line="117"
-            column="46"/>
-    </issue>
-
-    <issue
-        id="TypographyEllipsis"
-        message="Replace &quot;...&quot; with ellipsis character (…, &amp;#8230;) ?"
-        errorLine1="    &lt;string name=&quot;settings_preparing_update&quot;>准备更新...&lt;/string>"
-        errorLine2="                                             ~~~~~~~">
-        <location
-            file="src/main/res/values/strings.xml"
-            line="117"
-            column="46"/>
-    </issue>
-
-    <issue
-        id="TypographyEllipsis"
-        message="Replace &quot;...&quot; with ellipsis character (…, &amp;#8230;) ?"
-        errorLine1="    &lt;string name=&quot;profiles_search_hint&quot;>Enter keyword...&lt;/string>"
-        errorLine2="                                        ~~~~~~~~~~~~~~~~">
-        <location
-            file="src/main/res/values-en/strings.xml"
-            line="246"
-            column="41"/>
-    </issue>
-
-    <issue
-        id="TypographyEllipsis"
-        message="Replace &quot;...&quot; with ellipsis character (…, &amp;#8230;) ?"
-        errorLine1="    &lt;string name=&quot;profiles_search_hint&quot;>输入关键词...&lt;/string>"
-        errorLine2="                                        ~~~~~~~~">
-        <location
-            file="src/main/res/values-zh/strings.xml"
-            line="246"
-            column="41"/>
-    </issue>
-
-    <issue
-        id="TypographyEllipsis"
-        message="Replace &quot;...&quot; with ellipsis character (…, &amp;#8230;) ?"
-        errorLine1="    &lt;string name=&quot;profiles_search_hint&quot;>输入关键词...&lt;/string>"
-        errorLine2="                                        ~~~~~~~~">
-        <location
-            file="src/main/res/values/strings.xml"
-            line="246"
-            column="41"/>
-    </issue>
-
-    <issue
-        id="TypographyEllipsis"
-        message="Replace &quot;...&quot; with ellipsis character (…, &amp;#8230;) ?"
-        errorLine1="    &lt;string name=&quot;rulesets_tap_to_select&quot;>点击选择...&lt;/string>"
-        errorLine2="                                          ~~~~~~~">
-        <location
-            file="src/main/res/values-zh/strings.xml"
-            line="263"
-            column="43"/>
-    </issue>
-
-    <issue
-        id="TypographyEllipsis"
-        message="Replace &quot;...&quot; with ellipsis character (…, &amp;#8230;) ?"
-        errorLine1="    &lt;string name=&quot;rulesets_tap_to_select&quot;>点击选择...&lt;/string>"
-        errorLine2="                                          ~~~~~~~">
-        <location
-            file="src/main/res/values/strings.xml"
-            line="263"
-            column="43"/>
-    </issue>
-
-    <issue
-        id="TypographyEllipsis"
-        message="Replace &quot;...&quot; with ellipsis character (…, &amp;#8230;) ?"
-        errorLine1="    &lt;string name=&quot;subscription_import_fetching&quot;>Fetching subscription content...&lt;/string>"
-        errorLine2="                                                ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
-        <location
-            file="src/main/res/values-en/strings.xml"
-            line="273"
-            column="49"/>
-    </issue>
-
-    <issue
-        id="TypographyEllipsis"
-        message="Replace &quot;...&quot; with ellipsis character (…, &amp;#8230;) ?"
-        errorLine1="    &lt;string name=&quot;subscription_import_requesting&quot;>Trying subscription request with User-Agent (%1$d/%2$d)...&lt;/string>"
-        errorLine2="                                                  ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
-        <location
-            file="src/main/res/values-en/strings.xml"
-            line="274"
-            column="51"/>
-    </issue>
-
-    <issue
-        id="TypographyEllipsis"
-        message="Replace &quot;...&quot; with ellipsis character (…, &amp;#8230;) ?"
-        errorLine1="    &lt;string name=&quot;subscription_import_parsing&quot;>Parsing subscription response...&lt;/string>"
-        errorLine2="                                               ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
-        <location
-            file="src/main/res/values-en/strings.xml"
-            line="275"
-            column="48"/>
-    </issue>
-
-    <issue
-        id="TypographyEllipsis"
-        message="Replace &quot;...&quot; with ellipsis character (…, &amp;#8230;) ?"
-        errorLine1="    &lt;string name=&quot;subscription_import_fetching&quot;>正在获取订阅内容...&lt;/string>"
-        errorLine2="                                                ~~~~~~~~~~~">
-        <location
-            file="src/main/res/values-zh/strings.xml"
-            line="276"
-            column="49"/>
-    </issue>
-
-    <issue
-        id="TypographyEllipsis"
-        message="Replace &quot;...&quot; with ellipsis character (…, &amp;#8230;) ?"
-        errorLine1="    &lt;string name=&quot;subscription_import_fetching&quot;>正在获取订阅内容...&lt;/string>"
-        errorLine2="                                                ~~~~~~~~~~~">
-        <location
-            file="src/main/res/values/strings.xml"
-            line="276"
-            column="49"/>
-    </issue>
-
-    <issue
-        id="TypographyEllipsis"
-        message="Replace &quot;...&quot; with ellipsis character (…, &amp;#8230;) ?"
-        errorLine1="    &lt;string name=&quot;subscription_import_requesting&quot;>正在尝试订阅请求（User-Agent %1$d/%2$d）...&lt;/string>"
-        errorLine2="                                                  ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
-        <location
-            file="src/main/res/values-zh/strings.xml"
-            line="277"
-            column="51"/>
-    </issue>
-
-    <issue
-        id="TypographyEllipsis"
-        message="Replace &quot;...&quot; with ellipsis character (…, &amp;#8230;) ?"
-        errorLine1="    &lt;string name=&quot;subscription_import_requesting&quot;>正在尝试订阅请求（User-Agent %1$d/%2$d）...&lt;/string>"
-        errorLine2="                                                  ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
-        <location
-            file="src/main/res/values/strings.xml"
-            line="277"
-            column="51"/>
-    </issue>
-
-    <issue
-        id="TypographyEllipsis"
-        message="Replace &quot;...&quot; with ellipsis character (…, &amp;#8230;) ?"
-        errorLine1="    &lt;string name=&quot;subscription_import_parsing&quot;>正在解析订阅响应...&lt;/string>"
-        errorLine2="                                               ~~~~~~~~~~~">
-        <location
-            file="src/main/res/values-zh/strings.xml"
-            line="278"
-            column="48"/>
-    </issue>
-
-    <issue
-        id="TypographyEllipsis"
-        message="Replace &quot;...&quot; with ellipsis character (…, &amp;#8230;) ?"
-        errorLine1="    &lt;string name=&quot;subscription_import_parsing&quot;>正在解析订阅响应...&lt;/string>"
-        errorLine2="                                               ~~~~~~~~~~~">
-        <location
-            file="src/main/res/values/strings.xml"
-            line="278"
-            column="48"/>
-    </issue>
-
-    <issue
-        id="TypographyEllipsis"
-        message="Replace &quot;...&quot; with ellipsis character (…, &amp;#8230;) ?"
-        errorLine1="    &lt;string name=&quot;custom_profile_creating&quot;>Creating custom profile...&lt;/string>"
-        errorLine2="                                           ~~~~~~~~~~~~~~~~~~~~~~~~~~">
-        <location
-            file="src/main/res/values-en/strings.xml"
-            line="292"
-            column="44"/>
-    </issue>
-
-    <issue
-        id="TypographyEllipsis"
-        message="Replace &quot;...&quot; with ellipsis character (…, &amp;#8230;) ?"
-        errorLine1="    &lt;string name=&quot;custom_profile_creating&quot;>正在创建自定义配置...&lt;/string>"
-        errorLine2="                                           ~~~~~~~~~~~~">
-        <location
-            file="src/main/res/values-zh/strings.xml"
-            line="295"
-            column="44"/>
-    </issue>
-
-    <issue
-        id="TypographyEllipsis"
-        message="Replace &quot;...&quot; with ellipsis character (…, &amp;#8230;) ?"
-        errorLine1="    &lt;string name=&quot;custom_profile_creating&quot;>正在创建自定义配置...&lt;/string>"
-        errorLine2="                                           ~~~~~~~~~~~~">
-        <location
-            file="src/main/res/values/strings.xml"
-            line="295"
-            column="44"/>
-    </issue>
-
-    <issue
-        id="TypographyEllipsis"
-        message="Replace &quot;...&quot; with ellipsis character (…, &amp;#8230;) ?"
-        errorLine1="    &lt;string name=&quot;profiles_extracting_nodes&quot;>Extracting nodes (%1$d/%2$d)...&lt;/string>"
-        errorLine2="                                             ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
-        <location
-            file="src/main/res/values-en/strings.xml"
-            line="315"
-            column="46"/>
-    </issue>
-
-    <issue
-        id="TypographyEllipsis"
-        message="Replace &quot;...&quot; with ellipsis character (…, &amp;#8230;) ?"
-        errorLine1="    &lt;string name=&quot;profiles_extracting_nodes&quot;>正在提取节点 (%1$d/%2$d)...&lt;/string>"
-        errorLine2="                                             ~~~~~~~~~~~~~~~~~~~~~">
-        <location
-            file="src/main/res/values-zh/strings.xml"
-            line="318"
-            column="46"/>
-    </issue>
-
-    <issue
-        id="TypographyEllipsis"
-        message="Replace &quot;...&quot; with ellipsis character (…, &amp;#8230;) ?"
-        errorLine1="    &lt;string name=&quot;profiles_extracting_nodes&quot;>正在提取节点 (%1$d/%2$d)...&lt;/string>"
-        errorLine2="                                             ~~~~~~~~~~~~~~~~~~~~~">
-        <location
-            file="src/main/res/values/strings.xml"
-            line="318"
-            column="46"/>
-    </issue>
-
-    <issue
-        id="TypographyEllipsis"
-        message="Replace &quot;...&quot; with ellipsis character (…, &amp;#8230;) ?"
-        errorLine1="    &lt;string name=&quot;nodes_add_hint&quot;>Enter node link (vless://, trojan://, hysteria2://, etc)...&lt;/string>"
-        errorLine2="                                  ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
-        <location
-            file="src/main/res/values-en/strings.xml"
-            line="323"
-            column="35"/>
-    </issue>
-
-    <issue
-        id="TypographyEllipsis"
-        message="Replace &quot;...&quot; with ellipsis character (…, &amp;#8230;) ?"
-        errorLine1="    &lt;string name=&quot;nodes_add_new_profile_name_hint&quot;>Enter new profile name...&lt;/string>"
-        errorLine2="                                                   ~~~~~~~~~~~~~~~~~~~~~~~~~">
-        <location
-            file="src/main/res/values-en/strings.xml"
-            line="326"
-            column="52"/>
-    </issue>
-
-    <issue
-        id="TypographyEllipsis"
-        message="Replace &quot;...&quot; with ellipsis character (…, &amp;#8230;) ?"
-        errorLine1="    &lt;string name=&quot;nodes_add_hint&quot;>输入节点链接 (vless://, trojan://, hysteria2://, etc)...&lt;/string>"
-        errorLine2="                                  ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
-        <location
-            file="src/main/res/values-zh/strings.xml"
-            line="326"
-            column="35"/>
-    </issue>
-
-    <issue
-        id="TypographyEllipsis"
-        message="Replace &quot;...&quot; with ellipsis character (…, &amp;#8230;) ?"
-        errorLine1="    &lt;string name=&quot;nodes_add_hint&quot;>输入节点链接 (vless://, trojan://, hysteria2://, etc)...&lt;/string>"
-        errorLine2="                                  ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
-        <location
-            file="src/main/res/values/strings.xml"
-            line="326"
-            column="35"/>
-    </issue>
-
-    <issue
-        id="TypographyEllipsis"
-        message="Replace &quot;...&quot; with ellipsis character (…, &amp;#8230;) ?"
-        errorLine1="    &lt;string name=&quot;nodes_add_new_profile_name_hint&quot;>输入新配置名称...&lt;/string>"
-        errorLine2="                                                   ~~~~~~~~~~">
-        <location
-            file="src/main/res/values-zh/strings.xml"
-            line="329"
-            column="52"/>
-    </issue>
-
-    <issue
-        id="TypographyEllipsis"
-        message="Replace &quot;...&quot; with ellipsis character (…, &amp;#8230;) ?"
-        errorLine1="    &lt;string name=&quot;nodes_add_new_profile_name_hint&quot;>输入新配置名称...&lt;/string>"
-        errorLine2="                                                   ~~~~~~~~~~">
-        <location
-            file="src/main/res/values/strings.xml"
-            line="329"
-            column="52"/>
-    </issue>
-
-    <issue
-        id="TypographyEllipsis"
-        message="Replace &quot;...&quot; with ellipsis character (…, &amp;#8230;) ?"
-        errorLine1="    &lt;string name=&quot;nodes_testing_progress&quot;>Testing...&lt;/string>"
-        errorLine2="                                          ~~~~~~~~~~">
-        <location
-            file="src/main/res/values-en/strings.xml"
-            line="333"
-            column="43"/>
-    </issue>
-
-    <issue
-        id="TypographyEllipsis"
-        message="Replace &quot;...&quot; with ellipsis character (…, &amp;#8230;) ?"
-        errorLine1="    &lt;string name=&quot;nodes_testing_progress&quot;>测速中...&lt;/string>"
-        errorLine2="                                          ~~~~~~">
-        <location
-            file="src/main/res/values-zh/strings.xml"
-            line="336"
-            column="43"/>
-    </issue>
-
-    <issue
-        id="TypographyEllipsis"
-        message="Replace &quot;...&quot; with ellipsis character (…, &amp;#8230;) ?"
-        errorLine1="    &lt;string name=&quot;nodes_testing_progress&quot;>测速中...&lt;/string>"
-        errorLine2="                                          ~~~~~~">
-        <location
-            file="src/main/res/values/strings.xml"
-            line="336"
-            column="43"/>
-    </issue>
-
-    <issue
-        id="TypographyEllipsis"
-        message="Replace &quot;...&quot; with ellipsis character (…, &amp;#8230;) ?"
-        errorLine1="    &lt;string name=&quot;rulesets_tap_to_select&quot;>Tap to select...&lt;/string>"
-        errorLine2="                                          ~~~~~~~~~~~~~~~~">
-        <location
-            file="src/main/res/values-en/strings.xml"
-            line="480"
-            column="43"/>
-    </issue>
-
-    <issue
-        id="TypographyEllipsis"
-        message="Replace &quot;...&quot; with ellipsis character (…, &amp;#8230;) ?"
-        errorLine1="    &lt;string name=&quot;app_rules_click_to_select&quot;>Click to select...&lt;/string>"
-        errorLine2="                                             ~~~~~~~~~~~~~~~~~~">
-        <location
-            file="src/main/res/values-en/strings.xml"
-            line="505"
-            column="46"/>
-    </issue>
-
-    <issue
-        id="TypographyEllipsis"
-        message="Replace &quot;...&quot; with ellipsis character (…, &amp;#8230;) ?"
-        errorLine1="    &lt;string name=&quot;app_rules_click_to_select&quot;>点击选择...&lt;/string>"
-        errorLine2="                                             ~~~~~~~">
-        <location
-            file="src/main/res/values-zh/strings.xml"
-            line="505"
-            column="46"/>
-    </issue>
-
-    <issue
-        id="TypographyEllipsis"
-        message="Replace &quot;...&quot; with ellipsis character (…, &amp;#8230;) ?"
-        errorLine1="    &lt;string name=&quot;app_rules_click_to_select&quot;>点击选择...&lt;/string>"
-        errorLine2="                                             ~~~~~~~">
-        <location
-            file="src/main/res/values/strings.xml"
-            line="505"
-            column="46"/>
-    </issue>
-
-    <issue
-        id="TypographyEllipsis"
-        message="Replace &quot;...&quot; with ellipsis character (…, &amp;#8230;) ?"
-        errorLine1="    &lt;string name=&quot;diagnostics_view_config_loading&quot;>Generating...&lt;/string>"
-        errorLine2="                                                   ~~~~~~~~~~~~~">
-        <location
-            file="src/main/res/values-en/strings.xml"
-            line="558"
-            column="52"/>
-    </issue>
-
-    <issue
-        id="TypographyEllipsis"
-        message="Replace &quot;...&quot; with ellipsis character (…, &amp;#8230;) ?"
-        errorLine1="    &lt;string name=&quot;diagnostics_view_config_loading&quot;>正在生成...&lt;/string>"
-        errorLine2="                                                   ~~~~~~~">
-        <location
-            file="src/main/res/values-zh/strings.xml"
-            line="558"
-            column="52"/>
-    </issue>
-
-    <issue
-        id="TypographyEllipsis"
-        message="Replace &quot;...&quot; with ellipsis character (…, &amp;#8230;) ?"
-        errorLine1="    &lt;string name=&quot;diagnostics_view_config_loading&quot;>正在生成...&lt;/string>"
-        errorLine2="                                                   ~~~~~~~">
-        <location
-            file="src/main/res/values/strings.xml"
-            line="558"
-            column="52"/>
-    </issue>
-
-    <issue
-        id="TypographyEllipsis"
-        message="Replace &quot;...&quot; with ellipsis character (…, &amp;#8230;) ?"
-        errorLine1="    &lt;string name=&quot;diagnostics_export_config_loading&quot;>Exporting...&lt;/string>"
-        errorLine2="                                                     ~~~~~~~~~~~~">
-        <location
-            file="src/main/res/values-en/strings.xml"
-            line="561"
-            column="54"/>
-    </issue>
-
-    <issue
-        id="TypographyEllipsis"
-        message="Replace &quot;...&quot; with ellipsis character (…, &amp;#8230;) ?"
-        errorLine1="    &lt;string name=&quot;diagnostics_export_config_loading&quot;>正在导出...&lt;/string>"
-        errorLine2="                                                     ~~~~~~~">
-        <location
-            file="src/main/res/values-zh/strings.xml"
-            line="561"
-            column="54"/>
-    </issue>
-
-    <issue
-        id="TypographyEllipsis"
-        message="Replace &quot;...&quot; with ellipsis character (…, &amp;#8230;) ?"
-        errorLine1="    &lt;string name=&quot;diagnostics_export_config_loading&quot;>正在导出...&lt;/string>"
-        errorLine2="                                                     ~~~~~~~">
-        <location
-            file="src/main/res/values/strings.xml"
-            line="561"
-            column="54"/>
-    </issue>
-
-    <issue
-        id="TypographyEllipsis"
-        message="Replace &quot;...&quot; with ellipsis character (…, &amp;#8230;) ?"
-        errorLine1="    &lt;string name=&quot;diagnostics_export_package_loading&quot;>Building diagnostic package...&lt;/string>"
-        errorLine2="                                                      ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
-        <location
-            file="src/main/res/values-en/strings.xml"
-            line="568"
-            column="55"/>
-    </issue>
-
-    <issue
-        id="TypographyEllipsis"
-        message="Replace &quot;...&quot; with ellipsis character (…, &amp;#8230;) ?"
-        errorLine1="    &lt;string name=&quot;diagnostics_export_package_loading&quot;>正在生成诊断包...&lt;/string>"
-        errorLine2="                                                      ~~~~~~~~~~">
-        <location
-            file="src/main/res/values-zh/strings.xml"
-            line="568"
-            column="55"/>
-    </issue>
-
-    <issue
-        id="TypographyEllipsis"
-        message="Replace &quot;...&quot; with ellipsis character (…, &amp;#8230;) ?"
-        errorLine1="    &lt;string name=&quot;diagnostics_export_package_loading&quot;>正在生成诊断包...&lt;/string>"
-        errorLine2="                                                      ~~~~~~~~~~">
-        <location
-            file="src/main/res/values/strings.xml"
-            line="568"
-            column="55"/>
-    </issue>
-
-    <issue
-        id="TypographyEllipsis"
-        message="Replace &quot;...&quot; with ellipsis character (…, &amp;#8230;) ?"
-        errorLine1="    &lt;string name=&quot;diagnostics_app_routing_loading&quot;>Detecting...&lt;/string>"
-        errorLine2="                                                   ~~~~~~~~~~~~">
-        <location
-            file="src/main/res/values-en/strings.xml"
-            line="573"
-            column="52"/>
-    </issue>
-
-    <issue
-        id="TypographyEllipsis"
-        message="Replace &quot;...&quot; with ellipsis character (…, &amp;#8230;) ?"
-        errorLine1="    &lt;string name=&quot;diagnostics_app_routing_loading&quot;>正在检测...&lt;/string>"
-        errorLine2="                                                   ~~~~~~~">
-        <location
-            file="src/main/res/values-zh/strings.xml"
-            line="573"
-            column="52"/>
-    </issue>
-
-    <issue
-        id="TypographyEllipsis"
-        message="Replace &quot;...&quot; with ellipsis character (…, &amp;#8230;) ?"
-        errorLine1="    &lt;string name=&quot;diagnostics_app_routing_loading&quot;>正在检测...&lt;/string>"
-        errorLine2="                                                   ~~~~~~~">
-        <location
-            file="src/main/res/values/strings.xml"
-            line="573"
-            column="52"/>
-    </issue>
-
-    <issue
-        id="TypographyEllipsis"
-        message="Replace &quot;...&quot; with ellipsis character (…, &amp;#8230;) ?"
-        errorLine1="    &lt;string name=&quot;diagnostics_conn_owner_loading&quot;>Reading...&lt;/string>"
-        errorLine2="                                                  ~~~~~~~~~~">
-        <location
-            file="src/main/res/values-en/strings.xml"
-            line="576"
-            column="51"/>
-    </issue>
-
-    <issue
-        id="TypographyEllipsis"
-        message="Replace &quot;...&quot; with ellipsis character (…, &amp;#8230;) ?"
-        errorLine1="    &lt;string name=&quot;diagnostics_conn_owner_loading&quot;>正在读取...&lt;/string>"
-        errorLine2="                                                  ~~~~~~~">
-        <location
-            file="src/main/res/values-zh/strings.xml"
-            line="576"
-            column="51"/>
-    </issue>
-
-    <issue
-        id="TypographyEllipsis"
-        message="Replace &quot;...&quot; with ellipsis character (…, &amp;#8230;) ?"
-        errorLine1="    &lt;string name=&quot;diagnostics_conn_owner_loading&quot;>正在读取...&lt;/string>"
-        errorLine2="                                                  ~~~~~~~">
-        <location
-            file="src/main/res/values/strings.xml"
-            line="576"
-            column="51"/>
-    </issue>
-
-    <issue
-        id="TypographyEllipsis"
-        message="Replace &quot;...&quot; with ellipsis character (…, &amp;#8230;) ?"
-        errorLine1="    &lt;string name=&quot;diagnostics_node_line_query_loading&quot;>Querying...&lt;/string>"
-        errorLine2="                                                       ~~~~~~~~~~~">
-        <location
-            file="src/main/res/values-en/strings.xml"
-            line="581"
-            column="56"/>
-    </issue>
-
-    <issue
-        id="TypographyEllipsis"
-        message="Replace &quot;...&quot; with ellipsis character (…, &amp;#8230;) ?"
-        errorLine1="    &lt;string name=&quot;diagnostics_node_line_query_loading&quot;>正在查询...&lt;/string>"
-        errorLine2="                                                       ~~~~~~~">
-        <location
-            file="src/main/res/values-zh/strings.xml"
-            line="581"
-            column="56"/>
-    </issue>
-
-    <issue
-        id="TypographyEllipsis"
-        message="Replace &quot;...&quot; with ellipsis character (…, &amp;#8230;) ?"
-        errorLine1="    &lt;string name=&quot;diagnostics_node_line_query_loading&quot;>正在查询...&lt;/string>"
-        errorLine2="                                                       ~~~~~~~">
-        <location
-            file="src/main/res/values/strings.xml"
-            line="581"
-            column="56"/>
-    </issue>
-
-    <issue
-        id="TypographyEllipsis"
-        message="Replace &quot;...&quot; with ellipsis character (…, &amp;#8230;) ?"
-        errorLine1="    &lt;string name=&quot;diagnostics_connectivity_loading&quot;>Checking...&lt;/string>"
-        errorLine2="                                                    ~~~~~~~~~~~">
-        <location
-            file="src/main/res/values-en/strings.xml"
-            line="584"
-            column="53"/>
-    </issue>
-
-    <issue
-        id="TypographyEllipsis"
-        message="Replace &quot;...&quot; with ellipsis character (…, &amp;#8230;) ?"
-        errorLine1="    &lt;string name=&quot;diagnostics_connectivity_loading&quot;>正在检查...&lt;/string>"
-        errorLine2="                                                    ~~~~~~~">
-        <location
-            file="src/main/res/values-zh/strings.xml"
-            line="584"
-            column="53"/>
-    </issue>
-
-    <issue
-        id="TypographyEllipsis"
-        message="Replace &quot;...&quot; with ellipsis character (…, &amp;#8230;) ?"
-        errorLine1="    &lt;string name=&quot;diagnostics_connectivity_loading&quot;>正在检查...&lt;/string>"
-        errorLine2="                                                    ~~~~~~~">
-        <location
-            file="src/main/res/values/strings.xml"
-            line="584"
-            column="53"/>
-    </issue>
-
-    <issue
-        id="TypographyEllipsis"
-        message="Replace &quot;...&quot; with ellipsis character (…, &amp;#8230;) ?"
-        errorLine1="    &lt;string name=&quot;diagnostics_dns_leak_check_loading&quot;>Checking...&lt;/string>"
-        errorLine2="                                                      ~~~~~~~~~~~">
-        <location
-            file="src/main/res/values-en/strings.xml"
-            line="591"
-            column="55"/>
-    </issue>
-
-    <issue
-        id="TypographyEllipsis"
-        message="Replace &quot;...&quot; with ellipsis character (…, &amp;#8230;) ?"
-        errorLine1="    &lt;string name=&quot;diagnostics_dns_leak_check_loading&quot;>正在检测...&lt;/string>"
-        errorLine2="                                                      ~~~~~~~">
-        <location
-            file="src/main/res/values-zh/strings.xml"
-            line="591"
-            column="55"/>
-    </issue>
-
-    <issue
-        id="TypographyEllipsis"
-        message="Replace &quot;...&quot; with ellipsis character (…, &amp;#8230;) ?"
-        errorLine1="    &lt;string name=&quot;diagnostics_dns_leak_check_loading&quot;>正在检测...&lt;/string>"
-        errorLine2="                                                      ~~~~~~~">
-        <location
-            file="src/main/res/values/strings.xml"
-            line="591"
-            column="55"/>
-    </issue>
-
-    <issue
-        id="TypographyEllipsis"
-        message="Replace &quot;...&quot; with ellipsis character (…, &amp;#8230;) ?"
-        errorLine1="    &lt;string name=&quot;diagnostics_routing_test_loading&quot;>Testing...&lt;/string>"
-        errorLine2="                                                    ~~~~~~~~~~">
-        <location
-            file="src/main/res/values-en/strings.xml"
-            line="594"
-            column="53"/>
-    </issue>
-
-    <issue
-        id="TypographyEllipsis"
-        message="Replace &quot;...&quot; with ellipsis character (…, &amp;#8230;) ?"
-        errorLine1="    &lt;string name=&quot;diagnostics_routing_test_loading&quot;>正在测试...&lt;/string>"
-        errorLine2="                                                    ~~~~~~~">
-        <location
-            file="src/main/res/values-zh/strings.xml"
-            line="594"
-            column="53"/>
-    </issue>
-
-    <issue
-        id="TypographyEllipsis"
-        message="Replace &quot;...&quot; with ellipsis character (…, &amp;#8230;) ?"
-        errorLine1="    &lt;string name=&quot;diagnostics_routing_test_loading&quot;>正在测试...&lt;/string>"
-        errorLine2="                                                    ~~~~~~~">
-        <location
-            file="src/main/res/values/strings.xml"
-            line="594"
-            column="53"/>
-    </issue>
-
-    <issue
-        id="TypographyEllipsis"
-        message="Replace &quot;...&quot; with ellipsis character (…, &amp;#8230;) ?"
-        errorLine1="    &lt;string name=&quot;app_list_loading&quot;>Loading app list...&lt;/string>"
-        errorLine2="                                    ~~~~~~~~~~~~~~~~~~~">
-        <location
-            file="src/main/res/values-en/strings.xml"
-            line="623"
-            column="37"/>
-    </issue>
-
-    <issue
-        id="TypographyEllipsis"
-        message="Replace &quot;...&quot; with ellipsis character (…, &amp;#8230;) ?"
-        errorLine1="    &lt;string name=&quot;app_list_loading&quot;>正在加载应用列表...&lt;/string>"
-        errorLine2="                                    ~~~~~~~~~~~">
-        <location
-            file="src/main/res/values-zh/strings.xml"
-            line="623"
-            column="37"/>
-    </issue>
-
-    <issue
-        id="TypographyEllipsis"
-        message="Replace &quot;...&quot; with ellipsis character (…, &amp;#8230;) ?"
-        errorLine1="    &lt;string name=&quot;app_list_loading&quot;>正在加载应用列表...&lt;/string>"
-        errorLine2="                                    ~~~~~~~~~~~">
-        <location
-            file="src/main/res/values/strings.xml"
-            line="623"
-            column="37"/>
-    </issue>
-
-    <issue
-        id="TypographyEllipsis"
-        message="Replace &quot;...&quot; with ellipsis character (…, &amp;#8230;) ?"
-        errorLine1="    &lt;string name=&quot;about_kernel_loading&quot;>Loading...&lt;/string>"
-        errorLine2="                                        ~~~~~~~~~~">
-        <location
-            file="src/main/res/values-en/strings.xml"
-            line="660"
-            column="41"/>
-    </issue>
-
-    <issue
-        id="TypographyEllipsis"
-        message="Replace &quot;...&quot; with ellipsis character (…, &amp;#8230;) ?"
-        errorLine1="    &lt;string name=&quot;about_kernel_loading&quot;>加载中...&lt;/string>"
-        errorLine2="                                        ~~~~~~">
-        <location
-            file="src/main/res/values-zh/strings.xml"
-            line="660"
-            column="41"/>
-    </issue>
-
-    <issue
-        id="TypographyEllipsis"
-        message="Replace &quot;...&quot; with ellipsis character (…, &amp;#8230;) ?"
-        errorLine1="    &lt;string name=&quot;about_kernel_loading&quot;>加载中...&lt;/string>"
-        errorLine2="                                        ~~~~~~">
-        <location
-            file="src/main/res/values/strings.xml"
-            line="660"
-            column="41"/>
     </issue>
 
     <issue
@@ -2899,149 +1777,6 @@
             file="src/main/res/mipmap-anydpi-v26/ic_launcher_round.xml"
             line="2"
             column="1"/>
-    </issue>
-
-    <issue
-        id="UseKtx"
-        message="Use the KTX extension function `String.toUri` instead?"
-        errorLine1="        val intent = Intent(Intent.ACTION_VIEW, Uri.parse(htmlUrl))"
-        errorLine2="                                                ~~~~~~~~~~~~~~~~~~">
-        <location
-            file="src/main/java/com/mubox/app/utils/AppUpdateChecker.kt"
-            line="299"
-            column="49"/>
-    </issue>
-
-    <issue
-        id="UseKtx"
-        message="Use the KTX extension function `SharedPreferences.edit` instead?"
-        errorLine1="        prefs.edit().putString(KEY_LAST_NOTIFIED_VERSION, version).apply()"
-        errorLine2="        ~~~~~~~~~~~~">
-        <location
-            file="src/main/java/com/mubox/app/utils/AppUpdateChecker.kt"
-            line="371"
-            column="9"/>
-    </issue>
-
-    <issue
-        id="UseKtx"
-        message="Use the KTX extension function `SharedPreferences.edit` instead?"
-        errorLine1="        prefs.edit().remove(KEY_LAST_NOTIFIED_VERSION).apply()"
-        errorLine2="        ~~~~~~~~~~~~">
-        <location
-            file="src/main/java/com/mubox/app/utils/AppUpdateChecker.kt"
-            line="376"
-            column="9"/>
-    </issue>
-
-    <issue
-        id="UseKtx"
-        message="Use the KTX extension function `String.toUri` instead?"
-        errorLine1="            Uri.parse(&quot;package:${context.packageName}&quot;)"
-        errorLine2="            ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
-        <location
-            file="src/main/java/com/mubox/app/utils/AppUpdater.kt"
-            line="201"
-            column="13"/>
-    </issue>
-
-    <issue
-        id="UseKtx"
-        message="Use the KTX extension function `Int.toDrawable` instead?"
-        errorLine1="        window.setBackgroundDrawable(ColorDrawable(android.graphics.Color.TRANSPARENT))"
-        errorLine2="                                     ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
-        <location
-            file="src/main/java/com/mubox/app/ui/components/FullScreenDialogPage.kt"
-            line="402"
-            column="38"/>
-    </issue>
-
-    <issue
-        id="UseKtx"
-        message="Use the KTX extension function `SharedPreferences.edit` instead?"
-        errorLine1="            context.getSharedPreferences(SETTINGS_PREFS, Context.MODE_PRIVATE)"
-        errorLine2="            ^">
-        <location
-            file="src/main/java/com/mubox/app/utils/LocaleHelper.kt"
-            line="16"
-            column="13"/>
-    </issue>
-
-    <issue
-        id="UseKtx"
-        message="Use the KTX extension function `SharedPreferences.edit` instead?"
-        errorLine1="        prefs.edit().putString(&quot;app_language_cache&quot;, language.name).apply()"
-        errorLine2="        ~~~~~~~~~~~~">
-        <location
-            file="src/main/java/com/mubox/app/MainActivity.kt"
-            line="171"
-            column="9"/>
-    </issue>
-
-    <issue
-        id="UseKtx"
-        message="Use the KTX extension function `SharedPreferences.edit` instead?"
-        errorLine1="        context.getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE)"
-        errorLine2="        ^">
-        <location
-            file="src/main/java/com/mubox/app/service/manager/NetworkAutoSwitchManager.kt"
-            line="191"
-            column="9"/>
-    </issue>
-
-    <issue
-        id="UseKtx"
-        message="Use the KTX extension function `String.toUri` instead?"
-        errorLine1="                            val intent = Intent(Intent.ACTION_VIEW, Uri.parse(annotation.item))"
-        errorLine2="                                                                    ~~~~~~~~~~~~~~~~~~~~~~~~~~">
-        <location
-            file="src/main/java/com/mubox/app/ui/components/NodeSelectionDialogs.kt"
-            line="161"
-            column="69"/>
-    </issue>
-
-    <issue
-        id="UseKtx"
-        message="Use the KTX extension function `String.toUri` instead?"
-        errorLine1="                                data = Uri.parse(&quot;package:${context.packageName}&quot;)"
-        errorLine2="                                       ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
-        <location
-            file="src/main/java/com/mubox/app/ui/screens/SettingsScreen.kt"
-            line="285"
-            column="40"/>
-    </issue>
-
-    <issue
-        id="UseKtx"
-        message="Use the KTX extension function `String.toUri` instead?"
-        errorLine1="                                data = Uri.parse(&quot;package:${context.packageName}&quot;)"
-        errorLine2="                                       ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
-        <location
-            file="src/main/java/com/mubox/app/ui/screens/SettingsScreen.kt"
-            line="285"
-            column="40"/>
-    </issue>
-
-    <issue
-        id="UseKtx"
-        message="Use the KTX extension function `SharedPreferences.edit` instead?"
-        errorLine1="        prefs.edit()"
-        errorLine2="        ~~~~~~~~~~~~">
-        <location
-            file="src/main/java/com/mubox/app/repository/TrafficRepository.kt"
-            line="565"
-            column="9"/>
-    </issue>
-
-    <issue
-        id="UseKtx"
-        message="Use the KTX extension function `String.toUri` instead?"
-        errorLine1="        val intent = Intent(Intent.ACTION_VIEW, Uri.parse(&quot;https://example.com&quot;))"
-        errorLine2="                                                ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
-        <location
-            file="src/main/java/com/mubox/app/service/tun/VpnTunManager.kt"
-            line="664"
-            column="49"/>
     </issue>
 
 </issues>

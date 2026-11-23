@@ -59,20 +59,20 @@ private fun Modifier.nodeOverflowMenuPanel(): Modifier {
 fun NodeCard(
     name: String,
     type: String,
-    latency: Long? = null,
     isSelected: Boolean,
-    hasDetour: Boolean = false,
-    isSwitching: Boolean = false,
-    isTesting: Boolean = false,
-    trafficUsed: Long = 0,
     onClick: () -> Unit,
     onEdit: () -> Unit,
     onExport: () -> Unit,
     onLatency: () -> Unit,
     onDelete: () -> Unit,
+    modifier: Modifier = Modifier,
+    latency: Long? = null,
+    hasDetour: Boolean = false,
+    isSwitching: Boolean = false,
+    isTesting: Boolean = false,
+    trafficUsed: Long = 0,
     showLatency: Boolean = true,
-    showActions: Boolean = true,
-    modifier: Modifier = Modifier
+    showActions: Boolean = true
 ) {
     var showMenu by remember { mutableStateOf(false) }
     val listInteractionSource = remember { MutableInteractionSource() }
@@ -412,19 +412,19 @@ internal fun SelectedPulseIndicator(
 fun NodeGridCard(
     name: String,
     type: String,
-    latency: Long? = null,
     isSelected: Boolean,
-    hasDetour: Boolean = false,
-    isSwitching: Boolean = false,
-    isTesting: Boolean = false,
     onClick: () -> Unit,
     onEdit: () -> Unit,
     onExport: () -> Unit,
     onLatency: () -> Unit,
     onDelete: () -> Unit,
+    modifier: Modifier = Modifier,
+    latency: Long? = null,
+    hasDetour: Boolean = false,
+    isSwitching: Boolean = false,
+    isTesting: Boolean = false,
     showLatency: Boolean = true,
-    showActions: Boolean = true,
-    modifier: Modifier = Modifier
+    showActions: Boolean = true
 ) {
     var showMenu by remember { mutableStateOf(false) }
     val gridInteractionSource = remember { MutableInteractionSource() }

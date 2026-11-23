@@ -24,6 +24,7 @@ import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.res.pluralStringResource
 import androidx.compose.runtime.Composable
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.compose.runtime.getValue
@@ -112,14 +113,8 @@ fun DiagnosticsScreen(
                     SettingSwitchItem(
                         title = stringResource(R.string.diagnostics_resource_sampling),
                         subtitle = when {
-                            isResourceSamplingEnabled -> stringResource(
-                                R.string.diagnostics_resource_sampling_active,
-                                resourceSampleCount
-                            )
-                            resourceSampleCount > 0 -> stringResource(
-                                R.string.diagnostics_resource_sampling_stopped,
-                                resourceSampleCount
-                            )
+                            isResourceSamplingEnabled -> pluralStringResource(R.plurals.diagnostics_resource_sampling_active, resourceSampleCount, resourceSampleCount)
+                            resourceSampleCount > 0 -> pluralStringResource(R.plurals.diagnostics_resource_sampling_stopped, resourceSampleCount, resourceSampleCount)
                             else -> stringResource(R.string.diagnostics_resource_sampling_subtitle)
                         },
                         icon = Icons.Rounded.Analytics,

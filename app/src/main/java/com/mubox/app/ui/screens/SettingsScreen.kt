@@ -2,7 +2,7 @@ package com.mubox.app.ui.screens
 
 import android.content.Context
 import android.content.Intent
-import android.net.Uri
+import androidx.core.net.toUri
 import android.os.PowerManager
 import com.mubox.app.R
 import androidx.activity.compose.rememberLauncherForActivityResult
@@ -40,6 +40,7 @@ import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.res.pluralStringResource
 import androidx.compose.runtime.Composable
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.compose.LifecycleEventEffect
@@ -282,7 +283,7 @@ fun SettingsScreen(
                             val intent = Intent(
                                 android.provider.Settings.ACTION_REQUEST_IGNORE_BATTERY_OPTIMIZATIONS
                             ).apply {
-                                data = Uri.parse("package:${context.packageName}")
+                                data = "package:${context.packageName}".toUri()
                             }
                             runCatching { context.startActivity(intent) }
                         }
@@ -389,10 +390,7 @@ fun SettingsScreen(
                 SettingSwitchItem(
                     title = stringResource(R.string.settings_ruleset_auto_update),
                     subtitle = if (settings.ruleSetAutoUpdateEnabled)
-                        stringResource(
-                            R.string.settings_ruleset_auto_update_enabled,
-                            settings.ruleSetAutoUpdateInterval
-                        )
+                        pluralStringResource(R.plurals.settings_ruleset_auto_update_enabled, settings.ruleSetAutoUpdateInterval, settings.ruleSetAutoUpdateInterval)
                     else
                         stringResource(R.string.settings_ruleset_auto_update_disabled),
                     icon = Icons.Rounded.Schedule,
@@ -403,10 +401,7 @@ fun SettingsScreen(
                     val intervalMinMsg = stringResource(R.string.settings_update_interval_min)
                     EditableTextItem(
                         title = stringResource(R.string.settings_update_interval),
-                        value = stringResource(
-                            R.string.settings_update_interval_value,
-                            settings.ruleSetAutoUpdateInterval
-                        ),
+                        value = pluralStringResource(R.plurals.settings_update_interval_value, settings.ruleSetAutoUpdateInterval, settings.ruleSetAutoUpdateInterval),
                         onValueChange = { newValue ->
                             val interval = newValue.filter { it.isDigit() }.toIntOrNull()
                             if (interval != null && interval >= 15) {

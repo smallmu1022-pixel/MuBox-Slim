@@ -12,6 +12,7 @@ import android.os.Build
 import android.os.SystemClock
 import android.util.Log
 import androidx.core.content.ContextCompat
+import androidx.core.content.edit
 import com.mubox.app.ipc.SingBoxRemote
 import com.mubox.app.ipc.VpnStateStore
 import com.mubox.app.manager.VpnServiceManager
@@ -189,8 +190,6 @@ object NetworkAutoSwitchManager {
 
     private fun setStoppedByTrustedWifi(context: Context, value: Boolean) {
         context.getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE)
-            .edit()
-            .putBoolean(KEY_STOPPED_BY_TRUSTED_WIFI, value)
-            .apply()
+            .edit { putBoolean(KEY_STOPPED_BY_TRUSTED_WIFI, value) }
     }
 }

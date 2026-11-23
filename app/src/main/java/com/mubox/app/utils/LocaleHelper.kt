@@ -3,6 +3,7 @@ package com.mubox.app.utils
 import android.content.Context
 import android.content.res.Configuration
 import android.os.LocaleList
+import androidx.core.content.edit
 import com.mubox.app.model.AppLanguage
 import java.util.Locale
 
@@ -14,9 +15,7 @@ object LocaleHelper {
     fun saveLanguageCache(context: Context, language: AppLanguage) {
         runCatching {
             context.getSharedPreferences(SETTINGS_PREFS, Context.MODE_PRIVATE)
-                .edit()
-                .putString(LANGUAGE_CACHE_KEY, language.name)
-                .apply()
+                .edit { putString(LANGUAGE_CACHE_KEY, language.name) }
         }
     }
 

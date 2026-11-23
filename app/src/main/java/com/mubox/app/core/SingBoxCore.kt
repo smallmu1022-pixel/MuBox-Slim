@@ -135,7 +135,8 @@ internal class TemporaryProbeTrafficRecorder(
     }
 }
 
-class SingBoxCore private constructor(internal val context: Context) {
+class SingBoxCore private constructor(context: Context) {
+    internal val context: Context = context.applicationContext
 
     internal val gson = Gson()
     internal val workDir: File = File(context.filesDir, "singbox_work")

@@ -2,6 +2,7 @@ package com.mubox.app.ui.components
 
 import android.graphics.Bitmap
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.res.pluralStringResource
 import com.mubox.app.R
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
@@ -129,7 +130,7 @@ private fun AppSelectorTopControls(
                 modifier = Modifier.weight(1f)
             ) {
                 Text(
-                    text = stringResource(R.string.rulesets_selection_mode, selectedCount),
+                    text = pluralStringResource(R.plurals.rulesets_selection_mode, selectedCount, selectedCount),
                     style = MaterialTheme.typography.bodyMedium,
                     color = MaterialTheme.colorScheme.onSurfaceVariant,
                     maxLines = 1

@@ -103,17 +103,17 @@ private fun RuleSetBadge(
 @Composable
 fun RuleSetItem(
     ruleSet: RuleSet,
+    onClick: () -> Unit,
+    modifier: Modifier = Modifier,
     isSelectionMode: Boolean = false,
     isSelected: Boolean = false,
     isDownloading: Boolean = false,
-    onClick: () -> Unit,
     onToggle: (Boolean) -> Unit = {},
     onEditClick: () -> Unit = {},
     onDeleteClick: () -> Unit = {},
     onOutboundClick: () -> Unit = {},
     onInboundClick: () -> Unit = {},
-    outboundDisplayName: String? = null,
-    modifier: Modifier = Modifier
+    outboundDisplayName: String? = null
 ) {
     var showDeleteConfirm by remember { mutableStateOf(false) }
     var showOutboundName by remember { mutableStateOf(false) }

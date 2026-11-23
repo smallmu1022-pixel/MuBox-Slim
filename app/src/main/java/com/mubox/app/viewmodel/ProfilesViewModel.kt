@@ -133,8 +133,9 @@ class ProfilesViewModel(application: Application) : AndroidViewModel(application
                     message
                 }
                 is SubscriptionUpdateResult.SuccessNoChanges -> {
-                    val message = getApplication<Application>().getString(
-                        R.string.subscription_update_success_no_changes,
+                    val message = getApplication<Application>().resources.getQuantityString(
+                        R.plurals.subscription_update_success_no_changes,
+                        result.totalCount,
                         result.totalCount
                     )
                     message

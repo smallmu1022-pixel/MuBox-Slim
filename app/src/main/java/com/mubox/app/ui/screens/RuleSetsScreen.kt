@@ -23,6 +23,7 @@ import androidx.compose.material.icons.rounded.Delete
 import androidx.compose.material3.*
 import androidx.compose.foundation.layout.Box
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.res.pluralStringResource
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -252,7 +253,7 @@ fun RuleSetsScreen(
         val selectedCount = selectedItems.count { it.value }
         ConfirmDialog(
             title = stringResource(R.string.rulesets_delete_title),
-            message = stringResource(R.string.rulesets_delete_batch_confirm, selectedCount),
+            message = pluralStringResource(R.plurals.rulesets_delete_batch_confirm, selectedCount, selectedCount),
             confirmText = stringResource(R.string.common_delete),
             onConfirm = {
                 val idsToDelete = selectedItems.filter { it.value }.keys.toList()
@@ -449,7 +450,7 @@ fun RuleSetsScreen(
 
     FloatingPageLayout(
         title = if (isSelectionMode) {
-            stringResource(R.string.rulesets_selection_mode, selectedItems.count { it.value })
+            pluralStringResource(R.plurals.rulesets_selection_mode, selectedItems.count { it.value }, selectedItems.count { it.value })
         } else {
             stringResource(R.string.rulesets_title)
         },

@@ -144,21 +144,21 @@ fun ProfileCard(
     name: String,
     type: String,
     isSelected: Boolean,
-    isSwitching: Boolean = false,
     isEnabled: Boolean,
     isUpdating: Boolean,
-    updateStatus: UpdateStatus = UpdateStatus.Idle,
-    updateStage: SubscriptionUpdateStage? = null,
-    expireDate: Long = 0,
-    totalTraffic: Long = 0,
-    usedTraffic: Long = 0,
-    lastUpdated: Long = 0,
     onClick: () -> Unit,
     onUpdate: () -> Unit,
     onEdit: () -> Unit,
     onDelete: () -> Unit,
     onToggle: () -> Unit,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
+    isSwitching: Boolean = false,
+    updateStatus: UpdateStatus = UpdateStatus.Idle,
+    updateStage: SubscriptionUpdateStage? = null,
+    expireDate: Long = 0,
+    totalTraffic: Long = 0,
+    usedTraffic: Long = 0,
+    lastUpdated: Long = 0
 ) {
     var showMenu by remember { mutableStateOf(false) }
 
