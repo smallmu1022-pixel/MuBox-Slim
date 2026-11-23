@@ -83,7 +83,7 @@ class OutboundFixerTest {
     }
 
     @Test
-    fun testFixNaivePreservesH2NetworkForRuntime() {
+    fun testBuildForRuntimeRejectsRemovedNaiveWithH2Network() {
         val outbound = Outbound(
             type = "naive",
             tag = "naive-node",
@@ -94,15 +94,15 @@ class OutboundFixerTest {
             network = listOf("h2")
         )
 
-        val fixed = OutboundFixer.buildRuntimeNaiveOutbound(
-            fixed = outbound,
+        val runtime = OutboundFixer.buildForRuntimeWithDialConfigForTest(
+            outbound = outbound,
             tcpKeepAliveEnabled = false,
             tcpKeepAliveInterval = null,
             connectTimeout = null
         )
 
-        assertEquals(null, fixed.network)
-        assertEquals(false, fixed.quic)
+        assertNull(runtime)
+        assertEquals(listOf("h2"), OutboundFixer.fix(outbound).network)
         assertEquals(listOf("h2"), outbound.network)
     }
 
@@ -817,7 +817,7 @@ class OutboundFixerTest {
     }
 
     @Test
-    fun testBuildForRuntimeMapsNaiveQuicWithoutTransport() {
+    fun testBuildForRuntimeRejectsRemovedNaiveQuicOutbound() {
         val outbound = Outbound(
             type = "naive",
             tag = "naive-quic",
@@ -838,21 +838,9 @@ class OutboundFixerTest {
             )
         )
 
-        val runtime = OutboundFixer.buildRuntimeNaiveOutbound(
-            fixed = OutboundFixer.fix(outbound),
-            tcpKeepAliveEnabled = false,
-            tcpKeepAliveInterval = null,
-            connectTimeout = null
-        )
-
-        assertEquals(true, runtime.quic)
-        assertEquals("bbr", runtime.quicCongestionControl)
-        assertNull(runtime.transport)
-        assertNull(runtime.network)
-        assertEquals(true, runtime.tls?.insecure)
-        assertEquals(listOf("h3"), runtime.tls?.alpn)
-        assertEquals("chrome", runtime.tls?.utls?.fingerprint)
-        assertEquals("key", runtime.tls?.reality?.publicKey)
+        assertNull(OutboundFixer.buildForRuntimeWithDialConfigForTest(outbound = outbound))
+        assertEquals(true, outbound.quic)
+        assertEquals(listOf("quic"), outbound.network)
     }
 
     @Test
