@@ -36,6 +36,7 @@ import androidx.compose.material3.Surface
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.LaunchedEffect
+import androidx.core.content.edit
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -168,7 +169,7 @@ fun SingBoxApp() {
     LaunchedEffect(settings.appLanguage) {
         val language = settings.appLanguage
         val prefs = context.getSharedPreferences("settings", Context.MODE_PRIVATE)
-        prefs.edit().putString("app_language_cache", language.name).apply()
+        prefs.edit { putString("app_language_cache", language.name) }
     }
 
     val isVpnRunningForUpdate by SingBoxRemote.isRunning.collectAsStateWithLifecycle()
@@ -466,8 +467,8 @@ private fun AnimatedAppNavBar(
     visible: Boolean,
     navController: NavController,
     themeStyle: AppThemeStyle,
-    backdrop: Backdrop? = null,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
+    backdrop: Backdrop? = null
 ) {
     AnimatedVisibility(
         visible = visible,

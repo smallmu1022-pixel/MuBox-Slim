@@ -45,7 +45,7 @@
     <string name="common_refused">Refused</string>
     <string name="common_ipv6_only">IPv6 only</string>
     <string name="common_unavailable">Unavailable</string>
-    <string name="common_loading">Loading...</string>
+    <string name="common_loading">Loading…</string>
     <string name="common_unknown">Unknown</string>
     <string name="common_none">None</string>
     <string name="common_all">All</string>
@@ -64,9 +64,9 @@
 
     <!-- Connection Status -->
     <string name="connection_idle">Disconnected</string>
-    <string name="connection_connecting">Connecting...</string>
+    <string name="connection_connecting">Connecting…</string>
     <string name="connection_connected">Connected</string>
-    <string name="connection_disconnecting">Disconnecting...</string>
+    <string name="connection_disconnecting">Disconnecting…</string>
     <string name="connection_error">Error</string>
 
     <!-- Dashboard -->
@@ -113,17 +113,23 @@
     <string name="settings_tun_vpn_subtitle">Stack, MTU, per-app proxy</string>
     <string name="settings_update_rulesets">Update Rule Sets</string>
     <string name="settings_update_rulesets_subtitle">Manually update ad &amp; routing rules</string>
-    <string name="settings_updating">Downloading...</string>
-    <string name="settings_preparing_update">Preparing update...</string>
+    <string name="settings_updating">Downloading…</string>
+    <string name="settings_preparing_update">Preparing update…</string>
     <string name="settings_update_success">Update successful</string>
     <string name="settings_update_failed">Update failed</string>
     <string name="settings_ruleset_update_success">Rule sets updated successfully</string>
     <string name="settings_ruleset_update_failed">Rule sets update failed</string>
     <string name="settings_ruleset_auto_update">Rule Set Auto Update</string>
-    <string name="settings_ruleset_auto_update_enabled">Update every %d minutes</string>
+    <plurals name="settings_ruleset_auto_update_enabled">
+        <item quantity="one">Update every 1 minute</item>
+        <item quantity="other">Update every %d minutes</item>
+    </plurals>
     <string name="settings_ruleset_auto_update_disabled">Enable to auto update all remote rule sets</string>
     <string name="settings_update_interval">Update Interval</string>
-    <string name="settings_update_interval_value">%d minutes</string>
+    <plurals name="settings_update_interval_value">
+        <item quantity="one">1 minute</item>
+        <item quantity="other">%d minutes</item>
+    </plurals>
     <string name="settings_update_interval_min">Update interval must be at least 15 minutes</string>
     <string name="settings_debug_mode">Debug Mode</string>
     <string name="settings_debug_mode_subtitle">Enable detailed logging (requires service restart)</string>
@@ -167,7 +173,10 @@
     <string name="routing_settings_default_rule">Default Rule</string>
     <string name="routing_settings_latency_test_method">Latency Test Method</string>
     <string name="routing_settings_latency_test_url">Latency Test URL</string>
-    <string name="routing_settings_latency_test_timeout_s">%d seconds</string>
+    <plurals name="routing_settings_latency_test_timeout_s">
+        <item quantity="one">1 second</item>
+        <item quantity="other">%d seconds</item>
+    </plurals>
     <string name="routing_settings_subscription_timeout">Subscription Update Timeout</string>
     <string name="routing_settings_github_mirror">GitHub Mirror</string>
     <string name="routing_settings_block_quic">Block QUIC</string>
@@ -177,7 +186,10 @@
     <string name="routing_settings_icmp_echo_routing">ICMP Echo Routing</string>
     <string name="routing_settings_icmp_echo_routing_subtitle">Handle ping traffic with sing-box 1.13 ICMP routing rules</string>
     <string name="routing_settings_app_routing">App Routing</string>
-    <string name="routing_settings_app_routing_rules">%d rules</string>
+    <plurals name="routing_settings_app_routing_rules">
+        <item quantity="one">1 rule</item>
+        <item quantity="other">%d rules</item>
+    </plurals>
     <string name="routing_settings_domain_routing">Domain Routing</string>
     <string name="routing_settings_manage_rulesets">Manage Rule Sets</string>
 
@@ -206,12 +218,21 @@
     <string name="tun_settings_strict_route_subtitle">Limits route bypass; DNS safety still depends on TUN, hijack rules, and system VPN policy</string>
     <string name="tun_settings_route_mode">Route Mode</string>
     <string name="tun_settings_route_cidrs">Route CIDRs</string>
-    <string name="tun_settings_route_cidrs_configured">%d configured</string>
+    <plurals name="tun_settings_route_cidrs_configured">
+        <item quantity="one">%d configured</item>
+        <item quantity="other">%d configured</item>
+    </plurals>
     <string name="tun_settings_app_mode">Per-App Mode</string>
     <string name="tun_settings_allowlist">Allowlist</string>
-    <string name="tun_settings_allowlist_configured">%d configured</string>
+    <plurals name="tun_settings_allowlist_configured">
+        <item quantity="one">%d configured</item>
+        <item quantity="other">%d configured</item>
+    </plurals>
     <string name="tun_settings_blocklist">Blocklist</string>
-    <string name="tun_settings_blocklist_configured">%d configured</string>
+    <plurals name="tun_settings_blocklist_configured">
+        <item quantity="one">%d configured</item>
+        <item quantity="other">%d configured</item>
+    </plurals>
     <string name="tun_settings_follow_new_apps">Apply current rule to new apps</string>
     <string name="tun_settings_follow_new_apps_subtitle">Adds newly installed apps to the allowlist or blocklist based on the current mode</string>
     <string name="tun_settings_follow_allowlist_subtitle">New apps join the allowlist and enter the active capture mode</string>
@@ -243,7 +264,7 @@
 
 %2$s</string>
     <string name="profiles_import_content_too_large">Import content is too large, please reduce it and try again</string>
-    <string name="profiles_search_hint">Enter keyword...</string>
+    <string name="profiles_search_hint">Enter keyword…</string>
     <string name="profiles_add_subscription">Add Subscription</string>
     <string name="profiles_edit_profile">Edit Profile</string>
     <string name="profiles_subscription_link">Subscription Link</string>
@@ -270,9 +291,9 @@
     <string name="profiles_custom_config">Custom Profile</string>
     <string name="profiles_custom_config_subtitle">Add or combine nodes</string>
     <string name="profiles_imported_subscription_default_name">Imported Subscription</string>
-    <string name="subscription_import_fetching">Fetching subscription content...</string>
-    <string name="subscription_import_requesting">Trying subscription request with User-Agent (%1$d/%2$d)...</string>
-    <string name="subscription_import_parsing">Parsing subscription response...</string>
+    <string name="subscription_import_fetching">Fetching subscription content…</string>
+    <string name="subscription_import_requesting">Trying subscription request with User-Agent (%1$d/%2$d)…</string>
+    <string name="subscription_import_parsing">Parsing subscription response…</string>
     <string name="subscription_import_empty_response">Subscription response body is empty</string>
     <string name="subscription_import_http_error">Subscription request failed (HTTP %1$d: %2$s)</string>
     <string name="subscription_import_timeout">Connection timeout, please check your network</string>
@@ -281,7 +302,10 @@
     <string name="subscription_import_failed_generic">Subscription import failed</string>
     <string name="custom_profile_name_required">Name is required</string>
     <string name="custom_profile_name_hint">Enter a profile name</string>
-    <string name="custom_profile_selected_nodes">%d nodes total</string>
+    <plurals name="custom_profile_selected_nodes">
+        <item quantity="one">1 node total</item>
+        <item quantity="other">%d nodes total</item>
+    </plurals>
     <string name="custom_profile_nodes_optional">Add or select at least one node</string>
     <string name="custom_profile_no_available_nodes">No subscription nodes available</string>
     <string name="profiles_no_safe_node">No node can be selected safely from this profile</string>
@@ -289,7 +313,7 @@
     <string name="custom_profile_paste_link_subtitle">Add from clipboard</string>
     <string name="custom_profile_manual_add_subtitle">Choose a protocol and enter details</string>
     <string name="custom_profile_added_nodes">Added Nodes</string>
-    <string name="custom_profile_creating">Creating custom profile...</string>
+    <string name="custom_profile_creating">Creating custom profile…</string>
     <string name="custom_profile_create_failed">Failed to create custom profile</string>
     <string name="custom_profile_nodes_required">No available nodes selected</string>
     <string name="custom_profile_extract_failed">Failed to extract node configuration</string>
@@ -312,7 +336,7 @@
     <string name="profiles_name_label">Name</string>
     <string name="profiles_url_label">Subscription URL</string>
     <string name="profiles_subscription_node_warning">Cannot enter single node link in subscription URL, please use \'Clipboard\' import or \'Add Node\' feature</string>
-    <string name="profiles_extracting_nodes">Extracting nodes (%1$d/%2$d)...</string>
+    <string name="profiles_extracting_nodes">Extracting nodes (%1$d/%2$d)…</string>
 
     <!-- Nodes -->
     <string name="nodes_title">Node List</string>
@@ -320,17 +344,17 @@
     <string name="nodes_sort">Sort</string>
     <string name="nodes_filter">Filter</string>
     <string name="nodes_add">Add Node</string>
-    <string name="nodes_add_hint">Enter node link (vless://, trojan://, hysteria2://, etc)...</string>
+    <string name="nodes_add_hint">Enter node link (vless://, trojan://, hysteria2://, etc)…</string>
     <string name="nodes_add_to_profile">Add to Profile</string>
     <string name="nodes_add_create_new_profile">Create New Profile</string>
-    <string name="nodes_add_new_profile_name_hint">Enter new profile name...</string>
+    <string name="nodes_add_new_profile_name_hint">Enter new profile name…</string>
     <string name="nodes_export_link">Export Link</string>
     <string name="nodes_copied_to_clipboard">Copied to clipboard</string>
     <string name="nodes_clear_latency">Clear Latency</string>
     <string name="nodes_clear_latency_confirm">Clear all node latency records? This action cannot be undone.</string>
     <string name="nodes_latency_cleared">Latency cleared</string>
     <string name="nodes_test_latency">Test Latency</string>
-    <string name="nodes_testing_progress">Testing...</string>
+    <string name="nodes_testing_progress">Testing…</string>
     <string name="nodes_test_complete_stats">Test complete: %1$d success, %2$d timeout</string>
     <string name="nodes_test_complete_stats_v6">Test complete: %1$d success, %2$d timeout, %3$d IPv6 only</string>
     <string name="nodes_stop_test">Stop Test</string>
@@ -471,19 +495,25 @@
     <string name="rulesets_edit">Edit Rule Set</string>
     <string name="rulesets_delete_title">Delete Rule Set</string>
     <string name="rulesets_delete_confirm">Are you sure you want to delete rule set \"%s\"?</string>
-    <string name="rulesets_delete_batch_confirm">Are you sure you want to delete %d selected rule sets?</string>
+    <plurals name="rulesets_delete_batch_confirm">
+        <item quantity="one">Are you sure you want to delete 1 selected rule set?</item>
+        <item quantity="other">Are you sure you want to delete %d selected rule sets?</item>
+    </plurals>
     <string name="rulesets_select_outbound">Select Outbound Mode</string>
     <string name="rulesets_select_profile">Select Profile</string>
     <string name="rulesets_select_node">Select Node</string>
     <string name="rulesets_select_inbound">Select Inbound</string>
     <string name="rulesets_select_target">Select Target</string>
-    <string name="rulesets_tap_to_select">Tap to select...</string>
+    <string name="rulesets_tap_to_select">Tap to select…</string>
     <string name="rulesets_rule_set_tag">Rule Set Tag</string>
     <string name="rulesets_type">Type</string>
     <string name="rulesets_format">Format</string>
     <string name="rulesets_url">URL</string>
     <string name="rulesets_local_path">Local Path</string>
-    <string name="rulesets_nodes_count">%d nodes</string>
+    <plurals name="rulesets_nodes_count">
+        <item quantity="one">1 node</item>
+        <item quantity="other">%d nodes</item>
+    </plurals>
     <string name="rulesets_unknown_profile">Unknown Profile (%s)</string>
     <string name="rulesets_exists">Rule set \"%s\" already exists</string>
     <string name="rulesets_added_downloaded">Rule set \"%s\" added and downloaded</string>
@@ -502,7 +532,7 @@
     <string name="app_rules_unknown_profile">Unknown Profile</string>
     <string name="app_rules_empty_groups">No app groups</string>
     <string name="app_rules_empty_groups_hint">Tap + in top right to create a group</string>
-    <string name="app_rules_click_to_select">Click to select...</string>
+    <string name="app_rules_click_to_select">Click to select…</string>
     <string name="app_rules_select_target">Select Target</string>
 
     <!-- App Groups -->
@@ -555,43 +585,49 @@
     <string name="diagnostics_title">Network Diagnostics</string>
     <string name="diagnostics_view_config">View Running Config Summary</string>
     <string name="diagnostics_view_config_subtitle">Check if package_name rules are generated</string>
-    <string name="diagnostics_view_config_loading">Generating...</string>
+    <string name="diagnostics_view_config_loading">Generating…</string>
     <string name="diagnostics_export_config">Export Running Config</string>
     <string name="diagnostics_export_config_subtitle">Export running_config.json to external storage</string>
-    <string name="diagnostics_export_config_loading">Exporting...</string>
+    <string name="diagnostics_export_config_loading">Exporting…</string>
     <string name="diagnostics_resource_sampling">Periodic Resource Sampling</string>
     <string name="diagnostics_resource_sampling_subtitle">Sample app and VPN processes every 15 seconds, up to 4096 records</string>
-    <string name="diagnostics_resource_sampling_active">Sampling, %1$d records captured</string>
-    <string name="diagnostics_resource_sampling_stopped">Stopped, %1$d records retained</string>
+    <plurals name="diagnostics_resource_sampling_active">
+        <item quantity="one">Sampling, 1 record captured</item>
+        <item quantity="other">Sampling, %1$d records captured</item>
+    </plurals>
+    <plurals name="diagnostics_resource_sampling_stopped">
+        <item quantity="one">Stopped, 1 record retained</item>
+        <item quantity="other">Stopped, %1$d records retained</item>
+    </plurals>
     <string name="diagnostics_export_package">Export Redacted Diagnostic Package</string>
     <string name="diagnostics_export_package_subtitle">Export redacted logs, runtime config, and resource samples as ZIP</string>
-    <string name="diagnostics_export_package_loading">Building diagnostic package...</string>
+    <string name="diagnostics_export_package_loading">Building diagnostic package…</string>
     <string name="diagnostics_export_package_success">Diagnostic package exported to:\n%1$s\n\nSize: %2$d KiB\nResource records: %3$d</string>
     <string name="diagnostics_export_package_failed">Diagnostic package export failed: %1$s</string>
     <string name="diagnostics_app_routing">App Routing Diagnostics</string>
     <string name="diagnostics_app_routing_subtitle">Check /proc/net readability (affects package_name)</string>
-    <string name="diagnostics_app_routing_loading">Detecting...</string>
+    <string name="diagnostics_app_routing_loading">Detecting…</string>
     <string name="diagnostics_conn_owner">Connection Owner Stats</string>
     <string name="diagnostics_conn_owner_subtitle">View findConnectionOwner success/fail count</string>
-    <string name="diagnostics_conn_owner_loading">Reading...</string>
+    <string name="diagnostics_conn_owner_loading">Reading…</string>
     <string name="diagnostics_reset_conn_owner">Reset Connection Owner Stats</string>
     <string name="diagnostics_reset_conn_owner_subtitle">Reset counter (for debugging)</string>
     <string name="diagnostics_node_line_query">Node Line Query</string>
     <string name="diagnostics_node_line_query_subtitle">View current global node route and exit observation</string>
-    <string name="diagnostics_node_line_query_loading">Querying...</string>
+    <string name="diagnostics_node_line_query_loading">Querying…</string>
     <string name="diagnostics_connectivity">Connectivity Check</string>
     <string name="diagnostics_connectivity_subtitle">Connection test using the configured latency target</string>
-    <string name="diagnostics_connectivity_loading">Checking...</string>
+    <string name="diagnostics_connectivity_loading">Checking…</string>
     <string name="diagnostics_ping_test">Ping Test</string>
     <string name="diagnostics_ping_test_subtitle">TCP connect test using the configured latency target</string>
     <string name="diagnostics_dns_query">DNS Query</string>
     <string name="diagnostics_dns_query_subtitle">Resolve the configured latency target domain</string>
     <string name="diagnostics_dns_leak_check">DNS Leak Check</string>
     <string name="diagnostics_dns_leak_check_subtitle">Static check of DNS leak risks in the current running config</string>
-    <string name="diagnostics_dns_leak_check_loading">Checking...</string>
+    <string name="diagnostics_dns_leak_check_loading">Checking…</string>
     <string name="diagnostics_routing_test">Routing Test</string>
     <string name="diagnostics_routing_test_subtitle">Rule matching simulation (baidu.com)</string>
-    <string name="diagnostics_routing_test_loading">Testing...</string>
+    <string name="diagnostics_routing_test_loading">Testing…</string>
 
     <!-- Profile Editor -->
     <string name="profile_editor_title">Edit Profile</string>
@@ -613,14 +649,17 @@
     <string name="import_has_rulesets">Rule Sets</string>
     <string name="import_has_app_rules">App Routing</string>
     <string name="import_overwrite_warning">Import will overwrite existing profiles and settings with the same name</string>
-    <string name="import_count_items">%d items</string>
+    <plurals name="import_count_items">
+        <item quantity="one">1 item</item>
+        <item quantity="other">%d items</item>
+    </plurals>
     <string name="import_success">Import Successful</string>
     <string name="import_failed">Import Failed</string>
     <string name="import_settings_restored">Settings restored</string>
     <string name="import_success_detail">Imported: %1$d profiles, %2$d nodes</string>
 
     <!-- App List -->
-    <string name="app_list_loading">Loading app list...</string>
+    <string name="app_list_loading">Loading app list…</string>
     <string name="app_list_loaded">Loaded %1$d / %2$d apps</string>
     <string name="app_list_search_hint">Search app or package name</string>
     <string name="app_list_show_system">Show system apps</string>
@@ -657,7 +696,7 @@
     <!-- About Dialog -->
     <string name="about_version">App Version: %1$s (%2$d)</string>
     <string name="about_kernel_version">Kernel Version: %s</string>
-    <string name="about_kernel_loading">Loading...</string>
+    <string name="about_kernel_loading">Loading…</string>
     <string name="about_kernel_builtin">sing-box (built-in)</string>
     <string name="about_address">Address:</string>
     <string name="about_based_on">Based on Sing-box kernel.</string>
@@ -757,7 +796,10 @@
     <!-- Update Status Messages -->
     <string name="update_status_no_subscription">No subscription to update</string>
     <string name="update_status_failed">Update failed</string>
-    <string name="update_status_success_changes">Update successful, %d subscriptions changed</string>
+    <plurals name="update_status_success_changes">
+        <item quantity="one">Update successful, 1 subscription changed</item>
+        <item quantity="other">Update successful, %d subscriptions changed</item>
+    </plurals>
     <string name="update_status_success_no_changes">Update complete, no changes</string>
     <string name="update_status_partial">Update complete, %1$d successful, %2$d failed</string>
     <string name="update_status_complete">Update complete</string>
@@ -785,7 +827,10 @@
 
     <!-- Subscription Update Messages -->
     <string name="subscription_update_success_with_changes">Update successful (%1$s, %2$d nodes)</string>
-    <string name="subscription_update_success_no_changes">Update complete, no changes (%d nodes)</string>
+    <plurals name="subscription_update_success_no_changes">
+        <item quantity="one">Update complete, no changes (1 node)</item>
+        <item quantity="other">Update complete, no changes (%d nodes)</item>
+    </plurals>
     <string name="subscription_update_stage_requesting">Requesting</string>
     <string name="subscription_update_stage_parsing">Parsing</string>
     <string name="subscription_update_stage_saving">Saving</string>
@@ -796,7 +841,10 @@
     <string name="app_groups_name_placeholder">e.g. Social, Games</string>
 
     <!-- RuleSets Screen -->
-    <string name="rulesets_selection_mode">%d selected</string>
+    <plurals name="rulesets_selection_mode">
+        <item quantity="one">%d selected</item>
+        <item quantity="other">%d selected</item>
+    </plurals>
 
     <!-- Traffic Stats -->
     <string name="traffic_stats_title">Traffic Statistics</string>

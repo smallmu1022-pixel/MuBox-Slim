@@ -1,7 +1,7 @@
 package com.mubox.app.ui.components
 
 import android.content.Intent
-import android.net.Uri
+import androidx.core.net.toUri
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -158,7 +158,7 @@ fun AboutDialog(onDismiss: () -> Unit) {
                 onClick = { offset ->
                     annotatedString.getStringAnnotations(tag = "URL", start = offset, end = offset)
                         .firstOrNull()?.let { annotation ->
-                            val intent = Intent(Intent.ACTION_VIEW, Uri.parse(annotation.item))
+                            val intent = Intent(Intent.ACTION_VIEW, annotation.item.toUri())
                             context.startActivity(intent)
                         }
                 }

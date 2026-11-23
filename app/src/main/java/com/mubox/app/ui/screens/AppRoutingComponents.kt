@@ -17,6 +17,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.rounded.*
 import androidx.compose.material3.*
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.res.pluralStringResource
 import androidx.compose.runtime.*
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Alignment
@@ -228,7 +229,7 @@ fun AppGroupCard(
                     Text(
                         text = buildString {
                             append("${stringResource(mode.displayNameRes)} ·$outboundText ·")
-                            append(stringResource(R.string.import_count_items, group.apps.size))
+                            append(pluralStringResource(R.plurals.import_count_items, group.apps.size, group.apps.size))
                         },
                         style = MaterialTheme.typography.bodySmall,
                         color = color
@@ -482,7 +483,7 @@ fun MultiAppSelectorDialog(
                     modifier = Modifier.weight(1f)
                 ) {
                     Text(
-                        text = stringResource(R.string.import_count_items, tempSelected.size),
+                        text = pluralStringResource(R.plurals.import_count_items, tempSelected.size, tempSelected.size),
                         style = MaterialTheme.typography.bodyMedium,
                         color = MaterialTheme.colorScheme.onSurfaceVariant,
                         maxLines = 1

@@ -45,7 +45,7 @@
     <string name="common_refused">连接被拒</string>
     <string name="common_ipv6_only">仅IPv6可用</string>
     <string name="common_unavailable">不可用</string>
-    <string name="common_loading">加载中...</string>
+    <string name="common_loading">加载中…</string>
     <string name="common_unknown">未知</string>
     <string name="common_none">无</string>
     <string name="common_all">全部</string>
@@ -64,9 +64,9 @@
 
     <!-- Connection Status -->
     <string name="connection_idle">未连接</string>
-    <string name="connection_connecting">连接中...</string>
+    <string name="connection_connecting">连接中…</string>
     <string name="connection_connected">已连接</string>
-    <string name="connection_disconnecting">断开中...</string>
+    <string name="connection_disconnecting">断开中…</string>
     <string name="connection_error">错误</string>
 
     <!-- Dashboard -->
@@ -113,17 +113,21 @@
     <string name="settings_tun_vpn_subtitle">堆栈、MTU、分应用代理</string>
     <string name="settings_update_rulesets">更新规则集</string>
     <string name="settings_update_rulesets_subtitle">手动更新广告与路由规则</string>
-    <string name="settings_updating">正在下载...</string>
-    <string name="settings_preparing_update">准备更新...</string>
+    <string name="settings_updating">正在下载…</string>
+    <string name="settings_preparing_update">准备更新…</string>
     <string name="settings_update_success">更新成功</string>
     <string name="settings_update_failed">更新失败</string>
     <string name="settings_ruleset_update_success">规则集更新成功</string>
     <string name="settings_ruleset_update_failed">规则集更新失败</string>
     <string name="settings_ruleset_auto_update">规则集定时更新</string>
-    <string name="settings_ruleset_auto_update_enabled">每 %d 分钟自动更新</string>
+    <plurals name="settings_ruleset_auto_update_enabled">
+        <item quantity="other">每 %d 分钟自动更新</item>
+    </plurals>
     <string name="settings_ruleset_auto_update_disabled">开启后自动更新所有远程规则集</string>
     <string name="settings_update_interval">更新间隔</string>
-    <string name="settings_update_interval_value">%d 分钟</string>
+    <plurals name="settings_update_interval_value">
+        <item quantity="other">%d 分钟</item>
+    </plurals>
     <string name="settings_update_interval_min">更新间隔至少为 15 分钟</string>
     <string name="settings_debug_mode">调试模式</string>
     <string name="settings_debug_mode_subtitle">开启后记录详细日志（需重启服务）</string>
@@ -167,7 +171,9 @@
     <string name="routing_settings_default_rule">默认规则</string>
     <string name="routing_settings_latency_test_method">延迟测试方式</string>
     <string name="routing_settings_latency_test_url">延迟测试地址</string>
-    <string name="routing_settings_latency_test_timeout_s">%d 秒</string>
+    <plurals name="routing_settings_latency_test_timeout_s">
+        <item quantity="other">%d 秒</item>
+    </plurals>
     <string name="routing_settings_subscription_timeout">订阅更新超时</string>
     <string name="routing_settings_github_mirror">GitHub 镜像加速</string>
     <string name="routing_settings_block_quic">屏蔽 QUIC</string>
@@ -177,7 +183,9 @@
     <string name="routing_settings_icmp_echo_routing">ICMP Echo 分流</string>
     <string name="routing_settings_icmp_echo_routing_subtitle">启用后按 sing-box 1.13 的 ICMP 规则处理 ping 流量</string>
     <string name="routing_settings_app_routing">应用分流</string>
-    <string name="routing_settings_app_routing_rules">%d 条规则</string>
+    <plurals name="routing_settings_app_routing_rules">
+        <item quantity="other">%d 条规则</item>
+    </plurals>
     <string name="routing_settings_domain_routing">域名分流</string>
     <string name="routing_settings_manage_rulesets">管理规则集</string>
 
@@ -206,12 +214,18 @@
     <string name="tun_settings_strict_route_subtitle">限制系统路由绕过；DNS 安全仍依赖 TUN、劫持规则和系统 VPN 策略</string>
     <string name="tun_settings_route_mode">接管模式</string>
     <string name="tun_settings_route_cidrs">接管网段</string>
-    <string name="tun_settings_route_cidrs_configured">已设置 %d 条</string>
+    <plurals name="tun_settings_route_cidrs_configured">
+        <item quantity="other">已设置 %d 条</item>
+    </plurals>
     <string name="tun_settings_app_mode">分应用模式</string>
     <string name="tun_settings_allowlist">仅允许列表</string>
-    <string name="tun_settings_allowlist_configured">已设置 %d 个</string>
+    <plurals name="tun_settings_allowlist_configured">
+        <item quantity="other">已设置 %d 个</item>
+    </plurals>
     <string name="tun_settings_blocklist">排除列表</string>
-    <string name="tun_settings_blocklist_configured">已设置 %d 个</string>
+    <plurals name="tun_settings_blocklist_configured">
+        <item quantity="other">已设置 %d 个</item>
+    </plurals>
     <string name="tun_settings_follow_new_apps">新安装应用跟随当前规则</string>
     <string name="tun_settings_follow_new_apps_subtitle">仅允许模式自动加入仅允许列表；排除模式自动加入排除列表</string>
     <string name="tun_settings_follow_allowlist_subtitle">新安装应用自动加入仅允许列表并由当前模式接管</string>
@@ -243,7 +257,7 @@
 
 %2$s</string>
     <string name="profiles_import_content_too_large">导入内容过大，请缩小内容后再试</string>
-    <string name="profiles_search_hint">输入关键词...</string>
+    <string name="profiles_search_hint">输入关键词…</string>
     <string name="profiles_add_subscription">添加订阅</string>
     <string name="profiles_edit_profile">编辑配置</string>
     <string name="profiles_subscription_link">订阅链接</string>
@@ -260,7 +274,7 @@
     <string name="profiles_file_import">文件导入</string>
     <string name="profiles_clipboard_import">剪贴板导入</string>
     <string name="rulesets_select_target">选择目标</string>
-    <string name="rulesets_tap_to_select">点击选择...</string>
+    <string name="rulesets_tap_to_select">点击选择…</string>
     <string name="rulesets_rule_set_tag">规则集标签</string>
     <string name="profiles_file_empty">文件内容为空</string>
     <string name="profiles_read_file_failed">读取文件失败: %s</string>
@@ -273,9 +287,9 @@
     <string name="profiles_custom_config">自定义配置</string>
     <string name="profiles_custom_config_subtitle">添加或组合节点</string>
     <string name="profiles_imported_subscription_default_name">导入的订阅</string>
-    <string name="subscription_import_fetching">正在获取订阅内容...</string>
-    <string name="subscription_import_requesting">正在尝试订阅请求（User-Agent %1$d/%2$d）...</string>
-    <string name="subscription_import_parsing">正在解析订阅响应...</string>
+    <string name="subscription_import_fetching">正在获取订阅内容…</string>
+    <string name="subscription_import_requesting">正在尝试订阅请求（User-Agent %1$d/%2$d）…</string>
+    <string name="subscription_import_parsing">正在解析订阅响应…</string>
     <string name="subscription_import_empty_response">订阅响应内容为空</string>
     <string name="subscription_import_http_error">订阅请求失败（HTTP %1$d：%2$s）</string>
     <string name="subscription_import_timeout">连接超时，请检查网络</string>
@@ -284,7 +298,9 @@
     <string name="subscription_import_failed_generic">订阅导入失败</string>
     <string name="custom_profile_name_required">名称不能为空</string>
     <string name="custom_profile_name_hint">请输入配置名称</string>
-    <string name="custom_profile_selected_nodes">共 %d 个节点</string>
+    <plurals name="custom_profile_selected_nodes">
+        <item quantity="other">共 %d 个节点</item>
+    </plurals>
     <string name="custom_profile_nodes_optional">至少添加或选择一个节点</string>
     <string name="custom_profile_no_available_nodes">暂无可复制的订阅节点</string>
     <string name="profiles_no_safe_node">配置中没有可安全选择的节点</string>
@@ -292,7 +308,7 @@
     <string name="custom_profile_paste_link_subtitle">从剪贴板快速添加</string>
     <string name="custom_profile_manual_add_subtitle">选择协议并填写参数</string>
     <string name="custom_profile_added_nodes">已添加节点</string>
-    <string name="custom_profile_creating">正在创建自定义配置...</string>
+    <string name="custom_profile_creating">正在创建自定义配置…</string>
     <string name="custom_profile_create_failed">创建自定义配置失败</string>
     <string name="custom_profile_nodes_required">未选择可用节点</string>
     <string name="custom_profile_extract_failed">无法提取节点配置</string>
@@ -315,7 +331,7 @@
     <string name="profiles_name_label">名称</string>
     <string name="profiles_url_label">订阅链接</string>
     <string name="profiles_subscription_node_warning">禁止在订阅链接中填入单节点，请使用\'剪贴板\'导入或\'添加节点\'功能</string>
-    <string name="profiles_extracting_nodes">正在提取节点 (%1$d/%2$d)...</string>
+    <string name="profiles_extracting_nodes">正在提取节点 (%1$d/%2$d)…</string>
 
     <!-- Nodes -->
     <string name="nodes_title">节点列表</string>
@@ -323,17 +339,17 @@
     <string name="nodes_sort">排序</string>
     <string name="nodes_filter">筛选</string>
     <string name="nodes_add">添加节点</string>
-    <string name="nodes_add_hint">输入节点链接 (vless://, trojan://, hysteria2://, etc)...</string>
+    <string name="nodes_add_hint">输入节点链接 (vless://, trojan://, hysteria2://, etc)…</string>
     <string name="nodes_add_to_profile">添加到配置</string>
     <string name="nodes_add_create_new_profile">创建新配置</string>
-    <string name="nodes_add_new_profile_name_hint">输入新配置名称...</string>
+    <string name="nodes_add_new_profile_name_hint">输入新配置名称…</string>
     <string name="nodes_export_link">导出链接</string>
     <string name="nodes_copied_to_clipboard">已复制到剪贴板</string>
     <string name="nodes_clear_latency">清空延迟</string>
     <string name="nodes_clear_latency_confirm">确定要清空全部节点延迟记录吗？此操作无法撤销。</string>
     <string name="nodes_latency_cleared">已清空延迟</string>
     <string name="nodes_test_latency">测试延迟</string>
-    <string name="nodes_testing_progress">测速中...</string>
+    <string name="nodes_testing_progress">测速中…</string>
     <string name="nodes_test_complete_stats">测速完成: %1$d 成功, %2$d 超时</string>
     <string name="nodes_test_complete_stats_v6">测速完成: %1$d 成功, %2$d 超时, %3$d 仅IPv6可用</string>
     <string name="nodes_stop_test">停止测试</string>
@@ -474,7 +490,9 @@
     <string name="rulesets_edit">编辑规则集</string>
     <string name="rulesets_delete_title">删除规则集</string>
     <string name="rulesets_delete_confirm">确定要删除规则集 \"%s\" 吗？</string>
-    <string name="rulesets_delete_batch_confirm">确定要删除选中的 %d 个规则集吗？</string>
+    <plurals name="rulesets_delete_batch_confirm">
+        <item quantity="other">确定要删除选中的 %d 个规则集吗？</item>
+    </plurals>
     <string name="rulesets_select_outbound">选择出站模式</string>
     <string name="rulesets_select_profile">选择配置</string>
     <string name="rulesets_select_node">选择节点</string>
@@ -483,7 +501,9 @@
     <string name="rulesets_format">格式</string>
     <string name="rulesets_url">URL</string>
     <string name="rulesets_local_path">本地路径</string>
-    <string name="rulesets_nodes_count">%d 个节点</string>
+    <plurals name="rulesets_nodes_count">
+        <item quantity="other">%d 个节点</item>
+    </plurals>
     <string name="rulesets_unknown_profile">未知配置(%s)</string>
     <string name="rulesets_exists">规则集 \"%s\" 已存在</string>
     <string name="rulesets_added_downloaded">已添加规则集 \"%s\"，并完成下载</string>
@@ -502,7 +522,7 @@
     <string name="app_rules_unknown_profile">未知配置</string>
     <string name="app_rules_empty_groups">暂无应用分组</string>
     <string name="app_rules_empty_groups_hint">点击右上角 + 创建分组</string>
-    <string name="app_rules_click_to_select">点击选择...</string>
+    <string name="app_rules_click_to_select">点击选择…</string>
     <string name="app_rules_select_target">选择目标</string>
 
     <!-- App Groups -->
@@ -555,43 +575,47 @@
     <string name="diagnostics_title">网络诊断</string>
     <string name="diagnostics_view_config">查看运行配置摘要</string>
     <string name="diagnostics_view_config_subtitle">检查 package_name 规则是否生成</string>
-    <string name="diagnostics_view_config_loading">正在生成...</string>
+    <string name="diagnostics_view_config_loading">正在生成…</string>
     <string name="diagnostics_export_config">导出运行配置</string>
     <string name="diagnostics_export_config_subtitle">导出 running_config.json 到外部存储目录</string>
-    <string name="diagnostics_export_config_loading">正在导出...</string>
+    <string name="diagnostics_export_config_loading">正在导出…</string>
     <string name="diagnostics_resource_sampling">资源周期采样</string>
     <string name="diagnostics_resource_sampling_subtitle">每 15 秒采样主进程与 VPN 进程，最多保留 4096 条</string>
-    <string name="diagnostics_resource_sampling_active">采样中，已记录 %1$d 条</string>
-    <string name="diagnostics_resource_sampling_stopped">已停止，保留 %1$d 条</string>
+    <plurals name="diagnostics_resource_sampling_active">
+        <item quantity="other">采样中，已记录 %1$d 条</item>
+    </plurals>
+    <plurals name="diagnostics_resource_sampling_stopped">
+        <item quantity="other">已停止，保留 %1$d 条</item>
+    </plurals>
     <string name="diagnostics_export_package">导出脱敏诊断包</string>
     <string name="diagnostics_export_package_subtitle">导出脱敏日志、运行配置和资源采样 ZIP</string>
-    <string name="diagnostics_export_package_loading">正在生成诊断包...</string>
+    <string name="diagnostics_export_package_loading">正在生成诊断包…</string>
     <string name="diagnostics_export_package_success">诊断包已导出到：\n%1$s\n\n大小：%2$d KiB\n资源记录：%3$d 条</string>
     <string name="diagnostics_export_package_failed">诊断包导出失败：%1$s</string>
     <string name="diagnostics_app_routing">应用分流诊断</string>
     <string name="diagnostics_app_routing_subtitle">检查 /proc/net 可读性（影响 package_name 生效）</string>
-    <string name="diagnostics_app_routing_loading">正在检测...</string>
+    <string name="diagnostics_app_routing_loading">正在检测…</string>
     <string name="diagnostics_conn_owner">连接归属统计</string>
     <string name="diagnostics_conn_owner_subtitle">查看 findConnectionOwner 成功/失败计数</string>
-    <string name="diagnostics_conn_owner_loading">正在读取...</string>
+    <string name="diagnostics_conn_owner_loading">正在读取…</string>
     <string name="diagnostics_reset_conn_owner">重置连接归属统计</string>
     <string name="diagnostics_reset_conn_owner_subtitle">清零计数器（便于复现问题）</string>
     <string name="diagnostics_node_line_query">节点线路查询</string>
     <string name="diagnostics_node_line_query_subtitle">查看当前全局节点的线路与出口观测</string>
-    <string name="diagnostics_node_line_query_loading">正在查询...</string>
+    <string name="diagnostics_node_line_query_loading">正在查询…</string>
     <string name="diagnostics_connectivity">连通性检查</string>
     <string name="diagnostics_connectivity_subtitle">连接测试（使用已配置的延迟测试地址）</string>
-    <string name="diagnostics_connectivity_loading">正在检查...</string>
+    <string name="diagnostics_connectivity_loading">正在检查…</string>
     <string name="diagnostics_ping_test">Ping 测试</string>
     <string name="diagnostics_ping_test_subtitle">TCP 连接测试（使用已配置的延迟测试地址）</string>
     <string name="diagnostics_dns_query">DNS 查询</string>
     <string name="diagnostics_dns_query_subtitle">域名解析（使用已配置的延迟测试域名）</string>
     <string name="diagnostics_dns_leak_check">DNS 泄露检测</string>
     <string name="diagnostics_dns_leak_check_subtitle">静态检查当前运行配置中的 DNS 泄露风险</string>
-    <string name="diagnostics_dns_leak_check_loading">正在检测...</string>
+    <string name="diagnostics_dns_leak_check_loading">正在检测…</string>
     <string name="diagnostics_routing_test">路由测试</string>
     <string name="diagnostics_routing_test_subtitle">规则匹配模拟 (baidu.com)</string>
-    <string name="diagnostics_routing_test_loading">正在测试...</string>
+    <string name="diagnostics_routing_test_loading">正在测试…</string>
 
     <!-- Profile Editor -->
     <string name="profile_editor_title">编辑配置</string>
@@ -613,14 +637,16 @@
     <string name="import_has_rulesets">规则集</string>
     <string name="import_has_app_rules">应用分流</string>
     <string name="import_overwrite_warning">导入将覆盖现有的同名配置和设置</string>
-    <string name="import_count_items">%d 个</string>
+    <plurals name="import_count_items">
+        <item quantity="other">%d 个</item>
+    </plurals>
     <string name="import_success">导入成功</string>
     <string name="import_failed">导入失败</string>
     <string name="import_settings_restored">设置已恢复</string>
     <string name="import_success_detail">导入成功: %1$d 个配置, %2$d 个节点</string>
 
     <!-- App List -->
-    <string name="app_list_loading">正在加载应用列表...</string>
+    <string name="app_list_loading">正在加载应用列表…</string>
     <string name="app_list_loaded">已加载 %1$d / %2$d 个应用</string>
     <string name="app_list_search_hint">搜索应用或包名</string>
     <string name="app_list_show_system">显示系统应用</string>
@@ -657,7 +683,7 @@
     <!-- About Dialog -->
     <string name="about_version">应用版本: %1$s (%2$d)</string>
     <string name="about_kernel_version">内核版本: %s</string>
-    <string name="about_kernel_loading">加载中...</string>
+    <string name="about_kernel_loading">加载中…</string>
     <string name="about_kernel_builtin">sing-box (内置)</string>
     <string name="about_address">地址:</string>
     <string name="about_based_on">基于 Sing-box 内核构建。</string>
@@ -757,7 +783,9 @@
     <!-- Update Status Messages -->
     <string name="update_status_no_subscription">没有可更新的订阅</string>
     <string name="update_status_failed">更新失败</string>
-    <string name="update_status_success_changes">更新成功，%d个订阅有变化</string>
+    <plurals name="update_status_success_changes">
+        <item quantity="other">更新成功，%d个订阅有变化</item>
+    </plurals>
     <string name="update_status_success_no_changes">更新完成，无变化</string>
     <string name="update_status_partial">更新完成，%1$d个成功，%2$d个失败</string>
     <string name="update_status_complete">更新完成</string>
@@ -785,7 +813,9 @@
 
     <!-- Subscription Update Messages -->
     <string name="subscription_update_success_with_changes">更新成功 (%1$s, %2$d 个节点)</string>
-    <string name="subscription_update_success_no_changes">更新完成，无变化 (%d 个节点)</string>
+    <plurals name="subscription_update_success_no_changes">
+        <item quantity="other">更新完成，无变化 (%d 个节点)</item>
+    </plurals>
     <string name="subscription_update_stage_requesting">请求中</string>
     <string name="subscription_update_stage_parsing">解析中</string>
     <string name="subscription_update_stage_saving">保存中</string>
@@ -796,7 +826,9 @@
     <string name="app_groups_name_placeholder">例如: 社交, 游戏</string>
 
     <!-- RuleSets Screen -->
-    <string name="rulesets_selection_mode">已选择 %d 个</string>
+    <plurals name="rulesets_selection_mode">
+        <item quantity="other">已选择 %d 个</item>
+    </plurals>
 
     <!-- Traffic Stats -->
     <string name="traffic_stats_title">流量统计</string>

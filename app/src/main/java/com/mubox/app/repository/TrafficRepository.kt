@@ -5,6 +5,7 @@ import android.content.Context
 import android.os.Build
 import android.system.Os
 import android.util.Log
+import androidx.core.content.edit
 import com.google.gson.Gson
 import com.google.gson.annotations.SerializedName
 import com.google.gson.reflect.TypeToken
@@ -477,7 +478,8 @@ private fun moveTempFileWithNio(tempFile: File, targetFile: File, atomic: Boolea
     }
 }
 
-class TrafficRepository private constructor(private val context: Context) {
+class TrafficRepository private constructor(context: Context) {
+    private val context: Context = context.applicationContext
 
     companion object {
         const val UNATTRIBUTED_NODE_ID = "__unattributed__"
@@ -562,10 +564,10 @@ class TrafficRepository private constructor(private val context: Context) {
             legacyLastMonth >= 0 -> legacyLastMonth != currentMonth
             else -> false
         }
-        prefs.edit()
-            .putString("last_month_key", currentMonthKey)
-            .putInt("last_month", currentMonth)
-            .apply()
+        prefs.edit {
+            putString("last_month_key", currentMonthKey)
+            putInt("last_month", currentMonth)
+        }
         return shouldReset
     }
 

@@ -81,7 +81,8 @@ internal fun serializeInstalledAppsSnapshot(
     )
 }.toString()
 
-class InstalledAppsRepository private constructor(private val context: Context) {
+class InstalledAppsRepository private constructor(context: Context) {
+    private val context: Context = context.applicationContext
 
     sealed class LoadingState {
         object Idle : LoadingState()

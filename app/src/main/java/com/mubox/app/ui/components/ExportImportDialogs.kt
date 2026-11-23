@@ -10,6 +10,7 @@ import androidx.compose.material.icons.rounded.Error
 import androidx.compose.material.icons.rounded.Warning
 import androidx.compose.material3.*
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.res.pluralStringResource
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -253,8 +254,8 @@ fun ImportPreviewDialog(
                             color = liquidGlassDividerColor(MaterialTheme.colorScheme.outlineVariant)
                         )
 
-                        SummaryRow(stringResource(R.string.import_profile_count), stringResource(R.string.import_count_items, summary.profileCount))
-                        SummaryRow(stringResource(R.string.import_node_count), stringResource(R.string.import_count_items, summary.totalNodeCount))
+                        SummaryRow(stringResource(R.string.import_profile_count), pluralStringResource(R.plurals.import_count_items, summary.profileCount, summary.profileCount))
+                        SummaryRow(stringResource(R.string.import_node_count), pluralStringResource(R.plurals.import_count_items, summary.totalNodeCount, summary.totalNodeCount))
 
                         HorizontalDivider(
                             modifier = Modifier.padding(vertical = 12.dp),

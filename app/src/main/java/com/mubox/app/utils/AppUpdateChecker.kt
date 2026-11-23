@@ -7,7 +7,8 @@ import android.app.PendingIntent
 import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
-import android.net.Uri
+import androidx.core.net.toUri
+import androidx.core.content.edit
 import android.os.Build
 import android.util.Log
 import androidx.core.app.NotificationCompat
@@ -415,7 +416,7 @@ object AppUpdateChecker {
 
         createNotificationChannel(context)
 
-        val intent = Intent(Intent.ACTION_VIEW, Uri.parse(htmlUrl))
+        val intent = Intent(Intent.ACTION_VIEW, htmlUrl.toUri())
         // 解析出实际处理者并写明组件，避免隐式 PendingIntent 被其它应用
         // 抢答通知点击（CodeQL High）；解析不到时保持原隐式行为兜底。
         context.packageManager.resolveActivity(intent, PackageManager.MATCH_DEFAULT_ONLY)
@@ -491,12 +492,12 @@ object AppUpdateChecker {
 
     private fun setLastNotifiedVersion(context: Context, version: String) {
         val prefs = context.getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE)
-        prefs.edit().putString(KEY_LAST_NOTIFIED_VERSION, version).apply()
+        prefs.edit { putString(KEY_LAST_NOTIFIED_VERSION, version) }
     }
 
     fun clearLastNotifiedVersion(context: Context) {
         val prefs = context.getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE)
-        prefs.edit().remove(KEY_LAST_NOTIFIED_VERSION).apply()
+        prefs.edit { remove(KEY_LAST_NOTIFIED_VERSION) }
     }
 }
 

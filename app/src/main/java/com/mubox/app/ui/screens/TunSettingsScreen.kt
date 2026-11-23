@@ -14,6 +14,7 @@ import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.res.pluralStringResource
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
@@ -333,7 +334,7 @@ fun TunSettingsScreen(
                     SettingItem(
                         title = stringResource(R.string.tun_settings_route_cidrs),
                         value = if (settings.vpnRouteMode == VpnRouteMode.CUSTOM) {
-                            stringResource(R.string.tun_settings_route_cidrs_configured, cidrCount)
+                            pluralStringResource(R.plurals.tun_settings_route_cidrs_configured, cidrCount, cidrCount)
                         } else {
                             "-"
                         },
@@ -360,7 +361,7 @@ fun TunSettingsScreen(
                             )
                             SettingItem(
                                 title = stringResource(R.string.tun_settings_allowlist),
-                                value = stringResource(R.string.tun_settings_allowlist_configured, allowCount),
+                                value = pluralStringResource(R.plurals.tun_settings_allowlist_configured, allowCount, allowCount),
                                 enabled = !perAppApplying,
                                 onClick = { showAllowlistDialog = true }
                             )
@@ -375,7 +376,7 @@ fun TunSettingsScreen(
                             )
                             SettingItem(
                                 title = stringResource(R.string.tun_settings_blocklist),
-                                value = stringResource(R.string.tun_settings_blocklist_configured, blockCount),
+                                value = pluralStringResource(R.plurals.tun_settings_blocklist_configured, blockCount, blockCount),
                                 enabled = !perAppApplying,
                                 onClick = { showBlocklistDialog = true }
                             )

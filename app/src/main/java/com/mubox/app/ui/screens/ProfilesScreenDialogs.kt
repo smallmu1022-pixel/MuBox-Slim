@@ -36,6 +36,7 @@ import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.res.pluralStringResource
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -245,10 +246,7 @@ internal fun CustomConfigPage(
             item(key = "custom_profile_selection_count") {
                 Column(modifier = Modifier.padding(horizontal = 4.dp)) {
                     Text(
-                        text = stringResource(
-                            R.string.custom_profile_selected_nodes,
-                            selectedNodeIds.size + addedNodes.size
-                        ),
+                        text = pluralStringResource(R.plurals.custom_profile_selected_nodes, selectedNodeIds.size + addedNodes.size, selectedNodeIds.size + addedNodes.size),
                         style = MaterialTheme.typography.bodyMedium,
                         color = MaterialTheme.colorScheme.onSurfaceVariant
                     )
@@ -358,7 +356,7 @@ internal fun CustomConfigPage(
                                     color = MaterialTheme.colorScheme.onSurface
                                 )
                                 Text(
-                                    text = stringResource(R.string.rulesets_nodes_count, profileNodes.size),
+                                    text = pluralStringResource(R.plurals.rulesets_nodes_count, profileNodes.size, profileNodes.size),
                                     style = MaterialTheme.typography.bodySmall,
                                     color = MaterialTheme.colorScheme.onSurfaceVariant
                                 )

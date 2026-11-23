@@ -14,6 +14,7 @@ import androidx.compose.material.icons.rounded.Search
 import androidx.compose.material.icons.rounded.Visibility
 import androidx.compose.material3.*
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.res.pluralStringResource
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -144,7 +145,7 @@ fun RuleSetHubScreen(
 
     FloatingPageLayout(
         title = stringResource(R.string.ruleset_hub_title) + " · " +
-            stringResource(R.string.import_count_items, filteredRuleSets.size),
+            pluralStringResource(R.plurals.import_count_items, filteredRuleSets.size, filteredRuleSets.size),
         onBack = { navController.popBackStack() },
         actions = {
             IconButton(

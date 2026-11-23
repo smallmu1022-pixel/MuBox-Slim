@@ -21,9 +21,10 @@ import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
 
 class RootServiceConnection(
-    private val context: Context,
+    context: Context,
     onDisconnected: () -> Unit
 ) : ServiceConnection {
+    private val context: Context = context.applicationContext
     companion object {
         private const val TAG = "RootServiceConnection"
         private const val BIND_TIMEOUT_MS = 15_000L

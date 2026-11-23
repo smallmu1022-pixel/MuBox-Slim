@@ -106,7 +106,8 @@ internal fun isRuntimeSelectionConfirmed(
 }
 
 @Suppress("TooManyFunctions", "LargeClass", "ProtectedMemberInFinalClass")
-class ConfigRepository(internal val context: Context) {
+class ConfigRepository(context: Context) {
+    internal val context: Context = context.applicationContext
     sealed class OutboundSemantic {
         object Direct : OutboundSemantic()
         object Block : OutboundSemantic()
