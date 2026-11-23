@@ -33,6 +33,7 @@ internal suspend fun DashboardViewModel.stopVpnRuntime() {
     _connectionState.value = ConnectionState.Disconnecting
     _connectedAtElapsedMs.value = null
     _statsBase.value = ConnectionStats(0, 0, 0, 0, 0)
+    trafficMonitor.resetSession()
     val stopResult = withContext(Dispatchers.IO) {
         runCatching {
             VpnTileService.persistVpnPending("stopping")

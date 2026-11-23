@@ -29,17 +29,25 @@ internal class DashboardTrafficMonitor(
     private var lastTrafficTxBytes: Long = 0
     private var lastTrafficRxBytes: Long = 0
     private var lastTrafficSampleAtElapsedMs: Long = 0
+    // 会话锚点：一次连接内只锚定一次。切后台停采样、切回前台续采样时
+    // 沿用同一锚点，总量与速度不断层（旧行为每次 start 都重锚，总量
+    // 清零重爬、数字闪一下才站稳，2026-11-23 用户实测）。
+    private var sessionAnchored: Boolean = false
 
     fun start() {
-        stop()
+        job?.cancel()
+        job = null
         val uid = Process.myUid()
-        val tx0 = readUidTx(uid)
-        val rx0 = readUidRx(uid)
-        trafficBaseTxBytes = tx0
-        trafficBaseRxBytes = rx0
-        lastTrafficTxBytes = tx0
-        lastTrafficRxBytes = rx0
-        lastTrafficSampleAtElapsedMs = SystemClock.elapsedRealtime()
+        if (!sessionAnchored) {
+            val tx0 = readUidTx(uid)
+            val rx0 = readUidRx(uid)
+            trafficBaseTxBytes = tx0
+            trafficBaseRxBytes = rx0
+            lastTrafficTxBytes = tx0
+            lastTrafficRxBytes = rx0
+            lastTrafficSampleAtElapsedMs = SystemClock.elapsedRealtime()
+            sessionAnchored = true
+        }
         job = scope.launch(Dispatchers.Default) {
             while (true) {
                 delay(1000)
@@ -48,9 +56,15 @@ internal class DashboardTrafficMonitor(
         }
     }
 
+    /** 暂停采样（界面退后台）：只停轮询，会话计数全部保留待续。 */
     fun stop() {
         job?.cancel()
         job = null
+    }
+
+    /** 会话结束（断开连接）：计数清零，下次 start 重新锚定。 */
+    fun resetSession() {
+        stop()
         lastUploadSpeed = 0
         lastDownloadSpeed = 0
         trafficBaseTxBytes = 0
@@ -58,6 +72,7 @@ internal class DashboardTrafficMonitor(
         lastTrafficTxBytes = 0
         lastTrafficRxBytes = 0
         lastTrafficSampleAtElapsedMs = 0
+        sessionAnchored = false
     }
 
     private fun publishSample(uid: Int, nowElapsed: Long) {

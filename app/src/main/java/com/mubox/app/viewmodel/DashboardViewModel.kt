@@ -522,6 +522,7 @@ class DashboardViewModel(application: Application) : AndroidViewModel(applicatio
             _connectionState.value = ConnectionState.Idle
             _connectedAtElapsedMs.value = null
             stopTrafficMonitor()
+            trafficMonitor.resetSession()
             stopPingTest()
             _statsBase.value = ConnectionStats(0, 0, 0, 0, 0)
         }

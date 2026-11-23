@@ -416,6 +416,10 @@ object AppUpdateChecker {
         createNotificationChannel(context)
 
         val intent = Intent(Intent.ACTION_VIEW, Uri.parse(htmlUrl))
+        // 解析出实际处理者并写明组件，避免隐式 PendingIntent 被其它应用
+        // 抢答通知点击（CodeQL High）；解析不到时保持原隐式行为兜底。
+        context.packageManager.resolveActivity(intent, PackageManager.MATCH_DEFAULT_ONLY)
+            ?.activityInfo?.let { info -> intent.setClassName(info.packageName, info.name) }
         val pendingIntent = PendingIntent.getActivity(
             context,
             0,

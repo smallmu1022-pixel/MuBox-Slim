@@ -12,6 +12,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.currentCoroutineContext
 import kotlinx.coroutines.ensureActive
 import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.job
 import kotlinx.coroutines.withContext
 import okhttp3.Request
 import java.io.File
@@ -52,6 +53,9 @@ object AppUpdater {
             val file = try {
                 downloadWithClient(context, asset, proxyPort = proxyPort, onProgress)
             } catch (e: IOException) {
+                // 已被取消时 ensureActive 直接抛 CancellationException，
+                // 不再把断连的 IOException 当失败去走下一条回退通道。
+                currentCoroutineContext().ensureActive()
                 lastError = e
                 continue
             }
@@ -125,49 +129,57 @@ object AppUpdater {
                 callTimeoutSeconds = null
             )
         } else {
-            // 用 WithoutRetry 变体显式给足总时长：WithTimeout 传 null 会继承
-            // 基础客户端的 60 秒 callTimeout，慢网下 18 MB 包会被中途掐断。
-            // Bypass 变体在此之上绑物理网络绕开 TUN（全局模式下普通直连会被
-            // 自身隧道捕获、与代理通道同路），超时与 retry 语义与原变体一致。
+            // 不设总超时（callTimeoutSeconds = null → OkHttp 0 表示不限，
+            // 2026-11-23 用户拍板）：下载持续多久由用户决定，要停点「取消
+            // 下载」立即断连。Bypass 变体绑物理网络绕开 TUN（全局模式下
+            // 普通直连会被自身隧道捕获、与代理通道同路）。
             NetworkClient.createBypassClientWithoutRetry(
                 context = context,
                 connectTimeoutSeconds = 20,
                 readTimeoutSeconds = 60,
                 writeTimeoutSeconds = 60,
-                callTimeoutSeconds = 600
+                callTimeoutSeconds = null
             )
         }
         val request = Request.Builder()
             .url(asset.downloadUrl)
             .header("User-Agent", "MuBox-Android")
             .build()
-        client.newCall(request).execute().use { response ->
-            if (!response.isSuccessful) {
-                throw IOException("Download failed: HTTP ${response.code}")
-            }
-            val body = response.body ?: throw IOException("Empty download body")
-            val total = if (asset.size > 0) asset.size else body.contentLength()
-            body.byteStream().use { input ->
-                FileOutputStream(partial).use { out ->
-                    val buffer = ByteArray(64 * 1024)
-                    var downloaded = 0L
-                    while (true) {
-                        currentCoroutineContext().ensureActive()
-                        val read = input.read(buffer)
-                        if (read < 0) break
-                        out.write(buffer, 0, read)
-                        downloaded += read
-                        onProgress(downloaded, total)
+        val call = client.newCall(request)
+        // 协程被取消时联动 Call.cancel() 立即断连：阻塞中的流式读取当场
+        // 抛错退出，不再等 60 秒读超时（vc40 实测点取消卡 0% 无反应）。
+        val cancelHandle = currentCoroutineContext().job.invokeOnCompletion { call.cancel() }
+        try {
+            call.execute().use { response ->
+                if (!response.isSuccessful) {
+                    throw IOException("Download failed: HTTP ${response.code}")
+                }
+                val body = response.body ?: throw IOException("Empty download body")
+                val total = if (asset.size > 0) asset.size else body.contentLength()
+                body.byteStream().use { input ->
+                    FileOutputStream(partial).use { out ->
+                        val buffer = ByteArray(64 * 1024)
+                        var downloaded = 0L
+                        while (true) {
+                            currentCoroutineContext().ensureActive()
+                            val read = input.read(buffer)
+                            if (read < 0) break
+                            out.write(buffer, 0, read)
+                            downloaded += read
+                            onProgress(downloaded, total)
+                        }
                     }
                 }
             }
+            if (target.exists()) target.delete()
+            if (!partial.renameTo(target)) {
+                partial.copyTo(target, overwrite = true)
+                partial.delete()
+            }
+            target
+        } finally {
+            cancelHandle.dispose()
         }
-        if (target.exists()) target.delete()
-        if (!partial.renameTo(target)) {
-            partial.copyTo(target, overwrite = true)
-            partial.delete()
-        }
-        target
     }
 
     /** 发布资产在 GitHub API 中的摘要（sha256:…），无摘要时返回 null。 */
