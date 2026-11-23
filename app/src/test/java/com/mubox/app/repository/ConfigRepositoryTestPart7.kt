@@ -158,10 +158,9 @@ abstract class ConfigRepositoryTestPart7 : ConfigRepositoryTestPart6() {
         val yaml = """
             proxies:
               - name: "hk-regression"
-                type: ss
+                type: trojan
                 server: hk.example.com
                 port: 443
-                cipher: aes-128-gcm
                 password: pass-a
               - name: "us-regression"
                 type: trojan

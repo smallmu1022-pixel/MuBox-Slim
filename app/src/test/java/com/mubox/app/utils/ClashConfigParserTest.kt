@@ -21,10 +21,9 @@ class ClashConfigParserTest {
         val yaml = """
             proxies:
               - name: "ss1"
-                type: ss
+                type: trojan
                 server: 1.2.3.4
                 port: 443
-                cipher: aes-256-gcm
                 password: "pass"
             proxy-groups:
               - name: "PROXY"
@@ -42,7 +41,7 @@ class ClashConfigParserTest {
 
         val ss1 = outbounds.find { it.tag == "ss1" }
         assertNotNull(ss1)
-        assertEquals("shadowsocks", ss1?.type)
+        assertEquals("trojan", ss1?.type)
         assertEquals("1.2.3.4", ss1?.server)
 
         val proxyGroup = outbounds.find { it.tag == "PROXY" }
@@ -56,10 +55,9 @@ class ClashConfigParserTest {
         val yaml = """
             proxies:
               - name: "ss1"
-                type: ss
+                type: trojan
                 server: 1.2.3.4
                 port: 443
-                cipher: aes-256-gcm
                 password: "pass"
             proxy-groups:
               - name: "AUTO"
@@ -92,10 +90,9 @@ class ClashConfigParserTest {
         val yaml = """
             proxies:
               - name: "ss1"
-                type: ss
+                type: trojan
                 server: 1.2.3.4
                 port: 443
-                cipher: aes-256-gcm
                 password: "pass"
             proxy-groups:
               - name: "LOCAL"
@@ -127,10 +124,9 @@ class ClashConfigParserTest {
         val yaml = """
             proxies:
               - name: "DIRECT"
-                type: ss
+                type: trojan
                 server: 1.2.3.4
                 port: 443
-                cipher: aes-256-gcm
                 password: "pass"
             proxy-groups:
               - name: "PROXY"
@@ -244,7 +240,7 @@ class ClashConfigParserTest {
     }
 
     @Test
-    fun testParseClashV2RayQuicTransports() {
+    fun testParseClashQuicTransportsSkipsRemovedVmess() {
         val yaml = """
             proxies:
               - name: vmess-quic
@@ -273,7 +269,7 @@ class ClashConfigParserTest {
 
         val outbounds = ClashConfigParser.parse(yaml)?.outbounds.orEmpty().associateBy { it.tag }
 
-        assertEquals("quic", outbounds["vmess-quic"]?.transport?.type)
+        assertNull(outbounds["vmess-quic"])
         assertEquals("quic", outbounds["vless-quic"]?.transport?.type)
         assertEquals("quic", outbounds["trojan-quic"]?.transport?.type)
     }
@@ -443,7 +439,7 @@ class ClashConfigParserTest {
     }
 
     @Test
-    fun testParseVLessRejectsPrivateXhttpEncryption() {
+    fun testParseVLessRejectsPrivateEncryptionInXhttpExtra() {
         val yaml = """
             proxies:
               - name: "xhttp-vless"
@@ -467,14 +463,13 @@ class ClashConfigParserTest {
                     encryption: "mlkem768x25519plus.native.0rtt.test"
         """.trimIndent()
 
-        val config = ClashConfigParser.parse(yaml)
-        val vless = config?.outbounds?.find { it.tag == "xhttp-vless" }
+        val vless = ClashConfigParser.parse(yaml)?.outbounds?.find { it.tag == "xhttp-vless" }
 
         assertNull(vless)
     }
 
     @Test
-    fun omittedPacketEncodingStaysUnsetForVlessAndVmess() {
+    fun omittedPacketEncodingStaysUnsetForVlessAndSkipsVmess() {
         val yaml = """
             proxies:
               - name: "vless-default"
@@ -494,7 +489,7 @@ class ClashConfigParserTest {
         val outbounds = ClashConfigParser.parse(yaml)?.outbounds.orEmpty().associateBy { it.tag }
 
         assertNull(outbounds["vless-default"]?.packetEncoding)
-        assertNull(outbounds["vmess-default"]?.packetEncoding)
+        assertNull(outbounds["vmess-default"])
     }
 
     @Test
@@ -602,271 +597,6 @@ class ClashConfigParserTest {
     }
 
     @Test
-    fun testParseTuicKeepsDefaultCongestionUnset() {
-        val yaml = """
-            proxies:
-              - name: "tuic-default"
-                type: tuic
-                server: tuic.example.com
-                port: 443
-                uuid: uuid-123
-                password: pass
-        """.trimIndent()
-
-        val config = ClashConfigParser.parse(yaml)
-        val tuic = config?.outbounds?.find { it.tag == "tuic-default" }
-
-        assertNotNull(tuic)
-        assertEquals("tuic", tuic?.type)
-        assertNull(tuic?.congestionControl)
-    }
-
-    @Test
-    fun testParseNaiveProxy() {
-        val yaml = """
-            proxies:
-              - name: "🇹🇼 NA | 台湾 Native"
-                type: naive
-                server: native.5945946.xyz
-                port: 443
-                username: kziii
-                password: d63bddb3-4fb6-47d1-9360-c4ff2e8fdc9d
-        """.trimIndent()
-
-        val config = ClashConfigParser.parse(yaml)
-        assertNotNull(config)
-
-        val naive = config?.outbounds?.find { it.tag == "🇹🇼 NA | 台湾 Native" }
-        assertNotNull(naive)
-        assertEquals("naive", naive?.type)
-        assertEquals("native.5945946.xyz", naive?.server)
-        assertEquals(443, naive?.serverPort)
-        assertEquals("kziii", naive?.username)
-        assertEquals("d63bddb3-4fb6-47d1-9360-c4ff2e8fdc9d", naive?.password)
-        assertEquals(listOf("h2"), naive?.network)
-        assertNull(naive?.path)
-        assertNull(naive?.transport)
-        assertEquals(true, naive?.tls?.enabled)
-        assertEquals("native.5945946.xyz", naive?.tls?.serverName)
-    }
-
-    @Test
-    fun testParseWireGuardKeepsEndpointFieldsForRuntimeConversion() {
-        val yaml = """
-            proxies:
-              - name: WG
-                type: wireguard
-                server: wg.example.com
-                port: 51820
-                ip: [10.0.0.2/32]
-                private-key: private
-                public-key: public
-                pre-shared-key: psk
-                allowed-ips: [0.0.0.0/0, "::/0"]
-                persistent-keepalive: 25
-                reserved: [1, 2, 3]
-                mtu: 1380
-                workers: 2
-        """.trimIndent()
-
-        val wireGuard = ClashConfigParser.parse(yaml)?.outbounds?.find { it.tag == "WG" }
-
-        assertEquals("wireguard", wireGuard?.type)
-        assertEquals(listOf("10.0.0.2/32"), wireGuard?.localAddress)
-        assertEquals(listOf("private"), wireGuard?.privateKey)
-        assertEquals("wg.example.com", wireGuard?.peers?.single()?.server)
-        assertEquals(listOf("0.0.0.0/0", "::/0"), wireGuard?.peers?.single()?.allowedIps)
-        assertEquals(25, wireGuard?.peers?.single()?.persistentKeepaliveInterval)
-        assertEquals(listOf(1, 2, 3), wireGuard?.peers?.single()?.reserved)
-        assertEquals(1380, wireGuard?.mtu)
-        assertEquals(2, wireGuard?.workers)
-    }
-
-    @Test
-    fun testParseShadowsocksPluginUsesOfficialPluginFields() {
-        val yaml = """
-            proxies:
-              - name: SS-Plugin
-                type: ss
-                server: ss.example.com
-                port: 8388
-                cipher: aes-256-gcm
-                password: secret
-                plugin: v2ray-plugin
-                plugin-opts:
-                  mode: websocket
-                  host: cdn.example.com
-                  path: /ws
-                  tls: true
-        """.trimIndent()
-
-        val shadowsocks = ClashConfigParser.parse(yaml)?.outbounds?.find { it.tag == "SS-Plugin" }
-
-        assertEquals("v2ray-plugin", shadowsocks?.plugin)
-        assertTrue(shadowsocks?.pluginOpts?.contains("mode=websocket") == true)
-        assertTrue(shadowsocks?.pluginOpts?.contains("host=cdn.example.com") == true)
-        assertTrue(shadowsocks?.pluginOpts?.contains("path=/ws") == true)
-        assertNull(shadowsocks?.transport)
-        assertNull(shadowsocks?.tls)
-    }
-
-    @Test
-    fun testParseShadowsocksWithShadowTLS() {
-        val yaml = """
-            proxies:
-              - name: "ss-shadowtls"
-                type: ss
-                server: 14.3.28.11
-                port: 2245
-                cipher: aes-256-gcm
-                password: "vzx0"
-                udp: true
-                plugin: shadow-tls
-                client-fingerprint: chrome
-                plugin-opts:
-                  password: "ENX"
-                  version: 3
-                  host: "sns-video-qn.xhscdn.com"
-                smux:
-                  enabled: true
-                  padding: true
-        """.trimIndent()
-
-        val config = ClashConfigParser.parse(yaml)
-        assertNotNull(config)
-        assertNotNull(config?.outbounds)
-
-        val outbounds = config!!.outbounds!!
-
-        println("Parsed outbounds:")
-        outbounds.forEach { println("  - ${it.tag}: ${it.type}") }
-
-        assertEquals(2, outbounds.size)
-
-        val ss = outbounds.find { it.tag == "ss-shadowtls" }
-        assertNotNull("SS outbound not found", ss)
-        assertEquals("shadowsocks", ss?.type)
-        assertEquals("14.3.28.11", ss?.server)
-        assertEquals(2245, ss?.serverPort)
-        assertEquals("aes-256-gcm", ss?.method)
-        assertEquals("vzx0", ss?.password)
-        assertNotNull("SS should have detour", ss?.detour)
-        assertEquals("ss-shadowtls_shadowtls", ss?.detour)
-        assertNotNull("SS should have multiplex config", ss?.multiplex)
-        assertEquals(true, ss?.multiplex?.enabled)
-        assertEquals(true, ss?.multiplex?.padding)
-
-        val stls = outbounds.find { it.tag == "ss-shadowtls_shadowtls" }
-        assertNotNull("ShadowTLS outbound not found", stls)
-        assertEquals("shadowtls", stls?.type)
-        assertEquals("14.3.28.11", stls?.server)
-        assertEquals(2245, stls?.serverPort)
-        assertEquals(3, stls?.version?.asInt)
-        assertEquals("ENX", stls?.password)
-        assertNotNull("ShadowTLS should have TLS config", stls?.tls)
-        assertEquals("sns-video-qn.xhscdn.com", stls?.tls?.serverName)
-        assertNotNull("ShadowTLS should have uTLS fingerprint", stls?.tls?.utls)
-        assertEquals("chrome", stls?.tls?.utls?.fingerprint)
-
-        println("\nSS Outbound JSON:")
-        println(gson.toJson(ss))
-        println("\nShadowTLS Outbound JSON:")
-        println(gson.toJson(stls))
-    }
-
-    @Test
-    fun testParseUserProvidedShadowTLSConfig() {
-        // host 使用列表格式 [xxx] 测试
-        val yaml = """
-            proxies:
-              - name: "BWH-ShadowTLS"
-                type: ss
-                cipher: aes-256-gcm
-                password: vzx0fcb5MWN-aze1arp
-                port: 20004
-                server: 144.34.238.115
-                udp: true
-                plugin: shadow-tls
-                client-fingerprint: chrome
-                plugin-opts:
-                  password: ENX5apd5upw*amj8gky
-                  version: 3
-                  host:
-                    - sns-video-qn.xhscdn.com
-                smux:
-                  enabled: true
-                  padding: true
-        """.trimIndent()
-
-        val config = ClashConfigParser.parse(yaml)
-        assertNotNull(config)
-
-        val outbounds = config!!.outbounds!!
-        println("User config parsed outbounds:")
-        outbounds.forEach { println("  - ${it.tag}: ${it.type}") }
-
-        val ss = outbounds.find { it.type == "shadowsocks" }
-        val stls = outbounds.find { it.type == "shadowtls" }
-
-        assertNotNull("SS outbound missing", ss)
-        assertNotNull("ShadowTLS outbound missing", stls)
-
-        assertEquals("144.34.238.115", ss?.server)
-        assertEquals(20004, ss?.serverPort)
-        assertEquals("aes-256-gcm", ss?.method)
-        assertEquals("vzx0fcb5MWN-aze1arp", ss?.password)
-        assertEquals("BWH-ShadowTLS_shadowtls", ss?.detour)
-        assertEquals(true, ss?.multiplex?.enabled)
-        assertEquals(true, ss?.multiplex?.padding)
-
-        assertEquals("144.34.238.115", stls?.server)
-        assertEquals(20004, stls?.serverPort)
-        assertEquals(3, stls?.version?.asInt)
-        assertEquals("ENX5apd5upw*amj8gky", stls?.password)
-        assertEquals("sns-video-qn.xhscdn.com", stls?.tls?.serverName)
-        assertEquals("chrome", stls?.tls?.utls?.fingerprint)
-
-        println("\n=== Final sing-box config ===")
-        println("SS Outbound:")
-        println(gson.toJson(ss))
-        println("\nShadowTLS Outbound:")
-        println(gson.toJson(stls))
-    }
-
-    @Test
-    fun testParseShadowTlsV1WithoutPasswordAndRejectLaterVersionsWithoutPassword() {
-        val yaml = """
-            proxies:
-              - name: shadowtls-v1
-                type: shadowtls
-                server: v1.example.com
-                port: 443
-                version: 1
-                sni: handshake.example.com
-              - name: shadowtls-v2-missing-password
-                type: shadowtls
-                server: v2.example.com
-                port: 443
-                version: 2
-              - name: shadowtls-v3-missing-password
-                type: shadowtls
-                server: v3.example.com
-                port: 443
-                version: 3
-        """.trimIndent()
-
-        val outbounds = ClashConfigParser.parse(yaml)?.outbounds.orEmpty()
-        val version1 = outbounds.find { it.tag == "shadowtls-v1" }
-
-        assertNotNull(version1)
-        assertEquals(1, version1?.version?.asInt)
-        assertNull(version1?.password)
-        assertEquals("handshake.example.com", version1?.tls?.serverName)
-        assertNull(outbounds.find { it.tag == "shadowtls-v2-missing-password" })
-        assertNull(outbounds.find { it.tag == "shadowtls-v3-missing-password" })
-    }
-
-    @Test
     fun testParseAnyTlsWithCertificateFields() {
         val certificatePem = "-----BEGIN CERTIFICATE-----\nMIIBTESTCERTDATA\n-----END CERTIFICATE-----"
         val caPem = "-----BEGIN CERTIFICATE-----\nMIIBTESTCADATA\n-----END CERTIFICATE-----"
@@ -930,4 +660,24 @@ class ClashConfigParserTest {
         assertEquals("/etc/ssl/client.key", http?.tls?.keyPath)
         assertEquals("/etc/ssl/ca.pem", http?.tls?.caPath)
     }
+    @Test
+    fun removedClashProtocolTypesAreSkipped() {
+        val yaml = """
+            proxies:
+              - {name: old-ss, type: ss, server: ss.example.com, port: 8388, cipher: aes-256-gcm, password: secret}
+              - {name: old-vmess, type: vmess, server: vmess.example.com, port: 443, uuid: uuid, cipher: auto}
+              - {name: old-hysteria, type: hysteria, server: hy.example.com, port: 443, auth-str: secret}
+              - {name: old-naive, type: naive, server: naive.example.com, port: 443, username: user, password: secret}
+              - {name: old-tuic, type: tuic, server: tuic.example.com, port: 443, uuid: uuid, password: secret}
+              - {name: old-wireguard, type: wireguard, server: wg.example.com, port: 51820, ip: [10.0.0.2/32], private-key: secret}
+              - {name: old-ssh, type: ssh, server: ssh.example.com, port: 22, username: root}
+              - {name: old-shadowtls, type: shadowtls, server: stls.example.com, port: 443, version: 3, password: secret}
+        """.trimIndent()
+
+        val outbounds = ClashConfigParser.parse(yaml)?.outbounds.orEmpty()
+        val removedTypes = setOf("shadowsocks", "vmess", "hysteria", "naive", "tuic", "wireguard", "ssh", "shadowtls")
+
+        assertTrue(outbounds.none { it.type in removedTypes })
+    }
+
 }

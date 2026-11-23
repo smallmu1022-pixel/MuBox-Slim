@@ -6,6 +6,7 @@ import com.mubox.app.model.TlsConfig
 import com.mubox.app.model.TransportConfig
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertNotNull
+import org.junit.Assert.assertTrue
 import org.junit.Test
 
 class SubscriptionManagerTest {
@@ -88,7 +89,7 @@ class SubscriptionManagerTest {
     }
 
     @Test
-    fun singBoxParserPreservesWireGuardEndpointOnlyConfig() {
+    fun singBoxParserDropsConfigContainingOnlyRemovedWireGuardEndpoint() {
         val json = """
             {
               "endpoints": [
@@ -99,16 +100,7 @@ class SubscriptionManagerTest {
                   "address": ["10.0.0.2/32"],
                   "private_key": "private",
                   "workers": 2,
-                  "peers": [
-                    {
-                      "address": "wg.example.com",
-                      "port": 51820,
-                      "public_key": "public",
-                      "allowed_ips": ["0.0.0.0/0", "::/0"],
-                      "persistent_keepalive_interval": 25,
-                      "reserved": [1, 2, 3]
-                    }
-                  ]
+                  "peers": [{"address": "wg.example.com", "port": 51820, "public_key": "public"}]
                 }
               ]
             }
@@ -116,11 +108,7 @@ class SubscriptionManagerTest {
 
         val config = SingBoxParser(Gson()).parse(json)
 
-        assertNotNull(config)
-        assertEquals("wg-endpoint", config?.endpoints?.single()?.tag)
-        assertEquals("wg.example.com", config?.endpoints?.single()?.peers?.single()?.server)
-        assertEquals(listOf("0.0.0.0/0", "::/0"), config?.endpoints?.single()?.peers?.single()?.allowedIps)
-        assertEquals(25, config?.endpoints?.single()?.peers?.single()?.persistentKeepaliveInterval)
+        assertTrue(config?.endpoints.orEmpty().isEmpty())
     }
 
     @Test

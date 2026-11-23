@@ -781,7 +781,7 @@ class RootNetfilterPlanTest {
         val command = if (System.getProperty("os.name").orEmpty().startsWith("Windows", ignoreCase = true)) {
             listOf("powershell.exe", "-NoProfile", "-NonInteractive", "-Command", "Start-Sleep -Seconds 2")
         } else {
-            listOf("sh", "-c", "sleep 2")
+            listOf("sleep", "2")
         }
         val startedAt = System.nanoTime()
 
@@ -797,7 +797,7 @@ class RootNetfilterPlanTest {
         val command = if (System.getProperty("os.name").orEmpty().startsWith("Windows", ignoreCase = true)) {
             listOf("powershell.exe", "-NoProfile", "-NonInteractive", "-Command", "Start-Sleep -Seconds 5")
         } else {
-            listOf("sh", "-c", "sleep 5")
+            listOf("sleep", "5")
         }
         val started = CountDownLatch(1)
         val result = AtomicReference<RootCommandResult>()
@@ -807,10 +807,12 @@ class RootNetfilterPlanTest {
         }
         worker.start()
         assertTrue(started.await(1, TimeUnit.SECONDS))
-        CountDownLatch(1).await(150, TimeUnit.MILLISECONDS)
-
-        ProcessRootCommandExecutor().cancelActiveCommands()
-        worker.join(1_500L)
+        val cancellationDeadline = System.nanoTime() + TimeUnit.SECONDS.toNanos(1)
+        while (worker.isAlive && System.nanoTime() < cancellationDeadline) {
+            ProcessRootCommandExecutor().cancelActiveCommands()
+            worker.join(10L)
+        }
+        worker.join(1_000L)
 
         assertFalse("Root command from another executor was not cancelled", worker.isAlive)
         assertFalse(result.get().success)

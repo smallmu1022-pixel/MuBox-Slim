@@ -10,253 +10,12 @@ import org.junit.Test
  */
 @Suppress("LargeClass")
 class NodeLinkParserTest : NodeLinkParserProxyAndEdgeTest() {
-    // ==================== Shadowsocks ====================
 
     @Test
-    fun testParseShadowsocksSIP002() {
-        // SIP002 格式: ss://BASE64(method:password)@server:port#name
-        val link = "ss://YWVzLTI1Ni1nY206cGFzc3dvcmQ=@1.2.3.4:8388#MySSNode"
-        val outbound = parser.parse(link)
+    fun testParseQuicTransportsForSupportedVlessAndTrojan() {
+        val vlessLink = "vless://uuid-vless@vless.example.com:443?security=tls&type=quic#VLESS%20QUIC"
+        val trojanLink = "trojan://secret@trojan.example.com:443?type=quic&sni=trojan.example.com#Trojan%20QUIC"
 
-        assertNotNull(outbound)
-        assertEquals("shadowsocks", outbound?.type)
-        assertEquals("MySSNode", outbound?.tag)
-        assertEquals("1.2.3.4", outbound?.server)
-        assertEquals(8388, outbound?.serverPort)
-        assertEquals("aes-256-gcm", outbound?.method)
-        assertEquals("password", outbound?.password)
-    }
-
-    @Test
-    fun testParseShadowsocksLegacy() {
-        // Legacy 格式: ss://BASE64(method:password@server:port)#name
-        val link = "ss://YWVzLTI1Ni1nY206cGFzc3dvcmRAMS4yLjMuNDo4Mzg4#LegacyNode"
-        val outbound = parser.parse(link)
-
-        assertNotNull(outbound)
-        assertEquals("shadowsocks", outbound?.type)
-        assertEquals("LegacyNode", outbound?.tag)
-        assertEquals("1.2.3.4", outbound?.server)
-        assertEquals(8388, outbound?.serverPort)
-    }
-
-    @Test
-    fun testParseShadowsocksWithPlugin() {
-        val link = "ss://YWVzLTI1Ni1nY206cGFzc3dvcmQ=@1.2.3.4:8388?plugin=v2ray-plugin%3Bmode%3Dwebsocket#PluginNode"
-        val outbound = parser.parse(link)
-
-        assertNotNull(outbound)
-        assertEquals("v2ray-plugin", outbound?.plugin)
-        assertEquals("mode=websocket", outbound?.pluginOpts)
-    }
-
-    @Test
-    fun testParseShadowsocksIPv6() {
-        val link = "ss://YWVzLTI1Ni1nY206cGFzcw==@[2001:db8::1]:8388#IPv6Node"
-        val outbound = parser.parse(link)
-
-        assertNotNull(outbound)
-        assertEquals("2001:db8::1", outbound?.server)
-        assertEquals(8388, outbound?.serverPort)
-    }
-
-    @Test
-    fun testParseShadowsocksUrlEncodedName() {
-        val link = "ss://YWVzLTI1Ni1nY206cGFzcw==@1.2.3.4:8388#%E6%97%A5%E6%9C%AC%E8%8A%82%E7%82%B9"
-        val outbound = parser.parse(link)
-
-        assertNotNull(outbound)
-        assertEquals("日本节点", outbound?.tag)
-    }
-
-    @Test
-    fun testParseShadowsocksUrlEncodedPassword() {
-        // 非 Base64 格式，密码中包含特殊字符 : 被 URL 编码为 %3A
-        val link = "ss://aes-256-gcm:pass%3Aword@1.2.3.4:8388#UrlEncodedPwd"
-        val outbound = parser.parse(link)
-
-        assertNotNull(outbound)
-        assertEquals("shadowsocks", outbound?.type)
-        assertEquals("UrlEncodedPwd", outbound?.tag)
-        assertEquals("aes-256-gcm", outbound?.method)
-        assertEquals("pass:word", outbound?.password)
-    }
-
-    // ==================== VMess ====================
-
-    @Test
-    fun testParseVMessTcpHttpTypeBuildsHttpTransport() {
-        val link = "vmess://" +
-            "eyJhZGQiOiI5NC4xNzcuOS42NiIsImFpZCI6IjAiLCJhbHBuIjoiIiwiZnAiOiIiLCJob3N0Ijoi" +
-            "ZGluZ3RhbGsuY29tIiwiaWQiOiIxOTMzYTQyNS0yODQyLTRkMmItODU4OS05Y2EyMjQyZDc0" +
-            "MTUiLCJuZXQiOiJ0Y3AiLCJwYXRoIjoiLyIsInBvcnQiOiIyOTgyNSIsInBzIjoiQVQg" +
-            "8J+HpvCfh7kgIC1cdTAwM2UgIOKtkCDigIvlpaXlnLDliKkt5Y6f55SfLeWkp+W4puWu" +
-            "vS0yOTgyNSIsInNjeSI6ImF1dG8iLCJzbmkiOiIiLCJ0bHMiOiIiLCJ0eXBlIjoiaHR0" +
-            "cCIsInYiOiIyIn0="
-
-        val outbound = parser.parse(link)
-
-        assertNotNull(outbound)
-        assertEquals("vmess", outbound?.type)
-        assertEquals("http", outbound?.transport?.type)
-    }
-
-    @Test
-    fun testParseVMessHttpTransportKeepsHttp() {
-        val vmessJson = """
-            {
-              "v":"2",
-              "ps":"http vmess",
-              "add":"18.225.57.7",
-              "port":"32721",
-              "id":"c31a559b-8285-4b11-db99-d1edfc2b2b70",
-              "aid":"0",
-              "net":"http",
-              "host":"",
-              "path":"",
-              "tls":""
-            }
-        """.trimIndent()
-        val encoded = java.util.Base64.getEncoder().encodeToString(vmessJson.toByteArray())
-        val link = "vmess://$encoded"
-
-        val outbound = parser.parse(link)
-
-        assertNotNull(outbound)
-        assertEquals("vmess", outbound?.type)
-        assertNotNull(outbound?.transport)
-        assertEquals("http", outbound?.transport?.type)
-    }
-
-    @Test
-    fun testParseVMessHttpTransportPreservesHostAndPath() {
-        val vmessJson = """
-            {
-              "v":"2",
-              "ps":"http with host",
-              "add":"vmess.example.com",
-              "port":"80",
-              "id":"uuid-2000",
-              "aid":"0",
-              "net":"http",
-              "host":"cdn.example.com",
-              "path":"/health",
-              "tls":""
-            }
-        """.trimIndent()
-        val encoded = java.util.Base64.getEncoder().encodeToString(vmessJson.toByteArray())
-        val link = "vmess://$encoded"
-
-        val outbound = parser.parse(link)
-
-        assertNotNull(outbound)
-        assertEquals("http", outbound?.transport?.type)
-        assertEquals(listOf("cdn.example.com"), outbound?.transport?.host)
-        assertEquals("/health", outbound?.transport?.path)
-    }
-
-    @Test
-    fun testParseVMessUserHttpLinkKeepsHttpTransport() {
-        val link = "vmess://" +
-            "eyJhZGQiOiIxOC4yMjUuNTcuNyIsImFpZCI6IjAiLCJob3N0IjoiIiwiaWQiOiJjMzFhNTU5Yi04" +
-            "Mjg1LTRiMTEtZGI5OS1kMWVkZmMyYjJiNzAiLCJuZXQiOiJodHRwIiwicGF0aCI6IiIsInBv" +
-            "cnQiOiIzMjcyMSIsInBzIjoiVVMg8J+HuvCfh7ggIC1cdTAwM2UgIOe+juWbvS3ljp/nlJ8t" +
-            "5Lqa6ams6YCKLeWkp+W4puWuvS0zMjcyMSIsInNjeSI6ImF1dG8iLCJzbmkiOiIiLCJ0" +
-            "bHMiOiIiLCJ0eXBlIjoibm9uZSIsInYiOiIyIn0="
-
-        val outbound = parser.parse(link)
-
-        assertNotNull(outbound)
-        assertEquals("vmess", outbound?.type)
-        assertEquals("http", outbound?.transport?.type)
-        assertNull(outbound?.transport?.host)
-    }
-
-    @Test
-    fun testParseVMessHttpUpgradeUsesTransportHost() {
-        val vmessJson = """
-            {
-              "v":"2",
-              "ps":"httpupgrade vmess",
-              "add":"edge.example.com",
-              "port":"443",
-              "id":"c31a559b-8285-4b11-db99-d1edfc2b2b70",
-              "aid":"0",
-              "net":"httpupgrade",
-              "host":"cdn.example.com",
-              "path":"/up",
-              "tls":"tls"
-            }
-        """.trimIndent()
-        val encoded = java.util.Base64.getEncoder().encodeToString(vmessJson.toByteArray())
-        val link = "vmess://$encoded"
-
-        val outbound = parser.parse(link)
-
-        assertNotNull(outbound)
-        assertEquals("vmess", outbound?.type)
-        assertEquals("httpupgrade", outbound?.transport?.type)
-        assertEquals("/up", outbound?.transport?.path)
-        assertEquals(listOf("cdn.example.com"), outbound?.transport?.host)
-        assertNull(outbound?.transport?.headers?.get("Host"))
-        assertTrue(gson.toJson(outbound?.transport).contains("\"host\":\"cdn.example.com\""))
-    }
-
-    @Test
-    fun testParseVMessBasic() {
-        val vmessJson = """{"v":"2","ps":"VMess Node","add":"vmess.example.com","port":"443","id":"uuid-1234","aid":"0","net":"ws","type":"none","host":"","path":"/path","tls":"tls"}"""
-        val encoded = java.util.Base64.getEncoder().encodeToString(vmessJson.toByteArray())
-        val link = "vmess://$encoded"
-
-        val outbound = parser.parse(link)
-
-        assertNotNull(outbound)
-        assertEquals("vmess", outbound?.type)
-        assertEquals("VMess Node", outbound?.tag)
-        assertEquals("vmess.example.com", outbound?.server)
-        assertEquals(443, outbound?.serverPort)
-        assertEquals("uuid-1234", outbound?.uuid)
-        assertNotNull(outbound?.tls)
-        assertEquals(true, outbound?.tls?.enabled)
-        assertNotNull(outbound?.transport)
-        assertEquals("ws", outbound?.transport?.type)
-        assertEquals("/path", outbound?.transport?.path)
-    }
-
-    @Test
-    fun testParseVMessWithGrpc() {
-        val vmessJson = """{"v":"2","ps":"gRPC Node","add":"grpc.example.com","port":"443","id":"uuid-5678","aid":"0","net":"grpc","path":"grpc-service","tls":"tls"}"""
-        val encoded = java.util.Base64.getEncoder().encodeToString(vmessJson.toByteArray())
-        val link = "vmess://$encoded"
-
-        val outbound = parser.parse(link)
-
-        assertNotNull(outbound)
-        assertEquals("grpc", outbound?.transport?.type)
-        assertEquals("grpc-service", outbound?.transport?.serviceName)
-    }
-
-    @Test
-    fun testParseV2RayQuicTransports() {
-        val vmessJson = """
-            {
-              "v":"2",
-              "ps":"VMess QUIC",
-              "add":"vmess.example.com",
-              "port":"443",
-              "id":"uuid-vmess",
-              "aid":"0",
-              "net":"quic",
-              "tls":"tls"
-            }
-        """.trimIndent()
-        val vmessLink = "vmess://${java.util.Base64.getEncoder().encodeToString(vmessJson.toByteArray())}"
-        val vlessLink =
-            "vless://uuid-vless@vless.example.com:443?security=tls&type=quic#VLESS%20QUIC"
-        val trojanLink =
-            "trojan://secret@trojan.example.com:443?type=quic&sni=trojan.example.com#Trojan%20QUIC"
-
-        assertEquals("quic", parser.parse(vmessLink)?.transport?.type)
         assertEquals("quic", parser.parse(vlessLink)?.transport?.type)
         assertEquals("quic", parser.parse(trojanLink)?.transport?.type)
     }
@@ -281,50 +40,6 @@ class NodeLinkParserTest : NodeLinkParserProxyAndEdgeTest() {
         assertNull(parser.parse("vless://uuid@vless.example.com:443?security=tls&type=kcp#VLESS"))
         assertNull(parser.parse("trojan://secret@trojan.example.com:443?type=kcp#Trojan"))
     }
-
-    @Test
-    fun testParseVMessSupportsXhttpTransport() {
-        val vmessJson = """
-            {
-              "v":"2",
-              "ps":"xhttp vmess",
-              "add":"vmess.example.com",
-              "port":"443",
-              "id":"uuid-1000",
-              "aid":"0",
-              "net":"xhttp",
-              "host":"h1.example.com,h2.example.com",
-              "path":"/xhttp",
-              "mode":"auto",
-              "xPaddingBytes":"100-200",
-              "scMaxEachPostBytes":"1048576",
-              "scMinPostsIntervalMs":"30",
-              "scMaxBufferedPosts":"64",
-              "noGRPCHeader":"1",
-              "noSSEHeader":"true",
-              "tls":"tls",
-              "sni":"vmess.example.com"
-            }
-        """.trimIndent()
-        val encoded = java.util.Base64.getEncoder().encodeToString(vmessJson.toByteArray())
-        val link = "vmess://$encoded"
-
-        val outbound = parser.parse(link)
-
-        assertNotNull(outbound)
-        assertEquals("xhttp", outbound?.transport?.type)
-        assertEquals("/xhttp", outbound?.transport?.path)
-        assertEquals(listOf("h1.example.com", "h2.example.com"), outbound?.transport?.host)
-        assertEquals("auto", outbound?.transport?.mode)
-        assertEquals("100-200", outbound?.transport?.xPaddingBytes)
-        assertEquals(1_048_576L, outbound?.transport?.scMaxEachPostBytes)
-        assertEquals(30L, outbound?.transport?.scMinPostsIntervalMs)
-        assertEquals(64L, outbound?.transport?.scMaxBufferedPosts)
-        assertEquals(true, outbound?.transport?.noGRPCHeader)
-        assertEquals(true, outbound?.transport?.noSSEHeader)
-    }
-
-    // ==================== VLESS ====================
 
     @Test
     fun testParseVLessWebSocketEarlyDataFromPathQuery() {
@@ -460,13 +175,17 @@ class NodeLinkParserTest : NodeLinkParserProxyAndEdgeTest() {
     }
 
     @Test
-    fun testParseVLessRejectsUnsupportedPrivateEncryption() {
+    fun testParseVLessPreservesSupportedPrivateEncryption() {
         val link = "vless://b6fd6867-c239-4d95-8a98-cb036d34fc21@34.150.59.170:39797" +
             "?encryption=mlkem768x25519plus.native.0rtt.sample&flow=xtls-rprx-vision" +
             "&type=ws&path=b6fd6867-c239-4d95-8a98-cb036d34fc21-vw#vl-ws-enc"
 
         val outbound = parser.parse(link)
-        assertNull(outbound)
+
+        assertNotNull(outbound)
+        assertEquals("mlkem768x25519plus.native.0rtt.sample", outbound?.encryption)
+        assertNull(outbound?.flow)
+        assertEquals("ws", outbound?.transport?.type)
     }
 
     @Test
@@ -523,7 +242,7 @@ class NodeLinkParserTest : NodeLinkParserProxyAndEdgeTest() {
     }
 
     @Test
-    fun testParseVLessRejectsPrivateEncryptionWithXhttp() {
+    fun testParseVLessPreservesPrivateEncryptionWithXhttp() {
         val link =
             "vless://uuid@xhttp.example.com:443?security=reality&sni=apple.com&pbk=public-key-123" +
                 "&sid=short-id-123&fp=chrome&flow=xtls-rprx-vision&type=xhttp" +
@@ -531,7 +250,11 @@ class NodeLinkParserTest : NodeLinkParserProxyAndEdgeTest() {
 
         val outbound = parser.parse(link)
 
-        assertNull(outbound)
+        assertNotNull(outbound)
+        assertEquals("mlkem768x25519plus.native.0rtt.sample", outbound?.encryption)
+        assertNull(outbound?.flow)
+        assertEquals("xhttp", outbound?.transport?.type)
+        assertEquals(true, outbound?.tls?.reality?.enabled)
     }
 
     @Test
@@ -552,14 +275,21 @@ class NodeLinkParserTest : NodeLinkParserProxyAndEdgeTest() {
     }
 
     @Test
-    fun testRealVLessXhttpRealityNodeIsRejected() {
+    fun testRealVLessXhttpRealityNodeIsParsed() {
         val link = "vless://2edd765b-a895-46ab-a01c-c4719947546b@35.194.192.123:13324" +
             "?type=xhttp&encryption=mlkem768x25519plus.native.0rtt.sample&flow=xtls-rprx-vision" +
             "&security=reality&pbk=public-key-123&sid=94c5638d&sni=apple.com&fp=chrome" +
             "&packetEncoding=xudp&path=%2F2edd765b-a895-46ab-a01c-c4719947546b-xh&mode=auto" +
             "#TW-GCP-xhttp"
+
         val outbound = parser.parse(link)
-        assertNull(outbound)
+
+        assertNotNull(outbound)
+        assertEquals("xhttp", outbound?.transport?.type)
+        assertEquals("mlkem768x25519plus.native.0rtt.sample", outbound?.encryption)
+        assertNull(outbound?.flow)
+        assertEquals(true, outbound?.tls?.reality?.enabled)
+        assertEquals("apple.com", outbound?.tls?.serverName)
     }
 
     @Test
@@ -763,139 +493,6 @@ class NodeLinkParserTest : NodeLinkParserProxyAndEdgeTest() {
         assertNull(outbound?.tls?.serverName)
     }
 
-    // ==================== Naive ====================
-
-    @Test
-    fun testParseNaiveBasic() {
-        val link = "naive://user:pass@naive.example.com:443" +
-            "?network=h2&insecure_concurrency=2" +
-            "&extra_headers=User-Agent%3A%20naive%0AX-Test%3A%20demo" +
-            "&sni=naive.example.com#NaiveNode"
-        val outbound = parser.parse(link)
-
-        assertNotNull(outbound)
-        assertEquals("naive", outbound?.type)
-        assertEquals("NaiveNode", outbound?.tag)
-        assertEquals("naive.example.com", outbound?.server)
-        assertEquals(443, outbound?.serverPort)
-        assertEquals("user", outbound?.username)
-        assertEquals("pass", outbound?.password)
-        assertEquals(listOf("h2"), outbound?.network)
-        assertEquals(2, outbound?.insecureConcurrency)
-        assertEquals("naive", outbound?.extraHeaders?.get("User-Agent"))
-        assertEquals("demo", outbound?.extraHeaders?.get("X-Test"))
-        assertNull(outbound?.path)
-        assertNull(outbound?.headers)
-        assertNotNull(outbound?.tls)
-        assertEquals(true, outbound?.tls?.enabled)
-        assertEquals("naive.example.com", outbound?.tls?.serverName)
-    }
-
-    @Test
-    fun testParseNaivePlusHttpsScheme() {
-        val link = "naive+https://u:p@naive.example.com:443?extra_headers=User-Agent%3A%20naive#NaiveHttps"
-        val outbound = parser.parse(link)
-
-        assertNotNull(outbound)
-        assertEquals("naive", outbound?.type)
-        assertEquals("NaiveHttps", outbound?.tag)
-        assertEquals("u", outbound?.username)
-        assertEquals("p", outbound?.password)
-        assertEquals(listOf("h2"), outbound?.network)
-        assertEquals("naive", outbound?.extraHeaders?.get("User-Agent"))
-    }
-
-    @Test
-    fun testParseNaivePlusHttpsWithTrailingComma() {
-        val link = "naive+https://u:p@naive.example.com:443?insecure_concurrency=4#NaiveHttps,"
-        val outbound = parser.parse(link)
-
-        assertNotNull(outbound)
-        assertEquals("naive", outbound?.type)
-        assertEquals("NaiveHttps", outbound?.tag)
-        assertEquals("u", outbound?.username)
-        assertEquals("p", outbound?.password)
-        assertEquals(4, outbound?.insecureConcurrency)
-    }
-
-    @Test
-    fun testParseNaiveIpWithoutSniKeepsServerNameNull() {
-        val link = "naive://u:p@34.150.59.170:443?network=h2#NaiveIp"
-        val outbound = parser.parse(link)
-
-        assertNotNull(outbound)
-        assertEquals("34.150.59.170", outbound?.server)
-        assertNull(outbound?.tls?.serverName)
-    }
-
-    // ==================== TUIC ====================
-
-    @Test
-    fun testParseTuicBasic() {
-        val link = "tuic://uuid:password@tuic.example.com:443?congestion_control=bbr&udp_relay_mode=native#TUICNode"
-        val outbound = parser.parse(link)
-
-        assertNotNull(outbound)
-        assertEquals("tuic", outbound?.type)
-        assertEquals("TUICNode", outbound?.tag)
-        assertEquals("tuic.example.com", outbound?.server)
-        assertEquals(443, outbound?.serverPort)
-        assertEquals("uuid", outbound?.uuid)
-        assertEquals("password", outbound?.password)
-        assertEquals("bbr", outbound?.congestionControl)
-        assertEquals("native", outbound?.udpRelayMode)
-        assertEquals("tuic.example.com", outbound?.tls?.serverName)
-        assertNull(outbound?.tls?.disableSni)
-    }
-
-    @Test
-    fun testParseTuicWithDisableSniKeepsServerName() {
-        val link = "tuic://uuid:password@tuic.example.com:443?sni=edge.example.com&disable_sni=1#TUICDisableSni"
-        val outbound = parser.parse(link)
-
-        assertNotNull(outbound)
-        assertEquals("tuic", outbound?.type)
-        assertNull(outbound?.disableSni)
-        assertEquals(true, outbound?.tls?.disableSni)
-        assertEquals(true, outbound?.tls?.enabled)
-        assertEquals("edge.example.com", outbound?.tls?.serverName)
-    }
-
-    @Test
-    fun testParseTuicKeepsDefaultCongestionUnset() {
-        val link = "tuic://uuid:password@tuic.example.com:443#TUICDefaultCongestion"
-        val outbound = parser.parse(link)
-
-        assertNotNull(outbound)
-        assertEquals("tuic", outbound?.type)
-        assertNull(outbound?.congestionControl)
-    }
-
-    @Test
-    fun testParseTuicWithZeroRtt() {
-        val link = "tuic://uuid:password@tuic.example.com:443?reduce_rtt=1#ZeroRttNode"
-        val outbound = parser.parse(link)
-
-        assertNotNull(outbound)
-        assertEquals(true, outbound?.zeroRttHandshake)
-    }
-
-    @Test
-    fun testRealTuicLinkDisablesSniInRuntimeTlsOptions() {
-        val link = "tuic://a06ded63-e9b9-41ac-b721-c1372fe3d700:YhUro1WIFk@cdn4.eu.org:27017" +
-            "?security=tls&sni=cdn4.eu.org&alpn=h3&congestion_control=bbr#%F0%9F%87%B0%F0%9F%87%B7%20" +
-            "%E9%A6%96%E5%B0%944-T"
-        val outbound = parser.parse(link)?.copy(disableSni = true)
-
-        val runtime = outbound?.let { OutboundFixer.buildForRuntimeWithDialConfigForTest(it) }
-        val json = gson.toJson(runtime)
-
-        assertNotNull(runtime)
-        assertNull(runtime?.disableSni)
-        assertEquals(true, runtime?.tls?.disableSni)
-        assertEquals("cdn4.eu.org", runtime?.tls?.serverName)
-        assertTrue(json.contains("\"server_name\":\"cdn4.eu.org\""))
-    }
 
     @Test
     fun testRealHysteria2LinkDisablesSniInRuntimeTlsOptions() {
@@ -941,39 +538,26 @@ class NodeLinkParserTest : NodeLinkParserProxyAndEdgeTest() {
         assertEquals(2, outbound?.minIdleSession)
     }
 
-    // ==================== WireGuard ====================
 
     @Test
-    fun testParseWireGuardUsesRequiredLocalAddress() {
-        val link = "wireguard://private-key@example.com:51820?" +
-            "public_key=peer-key&address=10.7.0.2%2F32,fd00%3A%3A2%2F128" +
-            "&allowed_ips=0.0.0.0%2F0,%3A%3A%2F0&persistent_keepalive_interval=25" +
-            "&reserved=1,2,3&mtu=1380&workers=2#WireGuardNode"
+    fun removedProtocolLinksAreNotParsed() {
+        val vmessJson = """{"v":"2","ps":"Removed","add":"vmess.example.com","port":"443","id":"uuid","aid":"0","net":"ws"}"""
+        val vmessLink = "vmess://${java.util.Base64.getEncoder().encodeToString(vmessJson.toByteArray())}"
+        val removedLinks = listOf(
+            vmessLink,
+            "ss://YWVzLTI1Ni1nY206cGFzc3dvcmQ=@1.2.3.4:8388#Removed",
+            "hysteria://secret@hysteria.example.com:443",
+            "tuic://uuid:secret@tuic.example.com:443",
+            "naive://user:pass@naive.example.com:443",
+            "naive+https://user:pass@naive.example.com:443",
+            "wireguard://private-key@example.com:51820?public_key=peer&address=10.0.0.2%2F32",
+            "wg://private-key@example.com:51820?public_key=peer&address=10.0.0.2%2F32",
+            "ssh://root:secret@ssh.example.com:22"
+        )
 
-        val outbound = parser.parse(link)
-
-        assertNotNull(outbound)
-        assertEquals("wireguard", outbound?.type)
-        assertEquals("WireGuardNode", outbound?.tag)
-        assertEquals(listOf("private-key"), outbound?.privateKey)
-        assertEquals(listOf("10.7.0.2/32", "fd00::2/128"), outbound?.localAddress)
-        assertEquals("example.com", outbound?.peers?.firstOrNull()?.server)
-        assertEquals(51820, outbound?.peers?.firstOrNull()?.serverPort)
-        assertEquals("peer-key", outbound?.peers?.firstOrNull()?.publicKey)
-        assertEquals(listOf("0.0.0.0/0", "::/0"), outbound?.peers?.firstOrNull()?.allowedIps)
-        assertEquals(25, outbound?.peers?.firstOrNull()?.persistentKeepaliveInterval)
-        assertEquals(listOf(1, 2, 3), outbound?.peers?.firstOrNull()?.reserved)
-        assertEquals(1380, outbound?.mtu)
-        assertEquals(2, outbound?.workers)
-    }
-
-    @Test
-    fun testParseWireGuardRejectsMissingLocalAddress() {
-        val link = "wireguard://private-key@example.com:51820?public_key=peer-key#WireGuardNode"
-
-        val outbound = parser.parse(link)
-
-        assertNull(outbound)
+        removedLinks.forEach { link ->
+            assertNull("Removed protocol link should not be parsed: $link", parser.parse(link))
+        }
     }
 
     @Test
@@ -981,7 +565,7 @@ class NodeLinkParserTest : NodeLinkParserProxyAndEdgeTest() {
         assertTrue(NodeLinkParser.isSupportedLink("https://user:pass@example.com:443#HTTP"))
         assertFalse(NodeLinkParser.isSupportedLink("https://subscription.example.com/config"))
         assertTrue(NodeLinkParser.isSupportedLink("socks4a://example.com:1080#SOCKS"))
-        assertTrue(NodeLinkParser.isSupportedLink("wg://private@example.com:51820?address=10.0.0.2%2F32"))
+        assertFalse(NodeLinkParser.isSupportedLink("wg://private@example.com:51820?address=10.0.0.2%2F32"))
         assertFalse(NodeLinkParser.isSupportedLink("ssr://unsupported"))
     }
 }

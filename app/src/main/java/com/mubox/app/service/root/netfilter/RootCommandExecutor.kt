@@ -6,6 +6,7 @@ import android.util.Log
 import java.io.BufferedReader
 import java.io.InputStreamReader
 import java.util.Collections
+import java.util.concurrent.CountDownLatch
 import java.util.concurrent.TimeUnit
 import java.util.concurrent.atomic.AtomicLong
 import java.util.concurrent.atomic.AtomicReference
@@ -328,36 +329,45 @@ class ProcessRootCommandExecutor internal constructor(
 
     @Suppress("CyclomaticComplexMethod", "CognitiveComplexMethod")
     private fun collectProcess(process: Process, commandTimeoutMs: Long = timeoutMs): RootCommandResult {
-        val output = StringBuilder()
-        val errorOutput = StringBuilder()
+        val output = StringBuffer()
+        val errorOutput = StringBuffer()
         val outputReadError = AtomicReference<Throwable?>()
         val errorReadError = AtomicReference<Throwable?>()
+        val readersDone = CountDownLatch(2)
         val outputReader = Thread({
-            runCatching {
-                BufferedReader(InputStreamReader(process.inputStream)).use { input ->
-                    val buffer = CharArray(4_096)
-                    while (true) {
-                        val count = input.read(buffer)
-                        if (count < 0) break
-                        output.append(buffer, 0, count)
+            try {
+                runCatching {
+                    BufferedReader(InputStreamReader(process.inputStream)).use { input ->
+                        val buffer = CharArray(4_096)
+                        while (true) {
+                            val count = input.read(buffer)
+                            if (count < 0) break
+                            output.append(buffer, 0, count)
+                        }
                     }
-                }
-            }.onFailure(outputReadError::set)
+                }.onFailure(outputReadError::set)
+            } finally {
+                readersDone.countDown()
+            }
         }, "mubox-root-command-output").apply {
             isDaemon = true
             start()
         }
         val errorReader = Thread({
-            runCatching {
-                BufferedReader(InputStreamReader(process.errorStream)).use { input ->
-                    val buffer = CharArray(4_096)
-                    while (true) {
-                        val count = input.read(buffer)
-                        if (count < 0) break
-                        errorOutput.append(buffer, 0, count)
+            try {
+                runCatching {
+                    BufferedReader(InputStreamReader(process.errorStream)).use { input ->
+                        val buffer = CharArray(4_096)
+                        while (true) {
+                            val count = input.read(buffer)
+                            if (count < 0) break
+                            errorOutput.append(buffer, 0, count)
+                        }
                     }
-                }
-            }.onFailure(errorReadError::set)
+                }.onFailure(errorReadError::set)
+            } finally {
+                readersDone.countDown()
+            }
         }, "mubox-root-command-error").apply {
             isDaemon = true
             start()
@@ -368,8 +378,8 @@ class ProcessRootCommandExecutor internal constructor(
                 process.destroyForcibly()
                 process.waitFor(PROCESS_DESTROY_GRACE_MS, TimeUnit.MILLISECONDS)
             }
-            outputReader.join(PROCESS_READER_JOIN_MS)
-            errorReader.join(PROCESS_READER_JOIN_MS)
+            closeProcessStreams(process)
+            readersDone.await(PROCESS_DESTROY_GRACE_MS, TimeUnit.MILLISECONDS)
             activeProcesses.remove(process)
             return RootCommandResult(
                 COMMAND_TIMEOUT_EXIT_CODE,
@@ -377,13 +387,23 @@ class ProcessRootCommandExecutor internal constructor(
                 errorOutput.toString().trim()
             )
         }
-        outputReader.join(PROCESS_READER_JOIN_MS)
-        errorReader.join(PROCESS_READER_JOIN_MS)
-        check(!outputReader.isAlive && !errorReader.isAlive) { "Root command output reader did not finish" }
-        outputReadError.get()?.let { throw IllegalStateException("Cannot read Root command stdout", it) }
-        errorReadError.get()?.let { throw IllegalStateException("Cannot read Root command stderr", it) }
+        val readersClosedForcibly = !readersDone.await(PROCESS_READER_JOIN_MS, TimeUnit.MILLISECONDS)
+        if (readersClosedForcibly) {
+            closeProcessStreams(process)
+            readersDone.await(PROCESS_DESTROY_GRACE_MS, TimeUnit.MILLISECONDS)
+        }
+        if (!readersClosedForcibly) {
+            check(!outputReader.isAlive && !errorReader.isAlive) { "Root command output reader did not finish" }
+            outputReadError.get()?.let { throw IllegalStateException("Cannot read Root command stdout", it) }
+            errorReadError.get()?.let { throw IllegalStateException("Cannot read Root command stderr", it) }
+        }
         activeProcesses.remove(process)
         return RootCommandResult(process.exitValue(), output.toString().trim(), errorOutput.toString().trim())
+    }
+
+    private fun closeProcessStreams(process: Process) {
+        runCatching { process.inputStream.close() }
+        runCatching { process.errorStream.close() }
     }
 }
 

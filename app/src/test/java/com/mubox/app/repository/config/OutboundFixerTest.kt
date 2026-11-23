@@ -23,21 +23,7 @@ class OutboundFixerTest {
 
     @Test
     fun runtimeNormalizationPreservesMultiValueHeaders() {
-        val websocket = gson.fromJson(
-            """
-                {
-                  "type":"vmess",
-                  "tag":"ws",
-                  "server":"ws.example.com",
-                  "server_port":443,
-                  "uuid":"00000000-0000-0000-0000-000000000001",
-                  "security":"auto",
-                  "transport":{"type":"ws","headers":{"X-Multi":["one","two"]}}
-                }
-            """.trimIndent(),
-            Outbound::class.java
-        )
-        val httpUpgrade = gson.fromJson(
+        val outbound = gson.fromJson(
             """
                 {
                   "type":"vless",
@@ -53,33 +39,14 @@ class OutboundFixerTest {
             """.trimIndent(),
             Outbound::class.java
         )
-        val naive = gson.fromJson(
-            """
-                {
-                  "type":"naive",
-                  "tag":"naive",
-                  "server":"naive.example.com",
-                  "server_port":443,
-                  "username":"user",
-                  "password":"pass",
-                  "extra_headers":{"X-Multi":["one","two"]}
-                }
-            """.trimIndent(),
-            Outbound::class.java
-        )
 
-        listOf(websocket, httpUpgrade, naive).forEach { outbound ->
-            val runtime = OutboundFixer.buildForRuntimeWithDialConfigForTest(outbound)
-            assertNotNull(runtime)
-            val json = JsonParser.parseString(gson.toJson(runtime)).asJsonObject
-            val headers = when (outbound.type) {
-                "naive" -> json.getAsJsonObject("extra_headers")
-                else -> json.getAsJsonObject("transport").getAsJsonObject("headers")
-            }
+        val runtime = OutboundFixer.buildForRuntimeWithDialConfigForTest(outbound)
+        assertNotNull(runtime)
+        val json = JsonParser.parseString(gson.toJson(runtime)).asJsonObject
+        val headers = json.getAsJsonObject("transport").getAsJsonObject("headers")
 
-            assertTrue(headers.get("X-Multi").isJsonArray)
-            assertEquals(2, headers.getAsJsonArray("X-Multi").size())
-        }
+        assertTrue(headers.get("X-Multi").isJsonArray)
+        assertEquals(2, headers.getAsJsonArray("X-Multi").size())
     }
 
     @Test
@@ -172,48 +139,21 @@ class OutboundFixerTest {
     }
 
     @Test
-    fun testBuildRuntimeHysteriaPreservesDisableMtuDiscovery() {
-        val runtime = OutboundFixer.buildRuntimeHysteriaOutbound(
-            Outbound(
-                type = "hysteria",
-                tag = "hy-node",
-                server = "hy.example.com",
-                serverPort = 443,
-                authStr = "secret",
-                disableMtuDiscovery = true,
-                tls = TlsConfig(enabled = true, serverName = "hy.example.com")
-            )
+    fun testBuildForRuntimeDropsRemovedHysteriaV1Outbound() {
+        val runtime = OutboundFixer.buildForRuntimeWithDialConfigForTest(
+            Outbound(type = "hysteria", tag = "removed-hy1", server = "hy.example.com", serverPort = 443)
         )
 
-        assertEquals(true, runtime.disableMtuDiscovery)
+        assertNull(runtime)
     }
 
     @Test
-    fun testBuildForRuntimeKeepsOnlyOfficialShadowsocksPluginFields() {
-        val outbound = Outbound(
-            type = "shadowsocks",
-            tag = "ss-v2ray-plugin",
-            server = "ss.example.com",
-            serverPort = 8388,
-            method = "2022-blake3-aes-128-gcm",
-            password = "secret",
-            plugin = "v2ray-plugin",
-            pluginOpts = "mode=websocket;host=edge.example.com",
-            transport = TransportConfig(
-                type = "ws",
-                path = "/ws",
-                headers = mapOf("Host" to "edge.example.com")
-            ),
-            tls = TlsConfig(enabled = true, serverName = "edge.example.com")
+    fun testBuildForRuntimeDropsRemovedShadowsocksOutbound() {
+        val runtime = OutboundFixer.buildForRuntimeWithDialConfigForTest(
+            Outbound(type = "shadowsocks", tag = "removed-ss", server = "ss.example.com", serverPort = 8388)
         )
 
-        val runtime = OutboundFixer.buildForRuntimeWithDialConfigForTest(outbound)
-
-        assertEquals("shadowsocks", runtime?.type)
-        assertEquals("v2ray-plugin", runtime?.plugin)
-        assertEquals("mode=websocket;host=edge.example.com", runtime?.pluginOpts)
-        assertNull(runtime?.transport)
-        assertNull(runtime?.tls)
+        assertNull(runtime)
     }
 
     @Test
@@ -297,49 +237,21 @@ class OutboundFixerTest {
     }
 
     @Test
-    fun testBuildForRuntimeKeepsTuicServerNameWhenDisableSniEnabled() {
-        val outbound = Outbound(
-            type = "tuic",
-            tag = "tuic-node",
-            server = "tuic.example.com",
-            serverPort = 443,
-            uuid = "uuid",
-            password = "secret",
-            disableSni = true,
-            tls = TlsConfig(
-                enabled = true,
-                serverName = "tuic.example.com"
-            )
+    fun testBuildForRuntimeDropsRemovedTuicOutboundWhenDisableSniEnabled() {
+        val runtime = OutboundFixer.buildForRuntimeWithDialConfigForTest(
+            Outbound(type = "tuic", tag = "removed-tuic", server = "tuic.example.com", serverPort = 443)
         )
 
-        val runtime = OutboundFixer.buildForRuntimeWithDialConfigForTest(outbound)
-
-        assertNull(runtime?.disableSni)
-        assertEquals(true, runtime?.tls?.disableSni)
-        assertEquals(true, runtime?.tls?.enabled)
-        assertEquals("tuic.example.com", runtime?.tls?.serverName)
+        assertNull(runtime)
     }
 
     @Test
-    fun testBuildForRuntimeKeepsTuicServerNameWhenDisableSniDisabled() {
-        val outbound = Outbound(
-            type = "tuic",
-            tag = "tuic-node",
-            server = "tuic.example.com",
-            serverPort = 443,
-            uuid = "uuid",
-            password = "secret",
-            disableSni = null,
-            tls = TlsConfig(
-                enabled = true,
-                serverName = "edge.example.com"
-            )
+    fun testBuildForRuntimeDropsRemovedTuicOutboundWhenDisableSniDisabled() {
+        val runtime = OutboundFixer.buildForRuntimeWithDialConfigForTest(
+            Outbound(type = "tuic", tag = "removed-tuic", server = "tuic.example.com", serverPort = 443)
         )
 
-        val runtime = OutboundFixer.buildForRuntimeWithDialConfigForTest(outbound)
-
-        assertNull(runtime?.disableSni)
-        assertEquals("edge.example.com", runtime?.tls?.serverName)
+        assertNull(runtime)
     }
 
     @Test
@@ -402,11 +314,11 @@ class OutboundFixerTest {
     }
 
     @Test
-    fun testBuildForRuntimeRejectsUnsupportedVlessEncryption() {
+    fun testBuildForRuntimePreservesSupportedVlessEncryption() {
         val outbound = Outbound(
             type = "vless",
-            tag = "encrypted-xhttp",
-            server = "xhttp.example.com",
+            tag = "encrypted-vless",
+            server = "vless.example.com",
             serverPort = 443,
             uuid = "uuid",
             flow = "xtls-rprx-vision",
@@ -415,7 +327,9 @@ class OutboundFixerTest {
 
         val runtime = OutboundFixer.buildForRuntimeWithDialConfigForTest(outbound)
 
-        assertNull(runtime)
+        assertNotNull(runtime)
+        assertEquals("mlkem768x25519plus.native.0rtt.sample", runtime?.encryption)
+        assertNull(runtime?.flow)
     }
 
     @Test
@@ -436,19 +350,12 @@ class OutboundFixerTest {
     }
 
     @Test
-    fun testBuildForRuntimeKeepsVmessPacketEncodingUnset() {
+    fun testBuildForRuntimeDropsRemovedVmessOutbound() {
         val runtime = OutboundFixer.buildForRuntimeWithDialConfigForTest(
-            Outbound(
-                type = "vmess",
-                tag = "vmess-default-packet-encoding",
-                server = "vmess.example.com",
-                serverPort = 443,
-                uuid = "uuid",
-                security = "auto"
-            )
+            Outbound(type = "vmess", tag = "removed-vmess", server = "vmess.example.com", serverPort = 443)
         )
 
-        assertNull(runtime?.packetEncoding)
+        assertNull(runtime)
     }
 
     @Test
@@ -505,7 +412,7 @@ class OutboundFixerTest {
     }
 
     @Test
-    fun testBuildForRuntimeRejectsUnsupportedEncryptedVlessWebSocket() {
+    fun testBuildForRuntimePreservesPrivateEncryptionWithVlessWebSocket() {
         val outbound = Outbound(
             type = "vless",
             tag = "encrypted-ws-node",
@@ -518,7 +425,9 @@ class OutboundFixerTest {
 
         val runtime = OutboundFixer.buildForRuntimeWithDialConfigForTest(outbound)
 
-        assertNull(runtime)
+        assertNotNull(runtime)
+        assertEquals("mlkem768x25519plus.native.0rtt.sample", runtime?.encryption)
+        assertEquals("ws", runtime?.transport?.type)
     }
 
     @Test
@@ -609,10 +518,10 @@ class OutboundFixerTest {
     }
 
     @Test
-    fun testBuildForRuntimeKeepsVmessHttpTransport() {
+    fun testBuildForRuntimeKeepsVlessHttpTransport() {
         val outbound = Outbound(
-            type = "vmess",
-            tag = "vmess-http-node",
+            type = "vless",
+            tag = "vless-http-node",
             server = "18.225.57.7",
             serverPort = 32721,
             uuid = "c31a559b-8285-4b11-db99-d1edfc2b2b70",
@@ -621,7 +530,7 @@ class OutboundFixerTest {
 
         val runtime = OutboundFixer.buildForRuntimeWithDialConfigForTest(outbound)
 
-        assertEquals("vmess", runtime?.type)
+        assertEquals("vless", runtime?.type)
         assertEquals("http", runtime?.transport?.type)
     }
 
@@ -649,12 +558,11 @@ class OutboundFixerTest {
     @Test
     fun testBuildForRuntimeDoesNotConvertOfficialNetworkToTransport() {
         val outbound = Outbound(
-            type = "vmess",
+            type = "vless",
             tag = "udp-only",
-            server = "vmess.example.com",
+            server = "vless.example.com",
             serverPort = 443,
             uuid = "uuid",
-            security = "auto",
             network = listOf("udp")
         )
 
@@ -853,19 +761,12 @@ class OutboundFixerTest {
     }
 
     @Test
-    fun testBuildForRuntimePreservesSshInlinePrivateKey() {
+    fun testBuildForRuntimeDropsRemovedSshOutbound() {
         val runtime = OutboundFixer.buildForRuntimeWithDialConfigForTest(
-            Outbound(
-                type = "ssh",
-                tag = "ssh-node",
-                server = "ssh.example.com",
-                serverPort = 22,
-                user = "root",
-                privateKey = listOf("-----BEGIN OPENSSH PRIVATE KEY-----")
-            )
+            Outbound(type = "ssh", tag = "removed-ssh", server = "ssh.example.com", serverPort = 22)
         )
 
-        assertEquals(listOf("-----BEGIN OPENSSH PRIVATE KEY-----"), runtime?.privateKey)
+        assertNull(runtime)
     }
 
     @Test
