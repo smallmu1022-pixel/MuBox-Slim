@@ -5,7 +5,9 @@ import com.mubox.app.model.Outbound
 import com.mubox.app.model.SingBoxConfig
 import com.mubox.app.model.TransportConfig
 import com.mubox.app.model.UtlsConfig
+import org.yaml.snakeyaml.LoaderOptions
 import org.yaml.snakeyaml.Yaml
+import org.yaml.snakeyaml.constructor.SafeConstructor
 import org.yaml.snakeyaml.error.YAMLException
 
 private val CLASH_V2RAY_NETWORKS = setOf(
@@ -31,7 +33,9 @@ abstract class ClashYamlParserPart1 : ClashYamlParserBase() {
 
     override fun parse(content: String): SingBoxConfig? {
         val root = try {
-            Yaml().load<Any>(content)
+            // 订阅内容是外部可控数据：必须用 SafeConstructor，只产出
+            // Map/List/标量，禁止 YAML 标签构造任意对象（CodeQL Critical）。
+            Yaml(SafeConstructor(LoaderOptions())).load<Any>(content)
         } catch (_: YAMLException) {
             return null
         } catch (_: Exception) {
