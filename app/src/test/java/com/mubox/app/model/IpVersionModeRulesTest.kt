@@ -39,6 +39,50 @@ class IpVersionModeRulesTest {
     }
 
     @Test
+    fun enteringDualStackResetsLegacyDirectDnsToAutoAndPreservesOtherDnsPolicies() {
+        val previous = AppSettings(
+            ipVersionMode = IpVersionMode.IPV4_ONLY,
+            directDnsStrategy = DnsStrategy.ONLY_IPV4,
+            remoteDnsStrategy = DnsStrategy.ONLY_IPV6,
+            dnsStrategy = DnsStrategy.PREFER_IPV4
+        )
+
+        val updated = previous.withIpVersionMode(IpVersionMode.DUAL_STACK)
+
+        assertEquals(IpVersionMode.DUAL_STACK, updated.ipVersionMode)
+        assertEquals(DnsStrategy.AUTO, updated.directDnsStrategy)
+        assertEquals(DnsStrategy.ONLY_IPV6, updated.remoteDnsStrategy)
+        assertEquals(DnsStrategy.PREFER_IPV4, updated.dnsStrategy)
+    }
+
+    @Test
+    fun explicitDirectDnsChoiceIsNotOverriddenWhileRemainingInDualStack() {
+        val settings = AppSettings(
+            ipVersionMode = IpVersionMode.DUAL_STACK,
+            directDnsStrategy = DnsStrategy.ONLY_IPV4
+        )
+
+        assertEquals(
+            DnsStrategy.ONLY_IPV4,
+            settings.withIpVersionMode(IpVersionMode.DUAL_STACK).directDnsStrategy
+        )
+    }
+
+    @Test
+    fun reenteringDualStackResetsDirectDnsToAutoAfterAnExplicitChoice() {
+        val selectedExplicitly = AppSettings(
+            ipVersionMode = IpVersionMode.DUAL_STACK,
+            directDnsStrategy = DnsStrategy.PREFER_IPV6
+        )
+
+        val afterLeavingDualStack = selectedExplicitly.withIpVersionMode(IpVersionMode.IPV4_ONLY)
+        assertEquals(DnsStrategy.PREFER_IPV6, afterLeavingDualStack.directDnsStrategy)
+
+        val afterReenteringDualStack = afterLeavingDualStack.withIpVersionMode(IpVersionMode.DUAL_STACK)
+        assertEquals(DnsStrategy.AUTO, afterReenteringDualStack.directDnsStrategy)
+    }
+
+    @Test
     fun appSettingsDefaultDirectDnsStrategyIsAuto() {
         assertEquals(DnsStrategy.AUTO, AppSettings().directDnsStrategy)
     }

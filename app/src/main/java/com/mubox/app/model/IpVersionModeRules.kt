@@ -35,3 +35,12 @@ fun IpVersionMode.resolveDnsStrategy(strategy: DnsStrategy): String {
         }
     }
 }
+
+fun AppSettings.withIpVersionMode(value: IpVersionMode): AppSettings {
+    val isEnteringDualStack = value == IpVersionMode.DUAL_STACK &&
+        ipVersionMode != IpVersionMode.DUAL_STACK
+    return copy(
+        ipVersionMode = value,
+        directDnsStrategy = if (isEnteringDualStack) DnsStrategy.AUTO else directDnsStrategy
+    )
+}
