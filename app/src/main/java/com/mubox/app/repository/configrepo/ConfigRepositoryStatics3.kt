@@ -708,26 +708,37 @@ internal fun ConfigRepository.Companion.buildOutboundDomainResolverDnsRules(outb
     }
 }
 
+private const val DEFAULT_DOMAIN_FALLBACK_DELAY = "300ms"
+
 internal fun ConfigRepository.Companion.applyDefaultOutboundDomainResolver(
     outbounds: List<Outbound>,
     defaultResolverTag: String,
     defaultResolverStrategy: String? = null): List<Outbound> {
     return outbounds.map { outbound ->
         val server = outbound.server?.trim().orEmpty()
+        val hasDomainServer = server.isNotBlank() && !isIpAddressValue(server)
         val existing = outbound.domainResolver
         val existingServer = existing?.server?.trim()?.takeIf(String::isNotBlank)
-        val needsDefaultResolver = server.isNotBlank() && !isIpAddressValue(server) ||
+        val needsDefaultResolver = hasDomainServer ||
             !outbound.domainStrategy.isNullOrBlank()
         val resolverServer = existingServer ?: defaultResolverTag.takeIf { needsDefaultResolver }
+        val resolverStrategy = existing?.strategy ?: outbound.domainStrategy ?: defaultResolverStrategy
+        val usesLocalDomainDial = outbound.type.equals("direct", ignoreCase = true) || hasDomainServer
+        val prefersAddressFamily = resolverStrategy?.trim()?.lowercase() in setOf("prefer_ipv4", "prefer_ipv6")
         val resolver = resolverServer?.let {
             (existing ?: DomainResolveConfig()).copy(
                 server = it,
-                strategy = existing?.strategy ?: outbound.domainStrategy ?: defaultResolverStrategy
+                strategy = resolverStrategy
             )
         }
         outbound.copy(
             domainResolver = resolver,
-            domainStrategy = null
+            domainStrategy = null,
+            fallbackDelay = outbound.fallbackDelay ?: if (usesLocalDomainDial && prefersAddressFamily) {
+                DEFAULT_DOMAIN_FALLBACK_DELAY
+            } else {
+                null
+            }
         )
     }
 }

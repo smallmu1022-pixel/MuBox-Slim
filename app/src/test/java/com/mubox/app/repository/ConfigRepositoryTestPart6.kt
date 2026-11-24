@@ -493,6 +493,7 @@ abstract class ConfigRepositoryTestPart6 : ConfigRepositoryTestPart5() {
 
         assertEquals(ConfigRepository.DEFAULT_ROUTE_DOMAIN_RESOLVER_TAG, outbounds.first().domainResolver?.server)
         assertEquals("prefer_ipv4", outbounds.first().domainResolver?.strategy)
+        assertEquals("300ms", outbounds.first().fallbackDelay)
     }
 
     @Test
@@ -514,6 +515,75 @@ abstract class ConfigRepositoryTestPart6 : ConfigRepositoryTestPart5() {
 
         assertEquals(ConfigRepository.DEFAULT_ROUTE_DOMAIN_RESOLVER_TAG, outbounds.first().domainResolver?.server)
         assertEquals("prefer_ipv4", outbounds.first().domainResolver?.strategy)
+        assertEquals("300ms", outbounds.first().fallbackDelay)
+    }
+
+    @Test
+    fun preferredIpv6AddsFastDomainFallbackAndPreservesExplicitDelay() {
+        val automatic = ConfigRepository.applyDefaultOutboundDomainResolver(
+            outbounds = listOf(Outbound(type = "vless", tag = "ipv6-node", server = "v6.example.com")),
+            defaultResolverTag = ConfigRepository.DEFAULT_ROUTE_DOMAIN_RESOLVER_TAG,
+            defaultResolverStrategy = "prefer_ipv6"
+        ).single()
+        val explicit = ConfigRepository.applyDefaultOutboundDomainResolver(
+            outbounds = listOf(
+                Outbound(
+                    type = "trojan",
+                    tag = "custom-delay-node",
+                    server = "node.example.com",
+                    fallbackDelay = "125ms"
+                )
+            ),
+            defaultResolverTag = ConfigRepository.DEFAULT_ROUTE_DOMAIN_RESOLVER_TAG,
+            defaultResolverStrategy = "prefer_ipv4"
+        ).single()
+
+        assertEquals("prefer_ipv6", automatic.domainResolver?.strategy)
+        assertEquals("300ms", automatic.fallbackDelay)
+        assertEquals("125ms", explicit.fallbackDelay)
+    }
+
+    @Test
+    fun directDomainDialGetsFastFallbackOnlyForPreferredAddressFamilies() {
+        val preferred = ConfigRepository.applyDefaultOutboundDomainResolver(
+            outbounds = listOf(Outbound(type = "direct", tag = "direct")),
+            defaultResolverTag = ConfigRepository.DEFAULT_ROUTE_DOMAIN_RESOLVER_TAG,
+            defaultResolverStrategy = "prefer_ipv4"
+        ).single()
+        val ipv4Only = ConfigRepository.applyDefaultOutboundDomainResolver(
+            outbounds = listOf(Outbound(type = "direct", tag = "direct")),
+            defaultResolverTag = ConfigRepository.DEFAULT_ROUTE_DOMAIN_RESOLVER_TAG,
+            defaultResolverStrategy = "ipv4_only"
+        ).single()
+
+        assertEquals("300ms", preferred.fallbackDelay)
+        assertNull(ipv4Only.fallbackDelay)
+    }
+
+    @Test
+    fun onlyFamilyStrategiesDoNotEnableCrossFamilyFallback() {
+        val outbounds = listOf("ipv4_only", "ipv6_only").mapIndexed { index, strategy ->
+            ConfigRepository.applyDefaultOutboundDomainResolver(
+                outbounds = listOf(Outbound(type = "vless", tag = "node-$index", server = "node-$index.example.com")),
+                defaultResolverTag = ConfigRepository.DEFAULT_ROUTE_DOMAIN_RESOLVER_TAG,
+                defaultResolverStrategy = strategy
+            ).single()
+        }
+
+        assertEquals(listOf("ipv4_only", "ipv6_only"), outbounds.map { it.domainResolver?.strategy })
+        assertTrue(outbounds.all { it.fallbackDelay == null })
+    }
+
+    @Test
+    fun ipLiteralNodeDoesNotGetDefaultDomainFallbackDelay() {
+        val outbound = ConfigRepository.applyDefaultOutboundDomainResolver(
+            outbounds = listOf(Outbound(type = "vless", tag = "ip-node", server = "203.0.113.7")),
+            defaultResolverTag = ConfigRepository.DEFAULT_ROUTE_DOMAIN_RESOLVER_TAG,
+            defaultResolverStrategy = "prefer_ipv4"
+        ).single()
+
+        assertNull(outbound.domainResolver)
+        assertNull(outbound.fallbackDelay)
     }
 
     @Test

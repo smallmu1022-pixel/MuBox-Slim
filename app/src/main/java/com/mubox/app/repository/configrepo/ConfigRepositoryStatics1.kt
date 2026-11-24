@@ -342,15 +342,17 @@ internal fun ConfigRepository.Companion.resolveOutboundServerAddressStrategy(
     return ipVersionMode.resolveDnsStrategy(strategy)
 }
 
-/**
- * 直连 DNS：双栈下 AUTO 映射为 ipv4_only，避免无 IPv6 出口时国内站 AAAA 直连失败。
- * 用户显式选择 PREFER_IPV4/PREFER_IPV6 等时仍按原规则解析。
- */
+/** In VPN/TUN dual-stack AUTO, prefer IPv4 but keep IPv6 answers available. */
 internal fun ConfigRepository.Companion.resolveDirectDnsStrategy(
     strategy: DnsStrategy,
-    ipVersionMode: IpVersionMode
+    ipVersionMode: IpVersionMode,
+    captureMode: TrafficCaptureMode
 ): String {
-    if (ipVersionMode == IpVersionMode.DUAL_STACK && strategy == DnsStrategy.AUTO) {
+    if (
+        captureMode != TrafficCaptureMode.VPN &&
+        ipVersionMode == IpVersionMode.DUAL_STACK &&
+        strategy == DnsStrategy.AUTO
+    ) {
         return "ipv4_only"
     }
     return ipVersionMode.resolveDnsStrategy(strategy)

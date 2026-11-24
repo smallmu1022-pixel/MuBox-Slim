@@ -13,6 +13,7 @@ import com.mubox.app.model.RuleSetType
 import com.mubox.app.model.SingBoxConfig
 import com.mubox.app.model.ProfileType
 import com.mubox.app.model.RoutingMode
+import com.mubox.app.model.TrafficCaptureMode
 import com.mubox.app.model.TlsConfig
 import com.mubox.app.model.resolveDnsStrategy
 import org.junit.Assert.assertEquals
@@ -135,22 +136,71 @@ abstract class ConfigRepositoryTestPart4 : ConfigRepositoryTestPart3() {
     }
 
     @Test
-    fun directDnsAutoOnDualStackResolvesToIpv4Only() {
+    fun directDnsAutoOnDualStackPrefersIpv4WithoutDisablingIpv6() {
+        assertEquals(DnsStrategy.AUTO, AppSettings().directDnsStrategy)
         assertEquals(
-            "ipv4_only",
-            ConfigRepository.resolveDirectDnsStrategy(DnsStrategy.AUTO, IpVersionMode.DUAL_STACK)
+            "prefer_ipv4",
+            ConfigRepository.resolveDirectDnsStrategy(
+                DnsStrategy.AUTO,
+                IpVersionMode.DUAL_STACK,
+                TrafficCaptureMode.VPN
+            )
         )
         assertEquals(
             "prefer_ipv4",
-            ConfigRepository.resolveDirectDnsStrategy(DnsStrategy.PREFER_IPV4, IpVersionMode.DUAL_STACK)
-        )
-        assertEquals(
-            "prefer_ipv6",
-            ConfigRepository.resolveDirectDnsStrategy(DnsStrategy.AUTO, IpVersionMode.PREFER_IPV6)
+            ConfigRepository.resolveDirectDnsStrategy(
+                DnsStrategy.PREFER_IPV4,
+                IpVersionMode.DUAL_STACK,
+                TrafficCaptureMode.VPN
+            )
         )
         assertEquals(
             "ipv4_only",
-            ConfigRepository.resolveDirectDnsStrategy(DnsStrategy.AUTO, IpVersionMode.IPV4_ONLY)
+            ConfigRepository.resolveDirectDnsStrategy(
+                DnsStrategy.ONLY_IPV4,
+                IpVersionMode.DUAL_STACK,
+                TrafficCaptureMode.VPN
+            )
+        )
+        assertEquals(
+            "prefer_ipv6",
+            ConfigRepository.resolveDirectDnsStrategy(
+                DnsStrategy.AUTO,
+                IpVersionMode.PREFER_IPV6,
+                TrafficCaptureMode.VPN
+            )
+        )
+        assertEquals(
+            "ipv4_only",
+            ConfigRepository.resolveDirectDnsStrategy(
+                DnsStrategy.AUTO,
+                IpVersionMode.IPV4_ONLY,
+                TrafficCaptureMode.VPN
+            )
+        )
+        assertEquals(
+            "ipv6_only",
+            ConfigRepository.resolveDirectDnsStrategy(
+                DnsStrategy.ONLY_IPV6,
+                IpVersionMode.DUAL_STACK,
+                TrafficCaptureMode.VPN
+            )
+        )
+        assertEquals(
+            "ipv4_only",
+            ConfigRepository.resolveDirectDnsStrategy(
+                DnsStrategy.AUTO,
+                IpVersionMode.DUAL_STACK,
+                TrafficCaptureMode.ROOT_TRANSPARENT
+            )
+        )
+        assertEquals(
+            "ipv4_only",
+            ConfigRepository.resolveDirectDnsStrategy(
+                DnsStrategy.AUTO,
+                IpVersionMode.DUAL_STACK,
+                TrafficCaptureMode.PROXY_ONLY
+            )
         )
     }
 
