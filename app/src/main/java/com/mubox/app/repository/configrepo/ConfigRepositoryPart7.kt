@@ -157,11 +157,7 @@ internal fun ConfigRepository.buildRunDns(
     val localServer = ConfigRepository.buildDnsServer(
         address = localDnsAddr,
         tag = "local",
-        domainStrategy = resolveDirectDnsStrategy(
-            settings.directDnsStrategy,
-            settings.ipVersionMode,
-            settings.resolvedTrafficCaptureMode()
-        ),
+        domainStrategy = resolveDirectDnsStrategy(settings.directDnsStrategy, settings.ipVersionMode),
         domainResolver = localResolver
     )
     dnsServers.add(localServer)

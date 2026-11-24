@@ -39,7 +39,7 @@ class IpVersionModeRulesTest {
     }
 
     @Test
-    fun appSettingsDefaultDirectDnsStrategyIsAuto() {
-        assertEquals(DnsStrategy.AUTO, AppSettings().directDnsStrategy)
+    fun appSettingsDefaultDirectDnsStrategyIsOnlyIpv4() {
+        assertEquals(DnsStrategy.ONLY_IPV4, AppSettings().directDnsStrategy)
     }
 }

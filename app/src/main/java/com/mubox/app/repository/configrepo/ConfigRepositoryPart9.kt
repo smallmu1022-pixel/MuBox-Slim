@@ -78,13 +78,13 @@ internal fun ConfigRepository.resolveDnsStrategy(strategy: DnsStrategy, mode: Ip
     return mode.resolveDnsStrategy(strategy)
 }
 
-/** Resolve DIRECT DNS using both the selected IP mode and active traffic-capture mode. */
-internal fun ConfigRepository.resolveDirectDnsStrategy(
-    strategy: DnsStrategy,
-    mode: IpVersionMode,
-    captureMode: TrafficCaptureMode
-): String {
-    return ConfigRepository.resolveDirectDnsStrategy(strategy, mode, captureMode)
+/**
+ * 直连 DNS 策略：双栈 + AUTO 时强制 ipv4_only。
+ * prefer_ipv4 仍会返回 AAAA，无公网 IPv6 时 geosite-cn 直连会 network unreachable。
+ * 已保存为 AUTO 的旧配置也会走此路径。
+ */
+internal fun ConfigRepository.resolveDirectDnsStrategy(strategy: DnsStrategy, mode: IpVersionMode): String {
+    return ConfigRepository.resolveDirectDnsStrategy(strategy, mode)
 }
 
 internal fun ConfigRepository.logOutboundServerAddressStrategy(
