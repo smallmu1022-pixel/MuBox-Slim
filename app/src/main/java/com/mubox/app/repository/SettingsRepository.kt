@@ -6,7 +6,6 @@ import com.mubox.app.model.AppSettings
 import com.mubox.app.model.CustomRule
 import com.mubox.app.model.DefaultRule
 import com.mubox.app.model.DnsStrategy
-import com.mubox.app.model.withIpVersionMode
 import com.mubox.app.model.RoutingMode
 import com.mubox.app.model.AppGroup
 import com.mubox.app.model.RuleSet
@@ -201,7 +200,7 @@ class SettingsRepository(context: Context) {
     }
 
     suspend fun setIpVersionMode(value: IpVersionMode) {
-        updateSettingsAndNotifyRestart { it.withIpVersionMode(value) }
+        updateSettingsAndNotifyRestart { it.copy(ipVersionMode = value) }
     }
 
     suspend fun setTunMtu(value: Int) {
@@ -804,3 +803,4 @@ class SettingsRepository(context: Context) {
         }
     }
 }
+
