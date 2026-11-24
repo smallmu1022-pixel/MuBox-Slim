@@ -2,7 +2,7 @@
 
 # MuBox Slim for Android
 
-**KunBox 的深度精简版：只留你真正用的协议，体积小三分之一。**
+**深度精简版：只留你真正用的协议，体积小三分之一。**
 
 [![最新版本](https://img.shields.io/github/v/release/smallmu1022-pixel/MuBox-Slim?label=%E6%9C%80%E6%96%B0%E7%89%88%E6%9C%AC)](https://github.com/smallmu1022-pixel/MuBox-Slim/releases)
 [![总下载](https://img.shields.io/github/downloads/smallmu1022-pixel/MuBox-Slim/total?label=%E6%80%BB%E4%B8%8B%E8%BD%BD)](https://github.com/smallmu1022-pixel/MuBox-Slim/releases)
