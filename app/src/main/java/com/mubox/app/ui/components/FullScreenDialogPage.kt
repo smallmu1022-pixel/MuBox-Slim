@@ -60,6 +60,7 @@ import com.mubox.app.R
 import com.mubox.app.ui.theme.liquidGlassBackdrop
 import com.mubox.app.ui.theme.liquidGlassIconButtonPanel
 import com.mubox.app.ui.theme.liquidGlassScreenContainerColor
+import com.mubox.app.ui.theme.appBackgroundBrush
 
 @Composable
 fun floatingPageHeaderContentPadding(): Dp {
@@ -198,9 +199,7 @@ fun FullScreenDialogPage(
             modifier = Modifier
                 .fillMaxSize()
                 .liquidGlassBackdrop()
-                .background(
-                    liquidGlassScreenContainerColor(MaterialTheme.colorScheme.background)
-                ),
+                .background(appBackgroundBrush()),
             content = content
         )
     }

@@ -65,6 +65,7 @@ import com.mubox.app.ui.components.AppNotificationManager
 import com.mubox.app.ui.components.AppNavBar
 import com.mubox.app.ui.navigation.AppNavigation
 import com.mubox.app.ui.theme.SingBoxTheme
+import com.mubox.app.ui.theme.appBackgroundBrush
 import com.mubox.app.ui.theme.LocalLiquidGlassBackdrop
 import com.mubox.app.ui.theme.liquidGlassBackdrop
 import com.kyant.backdrop.Backdrop
@@ -348,13 +349,13 @@ fun SingBoxApp() {
         val showBottomBar = currentRoute in listOf(
             "dashboard", "nodes", "profiles", "settings"
         )
-        val rootContainerColor = if (useLiquidGlassNav) {
-            Color.Transparent
-        } else {
-            MaterialTheme.colorScheme.surface
-        }
+        val rootContainerColor = Color.Transparent
 
-        Box(modifier = Modifier.fillMaxSize()) {
+        Box(
+            modifier = Modifier
+                .fillMaxSize()
+                .background(appBackgroundBrush())
+        ) {
             Box(
                 modifier = Modifier
                     .fillMaxSize()

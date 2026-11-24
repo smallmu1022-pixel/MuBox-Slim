@@ -219,7 +219,7 @@ private fun RowScope.DefaultNavItem(
         selected = isSelected,
         onClick = onClick,
         colors = NavigationBarItemDefaults.colors(
-            selectedIconColor = MaterialTheme.colorScheme.onBackground,
+            selectedIconColor = MaterialTheme.colorScheme.primary,
             indicatorColor = Color.Transparent,
             unselectedIconColor = MaterialTheme.colorScheme.onSurfaceVariant
         )

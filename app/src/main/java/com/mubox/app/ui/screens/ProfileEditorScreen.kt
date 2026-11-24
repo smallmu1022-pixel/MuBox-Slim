@@ -43,6 +43,7 @@ import com.mubox.app.repository.*
 import com.mubox.app.ui.components.AppNotificationManager
 import com.mubox.app.ui.components.FloatingPageLayout
 import com.mubox.app.ui.theme.isLiquidGlassTheme
+import com.mubox.app.ui.theme.appBackgroundBrush
 import com.mubox.app.ui.theme.liquidGlassLoadingStatePanel
 import com.mubox.app.ui.theme.liquidGlassPanel
 import kotlinx.coroutines.CoroutineScope
@@ -55,7 +56,7 @@ private fun Modifier.profileEditorPanel(): Modifier {
     return if (isLiquidGlassTheme()) {
         liquidGlassPanel(shape = RoundedCornerShape(16.dp), shadowElevation = 8.dp)
     } else {
-        background(MaterialTheme.colorScheme.background)
+        background(appBackgroundBrush())
     }
 }
 

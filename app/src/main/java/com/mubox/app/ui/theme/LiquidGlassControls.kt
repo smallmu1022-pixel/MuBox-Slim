@@ -315,8 +315,9 @@ fun Modifier.liquidGlassLoadingStatePanel(
 }
 
 @Composable
+@Suppress("UnusedParameter")
 fun liquidGlassScreenContainerColor(defaultColor: Color): Color {
-    return liquidGlassTransparentContainerColor(defaultColor)
+    return Color.Transparent
 }
 
 @Composable

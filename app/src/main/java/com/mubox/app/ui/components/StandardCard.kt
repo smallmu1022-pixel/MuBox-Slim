@@ -20,10 +20,10 @@ import com.mubox.app.ui.theme.liquidGlassPressFeedback
 fun StandardCard(
     modifier: Modifier = Modifier,
     onClick: (() -> Unit)? = null,
-    border: BorderStroke? = BorderStroke(2.dp, MaterialTheme.colorScheme.onSurfaceVariant),
+    border: BorderStroke? = BorderStroke(1.dp, MaterialTheme.colorScheme.outline),
     content: @Composable ColumnScope.() -> Unit
 ) {
-    val shape = RoundedCornerShape(20.dp)
+    val shape = RoundedCornerShape(18.dp)
     if (isLiquidGlassTheme()) {
         Column(
             modifier = modifier
@@ -45,6 +45,7 @@ fun StandardCard(
             colors = CardDefaults.cardColors(
                 containerColor = MaterialTheme.colorScheme.surface
             ),
+            elevation = CardDefaults.cardElevation(defaultElevation = 0.dp),
             border = border,
             content = content
         )
@@ -55,6 +56,7 @@ fun StandardCard(
             colors = CardDefaults.cardColors(
                 containerColor = MaterialTheme.colorScheme.surface
             ),
+            elevation = CardDefaults.cardElevation(defaultElevation = 0.dp),
             border = border,
             content = content
         )

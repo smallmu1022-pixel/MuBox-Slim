@@ -131,6 +131,7 @@ class TrafficRepositorySavePolicyTest {
         assertEquals(23L, loaded.generation)
         assertEquals(321L, loaded.traffic.getValue(NODE_ID).upload)
         assertEquals(654L, loaded.daily.getValue(DATE_KEY).nodeStats.getValue(NODE_ID).download)
+        assertEquals(321L, loaded.allTimeTraffic?.getValue(NODE_ID)?.upload)
     }
 
     @Test
@@ -149,9 +150,122 @@ class TrafficRepositorySavePolicyTest {
         assertEquals(31L, loaded.generation)
         assertEquals(77L, loaded.traffic.getValue(NODE_ID).upload)
         assertEquals(88L, loaded.daily.getValue(DATE_KEY).nodeStats.getValue(NODE_ID).download)
+        assertEquals(77L, loaded.allTimeTraffic?.getValue(NODE_ID)?.upload)
         assertFalse(legacyStatsFile.exists())
         assertFalse(legacyDailyFile.exists())
         assertEquals(1, directory.listFiles().orEmpty().count { it.extension == "json" })
+    }
+
+    @Test
+    fun legacySnapshotSeedsAllTimeWithoutDoubleCountingMonthlyDailyOverlap() = withTempDirectory { directory ->
+        val store = TrafficSnapshotFileStore(directory)
+        val legacySnapshot = snapshot(generation = 24L, upload = 77L, download = 88L)
+        val previousMonthStats = NodeTrafficStats(
+            nodeId = NODE_ID,
+            upload = 11L,
+            download = 13L,
+            lastUpdated = 23L,
+            nodeName = "Test Node"
+        )
+        val withRetainedHistory = legacySnapshot.copy(
+            monthKey = "2026-7",
+            daily = mapOf(
+                "2026-6-30" to DailyTrafficRecord("2026-6-30").apply {
+                    nodeStats[NODE_ID] = previousMonthStats
+                },
+                DATE_KEY to legacySnapshot.daily.getValue(DATE_KEY)
+            )
+        )
+
+        assertTrue(store.save(withRetainedHistory, clearCutoffGeneration = 24L))
+
+        val migrated = requireNotNull(store.load(clearCutoffGeneration = 24L))
+        val reloaded = requireNotNull(store.load(clearCutoffGeneration = 24L))
+        assertEquals(88L, migrated.allTimeTraffic?.getValue(NODE_ID)?.upload)
+        assertEquals(101L, migrated.allTimeTraffic?.getValue(NODE_ID)?.download)
+        assertEquals(migrated.allTimeTraffic, reloaded.allTimeTraffic)
+    }
+
+    @Test
+    fun legacySnapshotWithoutMonthKeyUsesMonthlyTimestampInsteadOfLatestDailyMonth() = withTempDirectory { directory ->
+        val store = TrafficSnapshotFileStore(directory)
+        val monthlyTimestamp = java.util.Calendar.getInstance().apply {
+            clear()
+            set(2026, java.util.Calendar.JUNE, 15, 12, 0, 0)
+        }.timeInMillis
+        val monthlyStats = NodeTrafficStats(
+            nodeId = NODE_ID,
+            upload = 100L,
+            download = 200L,
+            lastUpdated = monthlyTimestamp,
+            nodeName = "Test Node"
+        )
+        val juneStats = monthlyStats.copy(upload = 20L, download = 40L)
+        val julyStats = monthlyStats.copy(upload = 5L, download = 7L)
+        val unparseableMonthlyStats = monthlyStats.copy(upload = 999L, download = 888L)
+        val unknownDateStats = NodeTrafficStats("node-b", upload = 9L, download = 10L)
+        val snapshotWithoutMonthKey = TrafficPersistenceSnapshot(
+            generation = 26L,
+            traffic = mapOf(NODE_ID to monthlyStats),
+            daily = mapOf(
+                "2026-6-30" to DailyTrafficRecord("2026-6-30").apply {
+                    nodeStats[NODE_ID] = juneStats
+                },
+                "2026-7-1" to DailyTrafficRecord("2026-7-1").apply {
+                    nodeStats[NODE_ID] = julyStats
+                },
+                "not-a-date" to DailyTrafficRecord("not-a-date").apply {
+                    nodeStats[NODE_ID] = unparseableMonthlyStats
+                },
+                "invalid-date" to DailyTrafficRecord("invalid-date").apply {
+                    nodeStats["node-b"] = unknownDateStats
+                }
+            )
+        )
+        assertTrue(store.save(snapshotWithoutMonthKey, clearCutoffGeneration = 26L))
+
+        val migrated = requireNotNull(store.load(clearCutoffGeneration = 26L))
+        assertEquals(105L, migrated.allTimeTraffic?.getValue(NODE_ID)?.upload)
+        assertEquals(207L, migrated.allTimeTraffic?.getValue(NODE_ID)?.download)
+        assertEquals(9L, migrated.allTimeTraffic?.getValue("node-b")?.upload)
+    }
+
+    @Test
+    fun allTimeLedgerSurvivesDailyRetentionAndMonthReset() = withTempDirectory { directory ->
+        val store = TrafficSnapshotFileStore(directory)
+        val oldMonthly = NodeTrafficStats(NODE_ID, upload = 120L, download = 240L)
+        val lifetime = NodeTrafficStats(NODE_ID, upload = 900L, download = 1_800L)
+        val initial = TrafficPersistenceSnapshot(
+            generation = 25L,
+            traffic = mapOf(NODE_ID to oldMonthly),
+            daily = mapOf(DATE_KEY to DailyTrafficRecord(DATE_KEY).apply {
+                nodeStats[NODE_ID] = oldMonthly.copy()
+            }),
+            monthKey = "2026-7",
+            allTimeTraffic = mapOf(NODE_ID to lifetime)
+        )
+        assertTrue(store.save(initial, clearCutoffGeneration = 25L))
+
+        val rolledOver = requireNotNull(store.load(clearCutoffGeneration = 25L) { snapshot ->
+            snapshot.copy(traffic = emptyMap(), daily = emptyMap(), monthKey = "2026-8")
+        })
+        assertTrue(rolledOver.traffic.isEmpty())
+        assertTrue(rolledOver.daily.isEmpty())
+        assertEquals(900L, rolledOver.allTimeTraffic?.getValue(NODE_ID)?.upload)
+
+        val newMonthDelta = NodeTrafficStats(NODE_ID, upload = 30L, download = 60L)
+        val merged = requireNotNull(store.mergeDeltas(
+            deltas = TrafficPersistenceSnapshot(
+                generation = 25L,
+                traffic = mapOf(NODE_ID to newMonthDelta),
+                daily = emptyMap(),
+                monthKey = "2026-8",
+                allTimeTraffic = mapOf(NODE_ID to newMonthDelta)
+            ),
+            clearCutoffGeneration = 25L
+        ))
+        assertEquals(30L, merged.traffic.getValue(NODE_ID).upload)
+        assertEquals(930L, merged.allTimeTraffic?.getValue(NODE_ID)?.upload)
     }
 
     @Test
@@ -194,7 +308,8 @@ class TrafficRepositorySavePolicyTest {
         return TrafficPersistenceSnapshot(
             generation = generation,
             traffic = emptyMap(),
-            daily = emptyMap()
+            daily = emptyMap(),
+            allTimeTraffic = emptyMap()
         )
     }
 

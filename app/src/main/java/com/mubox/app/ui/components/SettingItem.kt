@@ -1,6 +1,8 @@
 package com.mubox.app.ui.components
 
 import androidx.compose.foundation.horizontalScroll as foundationHorizontalScroll
+import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -11,6 +13,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.rounded.ChevronRight
 import androidx.compose.material3.Icon
@@ -78,17 +81,21 @@ fun SettingItem(
     ) {
         if (icon != null) {
             val iconTint = if (enabled) {
-                MaterialTheme.colorScheme.onSurfaceVariant
+                MaterialTheme.colorScheme.primary
             } else {
-                MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.5f)
+                MaterialTheme.colorScheme.primary.copy(alpha = 0.5f)
             }
+            val iconTileShape = RoundedCornerShape(10.dp)
             Box(
                 modifier = if (useLiquidGlass) {
                     Modifier
                         .size(34.dp)
                         .liquidGlassPanel(shape = CircleShape, shadowElevation = 4.dp)
                 } else {
-                    Modifier.size(24.dp)
+                    Modifier
+                        .size(36.dp)
+                        .background(MaterialTheme.colorScheme.primaryContainer, iconTileShape)
+                        .border(1.dp, MaterialTheme.colorScheme.outline, iconTileShape)
                 },
                 contentAlignment = Alignment.Center
             ) {
@@ -96,7 +103,7 @@ fun SettingItem(
                     imageVector = icon,
                     contentDescription = null,
                     tint = iconTint,
-                    modifier = Modifier.size(24.dp)
+                    modifier = Modifier.size(if (useLiquidGlass) 24.dp else 20.dp)
                 )
             }
             Spacer(modifier = Modifier.width(16.dp))

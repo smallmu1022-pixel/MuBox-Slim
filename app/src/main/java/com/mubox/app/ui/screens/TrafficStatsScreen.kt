@@ -78,16 +78,16 @@ import com.mubox.app.viewmodel.TrafficStatsViewModel
 import com.mubox.app.ui.theme.liquidGlassTopAppBarContainerColor
 
 private val chartColors = listOf(
-    Color(0xFF6366F1),
-    Color(0xFF22C55E),
-    Color(0xFFF59E0B),
-    Color(0xFFEF4444),
-    Color(0xFF8B5CF6),
-    Color(0xFF06B6D4),
-    Color(0xFFEC4899),
-    Color(0xFF14B8A6),
-    Color(0xFFF97316),
-    Color(0xFF64748B)
+    Color(0xFF2D83CC),
+    Color(0xFF43A7D9),
+    Color(0xFF68BCE7),
+    Color(0xFF86CBEF),
+    Color(0xFF5E92C2),
+    Color(0xFF8FAEC8),
+    Color(0xFF3D9DC8),
+    Color(0xFF9CC4E2),
+    Color(0xFF6E9FCB),
+    Color(0xFFB1C7D9)
 )
 
 @Composable
