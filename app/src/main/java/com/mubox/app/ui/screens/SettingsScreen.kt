@@ -25,7 +25,6 @@ import androidx.compose.material.icons.rounded.Download
 import androidx.compose.material.icons.rounded.History
 import androidx.compose.material.icons.rounded.Info
 import androidx.compose.material.icons.rounded.Language
-import androidx.compose.material.icons.rounded.Palette
 import androidx.compose.material.icons.rounded.PowerSettingsNew
 import androidx.compose.material.icons.rounded.Refresh
 import androidx.compose.material.icons.rounded.Route
@@ -59,7 +58,6 @@ import androidx.compose.ui.unit.Dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import com.mubox.app.model.AppThemeMode
-import com.mubox.app.model.AppThemeStyle
 import com.mubox.app.model.AppLanguage
 import com.mubox.app.model.ImportOptions
 import com.mubox.app.repository.RuleSetRepository
@@ -103,7 +101,6 @@ fun SettingsScreen(
 
     var showAboutDialog by remember { mutableStateOf(false) }
     var showThemeDialog by remember { mutableStateOf(false) }
-    var showThemeStyleDialog by remember { mutableStateOf(false) }
     var showLanguageDialog by remember { mutableStateOf(false) }
     var isUpdatingRuleSets by remember { mutableStateOf(false) }
     var updateMessage by remember { mutableStateOf("") }
@@ -146,19 +143,6 @@ fun SettingsScreen(
                 showThemeDialog = false
             },
             onDismiss = { showThemeDialog = false }
-        )
-    }
-
-    if (showThemeStyleDialog) {
-        SingleSelectDialog(
-            title = stringResource(R.string.settings_theme_style),
-            options = AppThemeStyle.entries.map { stringResource(it.displayNameRes) },
-            selectedIndex = AppThemeStyle.entries.indexOf(settings.appThemeStyle),
-            onSelect = { index ->
-                viewModel.setAppThemeStyle(AppThemeStyle.entries[index])
-                showThemeStyleDialog = false
-            },
-            onDismiss = { showThemeStyleDialog = false }
         )
     }
 
@@ -226,12 +210,6 @@ fun SettingsScreen(
                     value = stringResource(settings.appTheme.displayNameRes),
                     icon = Icons.Rounded.Brightness6,
                     onClick = { showThemeDialog = true }
-                )
-                SettingItem(
-                    title = stringResource(R.string.settings_theme_style),
-                    value = stringResource(settings.appThemeStyle.displayNameRes),
-                    icon = Icons.Rounded.Palette,
-                    onClick = { showThemeStyleDialog = true }
                 )
                 SettingItem(
                     title = stringResource(R.string.settings_app_language),

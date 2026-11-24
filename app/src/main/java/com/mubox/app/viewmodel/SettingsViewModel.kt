@@ -12,7 +12,6 @@ import com.mubox.app.model.CustomRule
 import com.mubox.app.model.DefaultRule
 import com.mubox.app.model.DnsStrategy
 import com.mubox.app.model.AppThemeMode
-import com.mubox.app.model.AppThemeStyle
 import com.mubox.app.model.AppLanguage
 import com.mubox.app.model.ExportData
 import com.mubox.app.model.ExportDataSummary
@@ -217,9 +216,6 @@ class SettingsViewModel(application: Application) : AndroidViewModel(application
         viewModelScope.launch { repository.setAppTheme(value) }
     }
 
-    fun setAppThemeStyle(value: AppThemeStyle) {
-        viewModelScope.launch { repository.setAppThemeStyle(value) }
-    }
 
     fun setAppLanguage(value: AppLanguage) {
         viewModelScope.launch { repository.setAppLanguage(value) }

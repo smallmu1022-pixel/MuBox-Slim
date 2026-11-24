@@ -319,9 +319,9 @@ fun SingBoxApp() {
     }
 
     val appTheme = settings.appTheme
-    val appThemeStyle = settings.appThemeStyle
+    val appThemeStyle = AppThemeStyle.DEFAULT
 
-    SingBoxTheme(appTheme = appTheme, appThemeStyle = appThemeStyle) {
+    SingBoxTheme(appTheme = appTheme) {
         val navController = rememberNavController()
         val useLiquidGlassNav = appThemeStyle == AppThemeStyle.LIQUID_GLASS
         val liquidGlassContentBackdrop = rememberLayerBackdrop()

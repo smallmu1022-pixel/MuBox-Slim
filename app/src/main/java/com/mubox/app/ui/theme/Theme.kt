@@ -1,4 +1,4 @@
-﻿package com.mubox.app.ui.theme
+package com.mubox.app.ui.theme
 
 import android.app.Activity
 import android.graphics.Color
@@ -57,7 +57,6 @@ private val LightColorScheme = lightColorScheme(
 @Composable
 fun SingBoxTheme(
     appTheme: AppThemeMode = AppThemeMode.SYSTEM,
-    appThemeStyle: AppThemeStyle = AppThemeStyle.DEFAULT,
     content: @Composable () -> Unit
 ) {
     val isSystemDark = isSystemInDarkTheme()
@@ -68,11 +67,7 @@ fun SingBoxTheme(
     }
 
     val colorScheme = if (useDarkTheme) OLEDColorScheme else LightColorScheme
-    val rippleConfiguration = if (appThemeStyle == AppThemeStyle.LIQUID_GLASS) {
-        null
-    } else {
-        RippleConfiguration()
-    }
+    val rippleConfiguration = RippleConfiguration()
     val view = LocalView.current
     if (!view.isInEditMode) {
         SideEffect {
@@ -94,7 +89,7 @@ fun SingBoxTheme(
     }
 
     CompositionLocalProvider(
-        LocalAppThemeStyle provides appThemeStyle,
+        LocalAppThemeStyle provides AppThemeStyle.DEFAULT,
         LocalRippleConfiguration provides rippleConfiguration
     ) {
         MaterialTheme(

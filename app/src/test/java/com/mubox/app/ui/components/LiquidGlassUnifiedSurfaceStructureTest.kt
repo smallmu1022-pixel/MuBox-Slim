@@ -60,21 +60,17 @@ class LiquidGlassUnifiedSurfaceStructureTest {
     }
 
     @Test
-    fun componentBackdropSamplesOnlyTheAppBackground() {
+    fun appUsesDefaultThemeStyleAndSettingsDoNotExposeStyleSelection() {
         val activity = source("MainActivity.kt")
-
-        assertTrue(activity.contains("val liquidGlassComponentBackdrop = rememberLayerBackdrop()"))
-        assertTrue(activity.contains("Modifier.layerBackdrop(liquidGlassComponentBackdrop)"))
-        assertTrue(activity.contains("LocalLiquidGlassBackdrop provides if (useLiquidGlassNav)"))
-        assertTrue(activity.contains(".layerBackdrop(liquidGlassContentBackdrop)"))
-        assertFalse(
-            activity.contains(
-                ".layerBackdrop(liquidGlassComponentBackdrop)\n" +
-                    "                            .background(rootContainerColor)"
-            )
-        )
+        val theme = source("ui/theme/Theme.kt")
+        val settings = source("ui/screens/SettingsScreen.kt")
+        assertTrue(activity.contains("val appThemeStyle = AppThemeStyle.DEFAULT"))
+        assertFalse(activity.contains("settings.appThemeStyle"))
+        assertTrue(theme.contains("LocalAppThemeStyle provides AppThemeStyle.DEFAULT"))
+        assertFalse(settings.contains("settings_theme_style"))
+        assertFalse(settings.contains("showThemeStyleDialog"))
+        assertFalse(settings.contains("AppThemeStyle"))
     }
-
     private fun String.extractFunctionBody(functionName: String): String {
         val start = listOf(
             "fun Modifier.$functionName",

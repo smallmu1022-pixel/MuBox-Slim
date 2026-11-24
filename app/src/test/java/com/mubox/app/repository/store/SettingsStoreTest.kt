@@ -178,6 +178,23 @@ class SettingsStoreTest {
     }
 
     @Test
+    fun testMigrateSettingsResetsLiquidGlassStyleToDefault() {
+        val loaded = AppSettings(appThemeStyle = AppThemeStyle.LIQUID_GLASS)
+        val migrated = SettingsStore.migrateSettings(
+            version = SettingsEntity.CURRENT_VERSION,
+            settings = loaded
+        )
+        assertEquals(AppThemeStyle.DEFAULT, migrated.appThemeStyle)
+        assertTrue(
+            SettingsStore.shouldPersistMigratedSettings(
+                version = SettingsEntity.CURRENT_VERSION,
+                loaded = loaded,
+                migrated = migrated
+            )
+        )
+    }
+
+    @Test
     fun testMigrateSettingsAddsIpv6RangeToLegacyDefaultFakeIpRange() {
         val migrated = SettingsStore.migrateSettings(
             version = 6,

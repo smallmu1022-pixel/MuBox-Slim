@@ -168,9 +168,6 @@ class SettingsRepository(context: Context) {
         settingsStore.updateSettingsAndWait { it.copy(appTheme = value) }
     }
 
-    suspend fun setAppThemeStyle(value: AppThemeStyle) {
-        settingsStore.updateSettingsAndWait { it.copy(appThemeStyle = value) }
-    }
 
     suspend fun setAppLanguage(value: AppLanguage) {
         if (settingsStore.updateSettingsAndWait { it.copy(appLanguage = value) }) {
@@ -750,7 +747,7 @@ class SettingsRepository(context: Context) {
             val normalized = imported.copy(
                 trafficCaptureMode = imported.resolvedTrafficCaptureMode(),
                 tunEnabled = imported.resolvedTrafficCaptureMode() == TrafficCaptureMode.VPN,
-                appThemeStyle = normalizeAppThemeStyle(imported),
+                appThemeStyle = AppThemeStyle.DEFAULT,
                 fakeIpRange = normalizeFakeIpRange(imported),
                 proxyPort = sanitizeProxyPort(imported.proxyPort),
                 latencyTestUrl = AppSettings.validateLatencyTestUrl(imported.latencyTestUrl)
@@ -790,9 +787,6 @@ class SettingsRepository(context: Context) {
             return fakeIpRange?.takeIf { it.isNotBlank() } ?: AppSettings.DEFAULT_FAKE_IP_RANGE
         }
 
-        private fun normalizeAppThemeStyle(settings: AppSettings): AppThemeStyle {
-            return runCatching { settings.appThemeStyle }.getOrNull() ?: AppThemeStyle.DEFAULT
-        }
 
         internal fun sanitizeProxyPort(value: Int): Int {
             return value.coerceIn(MIN_PROXY_PORT, MAX_PROXY_PORT)

@@ -1,16 +1,13 @@
-﻿package com.mubox.app.ui.scanner
+package com.mubox.app.ui.scanner
 
 import android.content.Context
 import android.graphics.Canvas
-import android.graphics.Color
 import android.graphics.Paint
 import android.graphics.Rect
 import android.util.AttributeSet
 import androidx.core.content.ContextCompat
 import com.journeyapps.barcodescanner.ViewfinderView
 import com.mubox.app.R
-import com.mubox.app.model.AppThemeStyle
-import com.mubox.app.repository.SettingsRepository
 import kotlin.math.min
 
 class SquareViewFinderView @JvmOverloads constructor(
@@ -18,61 +15,32 @@ class SquareViewFinderView @JvmOverloads constructor(
     attrs: AttributeSet? = null
 ) : ViewfinderView(context, attrs) {
 
-    private val useLiquidGlass = SettingsRepository.getInstance(context).settings.value.appThemeStyle ==
-        AppThemeStyle.LIQUID_GLASS
-
     private val cornerPaint = Paint(Paint.ANTI_ALIAS_FLAG).apply {
-        color = scannerFrameColor(
-            defaultColorRes = R.color.zxing_viewfinder_corner,
-            liquidColor = Color.argb(218, 255, 255, 255)
-        )
+        color = ContextCompat.getColor(context, R.color.zxing_viewfinder_corner)
         style = Paint.Style.STROKE
         strokeWidth = 8f
         strokeCap = Paint.Cap.ROUND
     }
 
     private val borderPaint = Paint(Paint.ANTI_ALIAS_FLAG).apply {
-        color = scannerFrameColor(
-            defaultColorRes = R.color.zxing_viewfinder_border,
-            liquidColor = Color.argb(118, 255, 255, 255)
-        )
+        color = ContextCompat.getColor(context, R.color.zxing_viewfinder_border)
         style = Paint.Style.STROKE
         strokeWidth = 2f
     }
 
     private val laserPaint = Paint(Paint.ANTI_ALIAS_FLAG).apply {
-        color = scannerFrameColor(
-            defaultColorRes = R.color.zxing_laser,
-            liquidColor = Color.argb(188, 255, 255, 255)
-        )
+        color = ContextCompat.getColor(context, R.color.zxing_laser)
         style = Paint.Style.FILL
     }
 
     private val maskPaint = Paint().apply {
-        color = scannerMaskColor()
+        color = ContextCompat.getColor(context, R.color.zxing_mask)
     }
 
     private val cornerLength = 50f
-
     private var laserY = 0f
     private var laserDirection = 1
     private var squareFrameRect: Rect? = null
-
-    private fun scannerFrameColor(defaultColorRes: Int, liquidColor: Int): Int {
-        return if (useLiquidGlass) {
-            liquidColor
-        } else {
-            ContextCompat.getColor(context, defaultColorRes)
-        }
-    }
-
-    private fun scannerMaskColor(): Int {
-        return if (useLiquidGlass) {
-            Color.argb(124, 0, 0, 0)
-        } else {
-            ContextCompat.getColor(context, R.color.zxing_mask)
-        }
-    }
 
     override fun onDraw(canvas: Canvas) {
         val frame = calculateSquareFrame()

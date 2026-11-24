@@ -1,4 +1,4 @@
-﻿package com.mubox.app.repository.store
+package com.mubox.app.repository.store
 
 import android.content.Context
 import android.util.Log
@@ -234,11 +234,11 @@ class SettingsStore private constructor(context: Context) {
 
         private fun migrateAppThemeStyle(version: Int, settings: AppSettings): AppSettings {
             val appThemeStyle: AppThemeStyle? = runCatching { settings.appThemeStyle }.getOrNull()
-            if (version >= APP_THEME_STYLE_MIGRATION_VERSION && appThemeStyle != null) {
+            if (version >= APP_THEME_STYLE_MIGRATION_VERSION && appThemeStyle == AppThemeStyle.DEFAULT) {
                 return settings
             }
 
-            return settings.copy(appThemeStyle = appThemeStyle ?: AppThemeStyle.DEFAULT)
+            return settings.copy(appThemeStyle = AppThemeStyle.DEFAULT)
         }
 
         internal fun shouldPersistMigratedSettings(

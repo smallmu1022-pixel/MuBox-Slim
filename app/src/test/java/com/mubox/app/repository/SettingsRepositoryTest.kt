@@ -59,7 +59,7 @@ class SettingsRepositoryTest {
         )
 
         assertEquals(AppLanguage.ENGLISH, result.appLanguage)
-        assertEquals(AppThemeStyle.LIQUID_GLASS, result.appThemeStyle)
+        assertEquals(AppThemeStyle.DEFAULT, result.appThemeStyle)
         assertFalse(result.showNotificationSpeed)
         assertEquals(IpVersionMode.IPV6_ONLY, result.ipVersionMode)
         assertFalse(result.tunMtuAuto)
