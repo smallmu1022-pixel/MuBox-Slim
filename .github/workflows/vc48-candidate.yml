@@ -5,6 +5,7 @@ on:
     branches: ["release/v1.0.2-vc48"]
     paths:
       - ".github/workflows/vc48-candidate.yml"
+      - "app/src/**"
 
 permissions:
   contents: read
@@ -72,6 +73,17 @@ jobs:
         run: |
           chmod +x ./gradlew
           ./gradlew :app:testDebugUnitTest -PabiOnly=arm64-v8a
+
+      - name: Upload unit test reports
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: vc48-unit-test-report
+          path: |
+            app/build/reports/tests/testDebugUnitTest/
+            app/build/test-results/testDebugUnitTest/
+          if-no-files-found: ignore
+          retention-days: 7
 
       - name: Build signed release APK
         env:

@@ -293,14 +293,20 @@ class ProcessRootCommandExecutor internal constructor(
         val processes = synchronized(activeProcesses) { activeProcesses.filter(Process::isAlive) }
         if (!beforeCancel()) return false
         processes.forEach { process ->
+            if (!process.isAlive) return@forEach
+            cancelledProcesses.add(process)
             runCatching { process.destroyForcibly() }
-                .onFailure { error -> Log.w(TAG, "Cannot cancel Root command", error) }
+                .onFailure { error ->
+                    cancelledProcesses.remove(process)
+                    Log.w(TAG, "Cannot cancel Root command", error)
+                }
         }
         return true
     }
 
     internal companion object {
         private val activeProcesses = Collections.synchronizedSet(mutableSetOf<Process>())
+        private val cancelledProcesses = Collections.synchronizedSet(mutableSetOf<Process>())
         private val cleanupCommand = ThreadLocal<Boolean>()
 
         internal fun <T> withCleanupCommands(block: () -> T): T {
@@ -372,7 +378,9 @@ class ProcessRootCommandExecutor internal constructor(
             isDaemon = true
             start()
         }
-        if (!process.waitFor(commandTimeoutMs, TimeUnit.MILLISECONDS)) {
+        val processCompleted = process.waitFor(commandTimeoutMs, TimeUnit.MILLISECONDS)
+        val commandWasCancelled = cancelledProcesses.remove(process)
+        if (!processCompleted) {
             process.destroy()
             if (!process.waitFor(PROCESS_DESTROY_GRACE_MS, TimeUnit.MILLISECONDS)) {
                 process.destroyForcibly()
@@ -394,8 +402,10 @@ class ProcessRootCommandExecutor internal constructor(
         }
         if (!readersClosedForcibly) {
             check(!outputReader.isAlive && !errorReader.isAlive) { "Root command output reader did not finish" }
-            outputReadError.get()?.let { throw IllegalStateException("Cannot read Root command stdout", it) }
-            errorReadError.get()?.let { throw IllegalStateException("Cannot read Root command stderr", it) }
+            if (!commandWasCancelled) {
+                outputReadError.get()?.let { throw IllegalStateException("Cannot read Root command stdout", it) }
+                errorReadError.get()?.let { throw IllegalStateException("Cannot read Root command stderr", it) }
+            }
         }
         activeProcesses.remove(process)
         return RootCommandResult(process.exitValue(), output.toString().trim(), errorOutput.toString().trim())

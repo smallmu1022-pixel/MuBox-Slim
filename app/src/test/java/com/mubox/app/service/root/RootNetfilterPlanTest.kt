@@ -800,10 +800,15 @@ class RootNetfilterPlanTest {
             listOf("sleep", "5")
         }
         val started = CountDownLatch(1)
-        val result = AtomicReference<RootCommandResult>()
+        val result = AtomicReference<RootCommandResult?>(null)
+        val executionFailure = AtomicReference<Throwable?>(null)
         val worker = Thread {
             started.countDown()
-            result.set(ProcessRootCommandExecutor(timeoutMs = 10_000L).execute(command))
+            try {
+                result.set(ProcessRootCommandExecutor(timeoutMs = 10_000L).execute(command))
+            } catch (error: Throwable) {
+                executionFailure.set(error)
+            }
         }
         worker.start()
         assertTrue(started.await(1, TimeUnit.SECONDS))
@@ -815,7 +820,9 @@ class RootNetfilterPlanTest {
         worker.join(1_000L)
 
         assertFalse("Root command from another executor was not cancelled", worker.isAlive)
-        assertFalse(result.get().success)
+        executionFailure.get()?.let { throw AssertionError("Root command execution threw unexpectedly", it) }
+        val commandResult = result.get() ?: throw AssertionError("Root command execution returned no result")
+        assertFalse(commandResult.success)
     }
 
     private fun lane(slot: Int, uid: Int): RootNetfilterLane = RootNetfilterLane(
