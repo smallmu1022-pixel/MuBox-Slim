@@ -59,7 +59,7 @@ internal fun MuBoxRootService.startUidMonitor(runtimeSessionId: String) {
     uidMonitorJob?.cancel()
     uidMonitorJob = serviceScope.launch {
         while (currentCoroutineContext().isActive) {
-            delay(MuBoxRootService.UID_REFRESH_INTERVAL_MS)
+            delay(MuBoxRootService.UID_REFRESH_FALLBACK_INTERVAL_MS)
             val keepMonitoring = synchronized(runtimeLock) {
                 if (!matchesRunningSession(runtimeSessionId)) return@synchronized false
                 val request = activeStartRequest ?: return@synchronized false

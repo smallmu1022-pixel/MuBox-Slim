@@ -1,5 +1,6 @@
-﻿package com.mubox.app.service.manager
+package com.mubox.app.service.manager
 
+import android.app.ActivityManager
 import android.app.Application
 import android.content.BroadcastReceiver
 import android.content.Context
@@ -24,6 +25,11 @@ class ScreenStateManager(
 
         internal fun isForegroundFromStartedActivityCount(count: Int): Boolean {
             return count > 0
+        }
+
+        internal fun isAppForegroundImportance(importance: Int): Boolean {
+            return importance == ActivityManager.RunningAppProcessInfo.IMPORTANCE_FOREGROUND ||
+                importance == ActivityManager.RunningAppProcessInfo.IMPORTANCE_VISIBLE
         }
     }
 
@@ -51,12 +57,32 @@ class ScreenStateManager(
 
     fun setPowerManager(manager: BackgroundPowerManager?) {
         powerManager = manager
+        if (manager != null) initializeCurrentState()
         Log.d(TAG, "PowerManager ${if (manager != null) "set" else "cleared"}")
+    }
+
+    fun initializeCurrentState() {
+        val currentPowerManager = context.getSystemService(Context.POWER_SERVICE) as? PowerManager
+        val screenOn = currentPowerManager?.isInteractive ?: isScreenOn
+        val appInForeground = runCatching {
+            val processInfo = ActivityManager.RunningAppProcessInfo()
+            ActivityManager.getMyMemoryState(processInfo)
+            isAppForegroundImportance(processInfo.importance)
+        }.getOrDefault(isAppInForeground)
+
+        isScreenOn = screenOn
+        isAppInForeground = appInForeground
+        startedActivityCount = if (appInForeground) 1 else 0
+        powerManager?.initializeDeviceState(screenOn = screenOn, appInForeground = appInForeground)
+        Log.i(TAG, "Initial device state: screenOn=$screenOn appInForeground=$appInForeground")
     }
 
     fun registerScreenStateReceiver() {
         try {
-            if (screenStateReceiver != null) return
+            if (screenStateReceiver != null) {
+                initializeCurrentState()
+                return
+            }
 
             screenStateReceiver = object : BroadcastReceiver() {
                 override fun onReceive(ctx: Context, intent: Intent) {
@@ -107,6 +133,7 @@ class ScreenStateManager(
             }
 
             context.registerReceiver(screenStateReceiver, filter)
+            initializeCurrentState()
             Log.i(TAG, "Screen state receiver registered")
         } catch (e: Exception) {
             Log.e(TAG, "Failed to register screen state receiver", e)

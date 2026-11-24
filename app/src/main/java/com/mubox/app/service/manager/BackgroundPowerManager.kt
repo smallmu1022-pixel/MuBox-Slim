@@ -87,6 +87,21 @@ class BackgroundPowerManager(
         Log.i(TAG, "BackgroundPowerManager initialized (threshold=$thresholdDisplay)")
     }
 
+    fun initializeDeviceState(screenOn: Boolean, appInForeground: Boolean) {
+        val wasAppInBackground = isAppInBackground
+        isAppInBackground = !appInForeground
+        isScreenOff = !screenOn
+        if (isAppInBackground) {
+            if (!wasAppInBackground || backgroundStartTimeMs == 0L) {
+                backgroundStartTimeMs = SystemClock.elapsedRealtime()
+            }
+        } else {
+            backgroundStartTimeMs = 0L
+        }
+        Log.i(TAG, "Initial device state applied: screenOn=$screenOn appInForeground=$appInForeground")
+        evaluateUserPresence()
+    }
+
     fun setThreshold(thresholdMs: Long) {
         backgroundThresholdMs = if (thresholdMs == Long.MAX_VALUE) {
             Long.MAX_VALUE

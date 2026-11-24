@@ -76,7 +76,7 @@ internal data class RootRoutingArtifacts(
 class MuBoxRootService : RootService() {
     companion object {
         internal const val TAG = "MuBoxRootService"
-        internal const val UID_REFRESH_INTERVAL_MS = 30_000L
+        internal const val UID_REFRESH_FALLBACK_INTERVAL_MS = 5 * 60_000L
         private const val UID_PREWARM_MAX_AGE_MS = 60_000L
         private const val UID_PREWARM_WAIT_MS = 1_500L
         private const val FORCED_STOP_GRACE_MS = 3_500L

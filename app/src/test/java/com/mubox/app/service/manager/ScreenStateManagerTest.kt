@@ -20,4 +20,12 @@ class ScreenStateManagerTest {
         assertTrue(ScreenStateManager.isForegroundFromStartedActivityCount(1))
         assertTrue(ScreenStateManager.isForegroundFromStartedActivityCount(2))
     }
+
+    @Test
+    fun foregroundImportanceExcludesForegroundServiceWithoutVisibleUi() {
+        assertTrue(ScreenStateManager.isAppForegroundImportance(100))
+        assertTrue(ScreenStateManager.isAppForegroundImportance(200))
+        assertFalse(ScreenStateManager.isAppForegroundImportance(125))
+        assertFalse(ScreenStateManager.isAppForegroundImportance(300))
+    }
 }
