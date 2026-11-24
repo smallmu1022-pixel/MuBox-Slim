@@ -401,9 +401,22 @@ internal fun SingBoxService.handleActiveOutboundFailure(signal: HealthSignal) {
     val failureTag = signal.outboundTag?.trim().orEmpty()
     val runningConfig = loadLastRunningConfig()
     val currentProxyTag = resolveCurrentProxyOutboundTag()
-    if (failureTag.isBlank() || runningConfig == null ||
-        SingBoxService.shouldRecoverMainOutboundFailure(failureTag, currentProxyTag, runningConfig)
-    ) {
+    val isDirectOutboundFailure = runningConfig?.let {
+        SingBoxService.isDirectOutboundFailure(failureTag, it)
+    } == true
+    if (failureTag.isBlank() || runningConfig == null) {
+        notifyMainNodeFailureIfNeeded(currentProxyTag ?: failureTag)
+        return
+    }
+    if (isDirectOutboundFailure) {
+        LogRepository.getInstance().addAlwaysLog(
+            "INFO recovery direct_outbound_failure outbound=$failureTag " +
+                "selected=${currentProxyTag.orEmpty()} failures=${signal.failureCount} " +
+                "notification=skipped guard=skipped reason=shared_direct_app_traffic"
+        )
+        return
+    }
+    if (SingBoxService.shouldRecoverMainOutboundFailure(failureTag, currentProxyTag, runningConfig)) {
         notifyMainNodeFailureIfNeeded(currentProxyTag ?: failureTag)
         return
     }

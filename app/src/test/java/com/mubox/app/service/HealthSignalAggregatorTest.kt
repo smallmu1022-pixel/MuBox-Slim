@@ -214,6 +214,27 @@ class HealthSignalAggregatorTest {
     }
 
     @Test
+    fun emitsActiveProbeSignalForGenuineDirectOutboundFailures() {
+        val aggregator = HealthSignalAggregator(
+            transportWindowMs = 7_000L,
+            minTransportFailures = 3
+        )
+        val failures = listOf(
+            "ERROR outbound/direct[direct]: i/o timeout",
+            "ERROR outbound/direct[direct]: connection reset by peer",
+            "ERROR outbound/direct[direct]: network is unreachable"
+        )
+
+        assertNull(aggregator.observeKernelLog(failures[0], nowMs = 2_000L))
+        assertNull(aggregator.observeKernelLog(failures[1], nowMs = 2_100L))
+        val signal = aggregator.observeKernelLog(failures[2], nowMs = 2_200L)
+
+        assertEquals(HealthSignalKind.ACTIVE_PROBE_FAILED, signal?.kind)
+        assertEquals(3, signal?.failureCount)
+        assertEquals("direct", signal?.outboundTag)
+    }
+
+    @Test
     fun doesNotMergeTransportFailuresFromDifferentOutbounds() {
         val aggregator = HealthSignalAggregator(minTransportFailures = 3)
 

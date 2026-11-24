@@ -668,6 +668,15 @@ class SingBoxService : VpnService() {
             }
         }
 
+        internal fun isDirectOutboundFailure(failureTag: String, config: SingBoxConfig): Boolean {
+            val normalizedFailureTag = UrlTestTagMatcher.normalizeTag(failureTag.trim())
+            if (normalizedFailureTag.isBlank()) return false
+            return config.outbounds.orEmpty().any { outbound ->
+                UrlTestTagMatcher.normalizeTag(outbound.tag) == normalizedFailureTag &&
+                    outbound.type.trim().equals("direct", ignoreCase = true)
+            }
+        }
+
         internal fun shouldSubmitMainAutoFailoverForDnsSignal(
             dnsServerTag: String?,
             currentProxyTag: String?,

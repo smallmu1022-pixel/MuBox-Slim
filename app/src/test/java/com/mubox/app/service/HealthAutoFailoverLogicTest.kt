@@ -240,6 +240,47 @@ class HealthAutoFailoverLogicTest {
                 config = config
             )
         )
+        assertNull(
+            SingBoxService.resolveSingleNodeRouteFailureTag(
+                dnsServerTag = "dns-remote-direct",
+                currentProxyTag = "node-a",
+                config = config
+            )
+        )
+    }
+
+    @Test
+    fun directOutboundTransportFailureIsSeparatedFromNodeFailureClassification() {
+        val config = routeFailureConfig().copy(
+            outbounds = routeFailureConfig().outbounds.orEmpty() + Outbound(type = "direct", tag = "direct")
+        )
+
+        assertTrue(SingBoxService.isDirectOutboundFailure("DIRECT", config))
+        assertFalse(SingBoxService.isDirectOutboundFailure("node-b", config))
+        assertEquals(
+            "单节点分流节点 节点 B 连接异常",
+            SingBoxService.buildSingleNodeRouteFailureNotificationText(" 节点 B ")
+        )
+    }
+
+    @Test
+    fun activeTransportFailureRuntimeDoesNotNotifyOrGuardDirectFailures() {
+        val source = File(
+            "src/main/java/com/mubox/app/service/vpn/SingBoxStartupRuntime.kt"
+        ).readText()
+        val start = source.indexOf("internal fun SingBoxService.handleActiveOutboundFailure")
+        val end = source.indexOf("internal fun SingBoxService.handleResourceExhaustionSignal", start)
+        val body = source.substring(start, end)
+
+        assertTrue(body.contains("SingBoxService.isDirectOutboundFailure"))
+        val directHandling = body.indexOf("if (isDirectOutboundFailure)")
+        val outboundGuard = body.indexOf("commandManager.handleOutboundFailureBurst")
+        assertTrue(directHandling >= 0)
+        assertTrue(outboundGuard > directHandling)
+        assertTrue(body.contains("notification=skipped guard=skipped"))
+        assertFalse(body.contains("notifyDirectOutboundFailureIfNeeded"))
+        assertTrue(body.contains("notifySingleNodeRouteFailureIfNeeded(failureTag)"))
+        assertTrue(body.contains("commandManager.handleOutboundFailureBurst"))
     }
 
     @Test
@@ -379,12 +420,14 @@ class HealthAutoFailoverLogicTest {
                     DnsServer(tag = "dns-remote-node-b", detour = "node-b"),
                     DnsServer(tag = "dns-remote-profile", detour = "P:HK"),
                     DnsServer(tag = "dns-remote-current", detour = "node-a"),
-                    DnsServer(tag = "dns-remote-nested-current", detour = "node-a")
+                    DnsServer(tag = "dns-remote-nested-current", detour = "node-a"),
+                    DnsServer(tag = "dns-remote-direct", detour = "direct")
                 )
             ),
             outbounds = listOf(
                 Outbound(type = "vless", tag = "node-a"),
                 Outbound(type = "vless", tag = "node-b"),
+                Outbound(type = "direct", tag = "direct"),
                 Outbound(
                     type = "selector",
                     tag = "P:HK",
