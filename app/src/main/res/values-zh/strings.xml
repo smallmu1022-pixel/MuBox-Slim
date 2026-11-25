@@ -737,6 +737,7 @@
     <string name="dns_strategy_only_ipv6">仅 IPv6</string>
 
     <!-- Enum: LatencyTestMethod -->
+    <string name="latency_test_auto">自动</string>
     <string name="latency_test_tcp">TCP 延迟</string>
     <string name="latency_test_rtt">真实延迟 (RTT)</string>
     <string name="latency_test_handshake">HTTP 握手延迟</string>

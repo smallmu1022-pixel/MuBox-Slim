@@ -997,8 +997,7 @@ class DashboardViewModel(application: Application) : AndroidViewModel(applicatio
     fun updateAllSubscriptions() = updateAllSubscriptionsRuntime()
 
     fun testAllNodesLatency(
-        methodOverride: com.mubox.app.model.LatencyTestMethod? =
-            com.mubox.app.model.LatencyTestMethod.TCP_PING
+        methodOverride: com.mubox.app.model.LatencyTestMethod? = null
     ) =
         testAllNodesLatencyRuntime(methodOverride)
 

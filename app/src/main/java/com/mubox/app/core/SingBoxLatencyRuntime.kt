@@ -123,10 +123,10 @@ private suspend fun SingBoxCore.testOutboundsLatencyBatchInternal(
     val prepared = prepareLatencyBatchTargets(batchOutbounds, dependencySourceOutbounds, onResult)
         ?: return
 
-    // TCP Ping connects directly to the server endpoint; Hysteria2 and VLESS/
-    // Trojan over QUIC instead need a core URL Test through the configured node.
+    // Auto and TCP Ping use direct TCP connects where supported; Hysteria2 and
+    // VLESS/Trojan over QUIC instead need a core URL Test through the node.
     var serviceTargets = prepared.targets
-    if (settings.latencyTestMethod.normalized() == LatencyTestMethod.TCP_PING) {
+    if (settings.latencyTestMethod.normalized() != LatencyTestMethod.URL_TEST) {
         val (urlTestTargets, tcpTargets) = prepared.targets.partition {
             LatencyRoutePolicy.requiresUrlTestForTcpPing(it)
         }

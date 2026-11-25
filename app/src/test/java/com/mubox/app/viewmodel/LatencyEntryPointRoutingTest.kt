@@ -7,7 +7,7 @@ import org.junit.Test
 class LatencyEntryPointRoutingTest {
 
     @Test
-    fun dashboardSingleAndBatchTestsRequestAutomaticProtocolRouting() {
+    fun dashboardSingleAndBatchTestsFollowSavedMethodWithoutPopup() {
         val dashboardRuntime = File(
             "src/main/java/com/mubox/app/viewmodel/DashboardConnectionRuntime.kt"
         ).readText(Charsets.UTF_8)
@@ -18,8 +18,9 @@ class LatencyEntryPointRoutingTest {
             .substringAfter("internal fun DashboardViewModel.testAllNodesLatencyRuntime(")
             .substringBefore("internal fun DashboardViewModel.getActiveProfileNameRuntime()")
 
-        assertTrue(singleTest.contains("methodOverride = LatencyTestMethod.TCP_PING"))
-        assertTrue(batchTest.contains("LatencyTestMethod.TCP_PING"))
+        assertTrue(singleTest.contains("configRepository.testNodeLatency(targetNodeId)"))
+        assertTrue(batchTest.contains("methodOverride = methodOverride"))
+        assertTrue(batchTest.contains("methodOverride: com.mubox.app.model.LatencyTestMethod? = null"))
         assertTrue(batchTest.contains("testAllNodesLatency("))
     }
 
@@ -34,15 +35,17 @@ class LatencyEntryPointRoutingTest {
             .substringAfter("fun testAllLatency()")
             .substringBefore("fun clearAllLatencies()")
 
-        assertTrue(singleTest.contains("methodOverride = LatencyTestMethod.TCP_PING"))
+        assertTrue(singleTest.contains("configRepository.testNodeLatency(nodeId)"))
+        assertTrue(!singleTest.contains("methodOverride"))
         assertTrue(batchTest.contains("targetNodeIds = targetIds"))
-        assertTrue(batchTest.contains("methodOverride = LatencyTestMethod.TCP_PING"))
+        assertTrue(!batchTest.contains("methodOverride"))
     }
 
     @Test
     fun batchCoreRoutesQuicAndHysteriaThroughUrlTestInOneSharedImplementation() {
         val source = File("src/main/java/com/mubox/app/core/SingBoxLatencyRuntime.kt")
             .readText(Charsets.UTF_8)
+        assertTrue(source.contains("settings.latencyTestMethod.normalized() != LatencyTestMethod.URL_TEST"))
         assertTrue(source.contains("LatencyRoutePolicy.requiresUrlTestForTcpPing(it)"))
         assertTrue(source.contains("runTcpingBatch(tcpTargets"))
         assertTrue(source.contains("serviceTargets = urlTestTargets"))

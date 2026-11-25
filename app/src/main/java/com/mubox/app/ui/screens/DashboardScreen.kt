@@ -47,7 +47,6 @@ import androidx.compose.ui.res.stringResource
 import androidx.navigation.NavController
 import com.mubox.app.ipc.SingBoxRemote
 import com.mubox.app.model.ConnectionState
-import com.mubox.app.model.LatencyTestMethod
 import com.mubox.app.model.PingDisplayText
 import com.mubox.app.model.RoutingMode
 import com.mubox.app.ui.navigation.Screen as AppScreen
@@ -463,8 +462,8 @@ fun DashboardScreen(
                             Icons.Rounded.Bolt,
                             stringResource(R.string.dashboard_latency_test)
                         ) {
-                            // TCP 节点走直连探测，UDP-only 节点由测速器自动回退到 URL 测试。
-                            viewModel.testAllNodesLatency(LatencyTestMethod.TCP_PING)
+                            // 使用测速设置中选定的 Auto 或手动方式。
+                            viewModel.testAllNodesLatency()
                         }
                     }
                 }

@@ -81,11 +81,8 @@ internal fun DashboardViewModel.startPingTestRuntime() {
     pingTestJob = viewModelScope.launch {
         _isPingTesting.value = true
         try {
-            // TCP 路线走直连探测；Hysteria2 与 VLESS/Trojan QUIC 自动使用 URL Test。
-            configRepository.testNodeLatency(
-                targetNodeId,
-                methodOverride = LatencyTestMethod.TCP_PING
-            )
+            // The repository follows the saved Auto / manual latency method setting.
+            configRepository.testNodeLatency(targetNodeId)
         } catch (e: Exception) {
             Log.e(DashboardViewModel.TAG, "Error during ping test", e)
         } finally {
@@ -121,8 +118,7 @@ internal fun DashboardViewModel.updateAllSubscriptionsRuntime() {
 }
 
 internal fun DashboardViewModel.testAllNodesLatencyRuntime(
-    methodOverride: com.mubox.app.model.LatencyTestMethod? =
-        com.mubox.app.model.LatencyTestMethod.TCP_PING
+    methodOverride: com.mubox.app.model.LatencyTestMethod? = null
 ) {
     viewModelScope.launch {
         val targetNodeIds = configRepository.nodes.value.map { it.id }
@@ -130,7 +126,7 @@ internal fun DashboardViewModel.testAllNodesLatencyRuntime(
         emitToast(getApplication<Application>().getString(R.string.common_loading))
         configRepository.testAllNodesLatency(
             targetNodeIds = targetNodeIds,
-            methodOverride = methodOverride ?: com.mubox.app.model.LatencyTestMethod.TCP_PING
+            methodOverride = methodOverride
         )
         emitToast(getApplication<Application>().getString(R.string.dashboard_test_complete))
     }

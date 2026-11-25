@@ -750,6 +750,7 @@
     <string name="dns_strategy_only_ipv6">IPv6 Only</string>
 
     <!-- Enum: LatencyTestMethod -->
+    <string name="latency_test_auto">Auto</string>
     <string name="latency_test_tcp">TCP Latency</string>
     <string name="latency_test_rtt">Real RTT</string>
     <string name="latency_test_handshake">HTTP Handshake</string>

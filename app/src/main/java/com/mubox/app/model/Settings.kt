@@ -71,7 +71,7 @@ data class AppSettings(
 
     @SerializedName("connectTimeout") val connectTimeout: Int = 10,
 
-    @SerializedName("latencyTestMethod") val latencyTestMethod: LatencyTestMethod = LatencyTestMethod.URL_TEST,
+    @SerializedName("latencyTestMethod") val latencyTestMethod: LatencyTestMethod = LatencyTestMethod.AUTO,
     @SerializedName("latencyTestUrl") val latencyTestUrl: String = DEFAULT_LATENCY_TEST_URL,
     @SerializedName("latencyTestTimeout") val latencyTestTimeout: Int = 5000,
     @SerializedName("latencyTestConcurrency") val latencyTestConcurrency: Int = 5,
@@ -183,8 +183,9 @@ enum class TrafficCaptureMode(@StringRes val displayNameRes: Int) {
 }
 
 enum class LatencyTestMethod(@StringRes val displayNameRes: Int) {
-    @SerializedName("URL_TEST") URL_TEST(R.string.latency_test_url_direct),
-    @SerializedName("TCP_PING") TCP_PING(R.string.latency_test_tcping),
+    @SerializedName("AUTO") AUTO(R.string.latency_test_auto),
+    @SerializedName("URL_TEST") URL_TEST(R.string.latency_method_url_test),
+    @SerializedName("TCP_PING") TCP_PING(R.string.latency_method_tcp_ping),
 
     // Legacy values from before v1.0.1. Kept only so existing settings still
     // deserialize; they are normalized to a selectable method on load and are
@@ -196,15 +197,15 @@ enum class LatencyTestMethod(@StringRes val displayNameRes: Int) {
     fun normalized(): LatencyTestMethod = when (this) {
         TCP -> TCP_PING
         REAL_RTT, HANDSHAKE -> URL_TEST
-        URL_TEST, TCP_PING -> this
+        AUTO, URL_TEST, TCP_PING -> this
     }
 
     companion object {
-        val selectable: List<LatencyTestMethod> = listOf(URL_TEST, TCP_PING)
+        val selectable: List<LatencyTestMethod> = listOf(AUTO, URL_TEST, TCP_PING)
 
         fun fromDisplayName(name: String): LatencyTestMethod {
             // Deprecated: use enum name for storage
-            return entries.find { it.name == name }?.normalized() ?: URL_TEST
+            return entries.find { it.name == name }?.normalized() ?: AUTO
         }
     }
 }

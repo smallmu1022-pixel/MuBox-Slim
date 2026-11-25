@@ -20,6 +20,36 @@ class LatencyRoutePolicyTest {
     }
 
     @Test
+    fun autoRoutesAllSixSupportedProtocolsByTransport() {
+        val cases = listOf(
+            "vless" to ("tcp" to LatencyTestMethod.TCP_PING),
+            "trojan" to ("tcp" to LatencyTestMethod.TCP_PING),
+            "hysteria2" to (null to LatencyTestMethod.URL_TEST),
+            "anytls" to ("tcp" to LatencyTestMethod.TCP_PING),
+            "http" to ("tcp" to LatencyTestMethod.TCP_PING),
+            "socks" to ("tcp" to LatencyTestMethod.TCP_PING)
+        )
+        cases.forEach { (protocol, route) ->
+            assertEquals(
+                "$protocol should follow its automatic route",
+                route.second,
+                LatencyRoutePolicy.resolve(LatencyTestMethod.AUTO, outbound(protocol, route.first))
+            )
+        }
+    }
+
+    @Test
+    fun autoRoutesVlessAndTrojanQuicThroughUrlTest() {
+        listOf("vless", "trojan").forEach { protocol ->
+            assertEquals(
+                "$protocol over QUIC should use URL Test in Auto mode",
+                LatencyTestMethod.URL_TEST,
+                LatencyRoutePolicy.resolve(LatencyTestMethod.AUTO, outbound(protocol, "quic"))
+            )
+        }
+    }
+
+    @Test
     fun hysteria2AlwaysUsesUrlTestWhenTcpPingWasRequested() {
         assertEquals(
             LatencyTestMethod.URL_TEST,

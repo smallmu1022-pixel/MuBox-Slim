@@ -3,6 +3,7 @@ on:
   push:
     branches: ["release/v1.0.3-vc51"]
     paths:
+      - "app/**"
       - ".github/workflows/vc51-candidate.yml"
 permissions:
   contents: read

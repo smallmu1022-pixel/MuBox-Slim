@@ -7,6 +7,7 @@ import com.mubox.app.model.AppThemeStyle
 import com.mubox.app.model.AppGroup
 import com.mubox.app.model.AppInfo
 import com.mubox.app.model.AppRule
+import com.mubox.app.model.LatencyTestMethod
 import com.mubox.app.model.RuleSetOutboundMode
 import com.mubox.app.model.TrafficCaptureMode
 import org.junit.Assert.assertEquals
@@ -393,6 +394,38 @@ class SettingsStoreTest {
         )
 
         assertEquals(updated, result)
+    }
+
+    @Test
+    fun latencyTestMethodDefaultsToAutoAndMissingStoredValueRecoversToAuto() {
+        val missing = Gson().fromJson("""{"latencyTestMethod":null}""", AppSettings::class.java)
+
+        assertEquals(LatencyTestMethod.AUTO, AppSettings().latencyTestMethod)
+        assertEquals(
+            listOf(LatencyTestMethod.AUTO, LatencyTestMethod.URL_TEST, LatencyTestMethod.TCP_PING),
+            LatencyTestMethod.selectable
+        )
+        assertEquals(
+            LatencyTestMethod.AUTO,
+            SettingsStore.migrateSettings(SettingsEntity.CURRENT_VERSION, missing).latencyTestMethod
+        )
+    }
+
+    @Test
+    fun autoAndManualLatencyMethodsRoundTripAndExplicitManualChoicesArePreserved() {
+        val gson = Gson()
+        listOf(
+            LatencyTestMethod.AUTO,
+            LatencyTestMethod.URL_TEST,
+            LatencyTestMethod.TCP_PING
+        ).forEach { method ->
+            val json = gson.toJson(AppSettings(latencyTestMethod = method))
+            val restored = gson.fromJson(json, AppSettings::class.java)
+            val migrated = SettingsStore.migrateSettings(SettingsEntity.CURRENT_VERSION, restored)
+
+            assertTrue(json.contains("\"latencyTestMethod\":\"${method.name}\""))
+            assertEquals("$method should survive stored JSON", method, migrated.latencyTestMethod)
+        }
     }
 
     @Test

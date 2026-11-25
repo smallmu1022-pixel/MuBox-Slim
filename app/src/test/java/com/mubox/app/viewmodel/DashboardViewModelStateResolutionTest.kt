@@ -411,23 +411,24 @@ class DashboardViewModelStateResolutionTest {
     }
 
     @Test
-    fun currentNodePingUsesTheManualSingleNodeLatencyPath() {
+    fun currentNodePingUsesTheSavedLatencyMethodWithoutForcingAnOverride() {
         val source = File("src/main/java/com/mubox/app/viewmodel/DashboardConnectionRuntime.kt")
             .readText(Charsets.UTF_8)
         val body = source.substringAfter("internal fun DashboardViewModel.startPingTestRuntime()")
             .substringBefore("internal fun DashboardViewModel.stopPingTestRuntime()")
 
-        assertTrue(body.contains("methodOverride = LatencyTestMethod.TCP_PING"))
+        assertTrue(body.contains("configRepository.testNodeLatency(targetNodeId)"))
+        assertFalse(body.contains("methodOverride"))
         assertTrue(body.contains("configRepository.testNodeLatency("))
         assertFalse(body.contains("configRepository.testAllNodesLatency"))
     }
 
     @Test
-    fun dashboardBatchLatencyActionUsesAutomaticProtocolMatchingWithoutMenu() {
+    fun dashboardBatchLatencyActionUsesSavedMethodWithoutMenu() {
         val source = File("src/main/java/com/mubox/app/ui/screens/DashboardScreen.kt")
             .readText(Charsets.UTF_8)
 
-        assertTrue(source.contains("viewModel.testAllNodesLatency(LatencyTestMethod.TCP_PING)"))
+        assertTrue(source.contains("viewModel.testAllNodesLatency()"))
         assertFalse(source.contains("showTestMenu"))
         assertFalse(source.contains("DropdownMenu("))
     }

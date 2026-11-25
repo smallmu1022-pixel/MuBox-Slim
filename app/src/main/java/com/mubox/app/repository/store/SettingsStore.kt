@@ -48,14 +48,15 @@ class SettingsStore private constructor(context: Context) {
 
         @Suppress("CognitiveComplexMethod", "CyclomaticComplexMethod")
         internal fun migrateSettings(version: Int, settings: AppSettings): AppSettings {
-            var result = migrateEarlySettings(version, settings)
+            // Normalize nullable legacy data before any copy-based migrations; explicit saved choices remain unchanged.
+            var result = normalizeLatencyTestMethod(settings)
+            result = migrateEarlySettings(version, result)
             result = migrateRoutingAndDnsSettings(version, result)
             result = migrateFakeIpRange(version, result)
             result = migrateNetworkAutoSwitch(version, result)
             result = migrateAppThemeStyle(version, result)
             result = migrateLocalDnsIpDoh(version, result)
             result = recoverLatencyTestUrl(result)
-            result = normalizeLatencyTestMethod(result)
             result = migrateTrafficCaptureMode(version, result)
             val perAppPolicyRevision: Long? = runCatching { result.perAppPolicyRevision }.getOrNull()
             result = result.copy(perAppPolicyRevision = perAppPolicyRevision?.coerceAtLeast(0L) ?: 0L)
@@ -189,8 +190,8 @@ class SettingsStore private constructor(context: Context) {
         private fun normalizeLatencyTestMethod(settings: AppSettings): AppSettings {
             val current: LatencyTestMethod? = settings.latencyTestMethod
             if (current == null) {
-                Log.w(TAG, "Recovering missing latency test method to URL_TEST")
-                return settings.copy(latencyTestMethod = LatencyTestMethod.URL_TEST)
+                Log.w(TAG, "Recovering missing latency test method to AUTO")
+                return settings.copy(latencyTestMethod = LatencyTestMethod.AUTO)
             }
             val normalized = current.normalized()
             if (normalized == current) return settings
