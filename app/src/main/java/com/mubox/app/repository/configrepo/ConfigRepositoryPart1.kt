@@ -8,6 +8,7 @@ import android.net.NetworkCapabilities
 import android.os.Build
 import android.util.Log
 import com.mubox.app.R
+import com.mubox.app.core.LatencyRoutePolicy
 import com.mubox.app.core.SingBoxCore
 import com.mubox.app.database.entity.ActiveStateEntity
 import com.mubox.app.database.entity.NodeLatencyEntity
@@ -390,7 +391,11 @@ internal suspend fun ConfigRepository.loadProfileNodesWithLatency(profileId: Str
     val nodes = extractNodesFromConfig(cfg, profileId)
     return nodes.map { node ->
         val latency = savedLatencyMs(node.id)
-        if (latency != null) node.copy(latencyMs = latency) else node
+        if (latency != null) {
+            node.copy(latencyMs = latency, latencyTestMethod = savedLatencyMethod(node.id))
+        } else {
+            node
+        }
     }.also { profileNodes[profileId] = it }
 }
 
@@ -616,7 +621,11 @@ internal fun ConfigRepository.setAllNodesUiActive(active: Boolean) {
                     val nodes = extractNodesFromConfig(cfg, p.id)
                     val nodesWithLatency = nodes.map { node ->
                         val latency = savedLatencyMs(node.id)
-                        if (latency != null) node.copy(latencyMs = latency) else node
+                        if (latency != null) {
+                            node.copy(latencyMs = latency, latencyTestMethod = savedLatencyMethod(node.id))
+                        } else {
+                            node
+                        }
                     }
                     profileNodes[p.id] = nodesWithLatency
                 }
@@ -643,17 +652,22 @@ internal fun ConfigRepository.setAllNodesUiActive(active: Boolean) {
     }
 }
 
-internal suspend fun ConfigRepository.updateLatencyInAllNodes(nodeId: String, latency: Long) {
+internal suspend fun ConfigRepository.updateLatencyInAllNodes(
+    nodeId: String,
+    latency: Long,
+    testMethod: LatencyTestMethod
+) {
     val latencyValue = normalizeLatencyValue(latency)
     val testedAt = System.currentTimeMillis()
-    savedNodeLatencies[nodeId] = SavedNodeLatency(latencyValue, testedAt)
+    val actualMethod = testMethod.normalized()
+    savedNodeLatencies[nodeId] = SavedNodeLatency(latencyValue, testedAt, actualMethod)
     _allNodes.update { list ->
         list.map {
-            if (it.id == nodeId) it.copy(latencyMs = latencyValue) else it
+            if (it.id == nodeId) it.copy(latencyMs = latencyValue, latencyTestMethod = actualMethod) else it
         }
     }
     try {
-        nodeLatencyDao.upsert(nodeId, latencyValue, testedAt)
+        nodeLatencyDao.upsert(nodeId, latencyValue, testedAt, actualMethod.name)
     } catch (e: CancellationException) {
         throw e
     } catch (e: Exception) {
@@ -677,10 +691,11 @@ internal fun ConfigRepository.recordLatencyResult(
     info: ConfigRepositoryNodeTestInfo,
     latency: Long,
     results: MutableMap<String, SavedNodeLatency>,
-    onNodeComplete: ((nodeId: String, latencyMs: Long) -> Unit)?
+    onNodeComplete: ((nodeId: String, latencyMs: Long) -> Unit)?,
+    testMethod: LatencyTestMethod
 ) {
     val latencyValue = normalizeLatencyValue(latency)
-    val savedLatency = SavedNodeLatency(latencyValue, System.currentTimeMillis())
+    val savedLatency = SavedNodeLatency(latencyValue, System.currentTimeMillis(), testMethod.normalized())
     results[info.nodeId] = savedLatency
     // 测完单个节点立即刷新 UI，避免整批结束后才一次性显示
     applyLatencyResultsToMemory(mapOf(info.nodeId to savedLatency))
@@ -690,17 +705,19 @@ internal fun ConfigRepository.recordLatencyResult(
 internal fun ConfigRepository.applyLatencyResultsToMemory(results: Map<String, SavedNodeLatency>) {
     if (results.isEmpty()) return
     savedNodeLatencies.putAll(results)
-    val visibleResults = results.mapValues { it.value.latencyMs }
-    _nodes.update { nodes -> ConfigRepository.applyLatencyResultsToNodes(nodes, visibleResults) }
-    _allNodes.update { nodes -> ConfigRepository.applyLatencyResultsToNodes(nodes, visibleResults) }
+    _nodes.update { nodes -> ConfigRepository.applyLatencyResultsToNodes(nodes, results) }
+    _allNodes.update { nodes -> ConfigRepository.applyLatencyResultsToNodes(nodes, results) }
     profileNodes.keys.forEach { profileId ->
         profileNodes.computeIfPresent(profileId) { _, nodes ->
-            ConfigRepository.applyLatencyResultsToNodes(nodes, visibleResults)
+            ConfigRepository.applyLatencyResultsToNodes(nodes, results)
         }
     }
 }
 
 internal fun ConfigRepository.savedLatencyMs(nodeId: String): Long? = savedNodeLatencies[nodeId]?.latencyMs
+
+internal fun ConfigRepository.savedLatencyMethod(nodeId: String): LatencyTestMethod? =
+    savedNodeLatencies[nodeId]?.testMethod
 
 internal suspend fun ConfigRepository.applyLatencyResults(results: Map<String, SavedNodeLatency>) {
     if (results.isEmpty()) return
@@ -711,7 +728,8 @@ internal suspend fun ConfigRepository.applyLatencyResults(results: Map<String, S
                 NodeLatencyEntity(
                     nodeId = nodeId,
                     latencyMs = latency.latencyMs,
-                    testedAt = latency.testedAt
+                    testedAt = latency.testedAt,
+                    testMethod = latency.testMethod?.name
                 )
             }
         )
@@ -836,6 +854,7 @@ internal suspend fun ConfigRepository.testRegularOutboundsLatency(
     methodOverride: LatencyTestMethod? = null
 ) {
     if (infos.isEmpty()) return
+    val requestedMethod = methodOverride ?: settingsRepository.settings.first().latencyTestMethod
 
     infos.groupBy { it.dnsConfig to it.allOutbounds }.forEach { (runtime, groupedInfos) ->
         val infoByTag = groupedInfos.associateBy { ConfigRepository.buildLatencyProbeTag(it.nodeId) }
@@ -845,7 +864,13 @@ internal suspend fun ConfigRepository.testRegularOutboundsLatency(
         val onProbeResult: (tag: String, latency: Long) -> Unit = { tag, latency ->
             val info = infoByTag[tag]
             if (info != null) {
-                recordLatencyResult(info, latency, results, onNodeComplete)
+                recordLatencyResult(
+                    info,
+                    latency,
+                    results,
+                    onNodeComplete,
+                    LatencyRoutePolicy.resolve(requestedMethod, info.outbound)
+                )
             }
         }
         // VPN 连接时，主进程临时测速实例的出站会被自身 TUN 回环捕获（protect 跨进程不可用），
@@ -857,7 +882,7 @@ internal suspend fun ConfigRepository.testRegularOutboundsLatency(
                 outbounds = probeOutbounds,
                 allOutbounds = runtime.second,
                 dnsConfig = runtime.first,
-                methodOverride = methodOverride,
+                methodOverride = requestedMethod,
                 onResult = onProbeResult
             )
         if (!handledInService) {
@@ -865,7 +890,7 @@ internal suspend fun ConfigRepository.testRegularOutboundsLatency(
                 outbounds = probeOutbounds,
                 allOutbounds = runtime.second,
                 dnsConfig = runtime.first,
-                methodOverride = methodOverride,
+                methodOverride = requestedMethod,
                 onResult = onProbeResult
             )
         }

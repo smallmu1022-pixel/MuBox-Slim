@@ -378,6 +378,7 @@ internal fun ConfigRepository.createNodeUi(
         protocol = outbound.type,
         group = group,
         latencyMs = savedLatencyMs(id),
+        latencyTestMethod = savedLatencyMethod(id),
         isFavorite = false,
         sourceProfileId = profileId,
         trafficUsed = trafficRepo.getMonthlyTotal(id),

@@ -102,6 +102,7 @@ data class NodeUi(
     @SerializedName("protocol") val protocol: String,
     @SerializedName("group") val group: String,
     @SerializedName("latencyMs") val latencyMs: Long? = null, // null means not tested
+    @SerializedName("latencyTestMethod") val latencyTestMethod: LatencyTestMethod? = null,
     @SerializedName("isFavorite") val isFavorite: Boolean = false,
     @SerializedName("sourceProfileId") val sourceProfileId: String,
     @SerializedName("tags") val tags: List<String> = emptyList(),
@@ -156,4 +157,3 @@ data class SavedProfilesData(
     @SerializedName("activeNodeId") val activeNodeId: String?,
     @SerializedName("nodeLatencies") val nodeLatencies: Map<String, Long> = emptyMap()
 )
-

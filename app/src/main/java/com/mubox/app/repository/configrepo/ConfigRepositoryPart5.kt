@@ -4,6 +4,7 @@ package com.mubox.app.repository
 
 import android.util.Log
 import com.mubox.app.R
+import com.mubox.app.core.LatencyRoutePolicy
 import com.mubox.app.database.entity.ProfileEntity
 import com.mubox.app.ipc.SingBoxRemote
 import com.mubox.app.ipc.VpnStateStore
@@ -232,6 +233,10 @@ internal suspend fun ConfigRepository.testNodeLatency(
                         return@withContext -1L
                     }
                     val allOutbounds = runtimeContext.outbounds
+                    val actualMethod = LatencyRoutePolicy.resolve(
+                        methodOverride ?: settings.latencyTestMethod,
+                        fixedOutbound
+                    )
                     // 与批量测速同一口径：VPN 连接时委托 :bg 进程执行，避免临时实例出站
                     // 被自身 TUN 回环捕获；未送达（服务不可用）时回退本地执行。
                     // 本函数也被 :bg 的 IPC Hub 调用，那边 isMainProcess 为 false，直接走本地。
@@ -242,7 +247,7 @@ internal suspend fun ConfigRepository.testNodeLatency(
                             outbound = fixedOutbound,
                             allOutbounds = allOutbounds,
                             dnsConfig = runtimeContext.dnsConfig,
-                            methodOverride = methodOverride
+                            methodOverride = actualMethod
                         )
                     } else {
                         null
@@ -251,13 +256,16 @@ internal suspend fun ConfigRepository.testNodeLatency(
                         fixedOutbound,
                         allOutbounds,
                         runtimeContext.dnsConfig,
-                        methodOverride = methodOverride
+                        methodOverride = actualMethod
                     )
 
                     _nodes.update { list ->
                         list.map {
                             if (it.id == nodeId) {
-                                it.copy(latencyMs = normalizeLatencyValue(latency))
+                                it.copy(
+                                    latencyMs = normalizeLatencyValue(latency),
+                                    latencyTestMethod = actualMethod
+                                )
                             } else {
                                 it
                             }
@@ -266,12 +274,15 @@ internal suspend fun ConfigRepository.testNodeLatency(
 
                     profileNodes[node.sourceProfileId] = profileNodes[node.sourceProfileId]?.map {
                         if (it.id == nodeId) {
-                            it.copy(latencyMs = normalizeLatencyValue(latency))
+                            it.copy(
+                                latencyMs = normalizeLatencyValue(latency),
+                                latencyTestMethod = actualMethod
+                            )
                         } else {
                             it
                         }
                     } ?: emptyList()
-                    updateLatencyInAllNodes(nodeId, latency)
+                    updateLatencyInAllNodes(nodeId, latency, actualMethod)
 
                     latency
                 } catch (e: Exception) {
@@ -304,17 +315,17 @@ internal suspend fun ConfigRepository.clearAllNodesLatency() = withContext(Dispa
     nodeLatencyDao.deleteAll()
 
     _nodes.update { list ->
-        list.map { it.copy(latencyMs = null) }
+        list.map { it.copy(latencyMs = null, latencyTestMethod = null) }
     }
 
     // Update profileNodes map
     profileNodes.keys.forEach { profileId ->
         profileNodes[profileId] = profileNodes[profileId]?.map {
-            it.copy(latencyMs = null)
+            it.copy(latencyMs = null, latencyTestMethod = null)
         } ?: emptyList()
     }
     _allNodes.update { list ->
-        list.map { it.copy(latencyMs = null) }
+        list.map { it.copy(latencyMs = null, latencyTestMethod = null) }
     }
 }
 
@@ -332,6 +343,7 @@ internal suspend fun ConfigRepository.testAllNodesLatency(
     val nodes = selectedNodes.filterNot(NodeUi::meteredProtected)
 
     val settings = settingsRepository.settings.first()
+    val requestedMethod = methodOverride ?: settings.latencyTestMethod
     val testInfoList = buildNodeTestInfos(nodes, settings)
 
     if (testInfoList.isEmpty()) {
@@ -342,7 +354,7 @@ internal suspend fun ConfigRepository.testAllNodesLatency(
     val results = ConcurrentHashMap<String, SavedNodeLatency>()
     runLatencyBatchAndApply(
         runBatch = {
-            testRegularOutboundsLatency(testInfoList, results, onNodeComplete, methodOverride)
+            testRegularOutboundsLatency(testInfoList, results, onNodeComplete, requestedMethod)
         },
         applyResults = {
             applyLatencyResults(results)

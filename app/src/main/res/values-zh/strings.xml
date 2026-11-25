@@ -743,6 +743,9 @@
     <string name="latency_test_url_test">URL Test</string>
     <string name="latency_test_url_direct">URL 直测</string>
     <string name="latency_test_tcping">TCPing</string>
+    <string name="latency_method_tcp_ping">TCP Ping</string>
+    <string name="latency_method_url_test">URL Test</string>
+    <string name="latency_method_unknown">测速口径未知</string>
 
     <!-- Enum: GhProxyMirror -->
     <string name="gh_mirror_sagernet">SagerNet (官方)</string>

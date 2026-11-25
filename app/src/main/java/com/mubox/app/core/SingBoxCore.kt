@@ -396,12 +396,10 @@ class SingBoxCore private constructor(context: Context) {
         val url = AppSettings.requireLatencyTestUrl(finalSettings.latencyTestUrl)
         val timeoutMs = finalSettings.latencyTestTimeout
 
-        // TCPing never starts a core service: it connects to the server endpoint
-        // directly. UDP-only outbounds (Hysteria2) have no TCP handshake to
-        // measure and fall through to the core urltest path below.
-        if (finalSettings.latencyTestMethod.normalized() == LatencyTestMethod.TCP_PING &&
-            !outbound.type.equals("hysteria2", ignoreCase = true)
-        ) {
+        // TCP Ping is a physical TCP connect. UDP-only and QUIC routes use the
+        // core URL Test path so they measure the proxy's actual routed request.
+        val actualMethod = LatencyRoutePolicy.resolve(finalSettings.latencyTestMethod, outbound)
+        if (actualMethod == LatencyTestMethod.TCP_PING) {
             val prepared = prepareLatencyProbeTarget(outbound) ?: return@withContext -1L
             return@withContext LatencyProbe.tcpPing(context, prepared.server, prepared.serverPort, timeoutMs)
         }
@@ -610,8 +608,11 @@ class SingBoxCore private constructor(context: Context) {
                 val timeout = timeoutOverrideMs?.takeIf { it > 0 } ?: currentSettings.latencyTestTimeout
                 currentSettings.copy(
                     latencyTestTimeout = timeout,
-                    // 单节点测速的本次方式覆盖；不传时用设置里的默认方式（与批量测速同一口径）
-                    latencyTestMethod = methodOverride ?: currentSettings.latencyTestMethod
+                    // Single-node override; when TCP Ping is requested, select a valid route per outbound.
+                    latencyTestMethod = LatencyRoutePolicy.resolve(
+                        methodOverride ?: currentSettings.latencyTestMethod,
+                        outbound
+                    )
                 )
             }
 

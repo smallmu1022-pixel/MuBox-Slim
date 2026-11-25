@@ -318,7 +318,7 @@ internal suspend fun ConfigRepository.migrateNodeLatency(oldNodeId: String, newN
     val latency = savedNodeLatencies.remove(oldNodeId) ?: return
     savedNodeLatencies[newNodeId] = latency
     runCatching {
-        nodeLatencyDao.upsert(newNodeId, latency.latencyMs, latency.testedAt)
+        nodeLatencyDao.upsert(newNodeId, latency.latencyMs, latency.testedAt, latency.testMethod?.name)
         nodeLatencyDao.deleteByNodeIds(listOf(oldNodeId))
     }.onFailure { error ->
         Log.w(ConfigRepository.TAG, "Failed to migrate persisted node latency", error)

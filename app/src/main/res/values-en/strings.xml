@@ -756,6 +756,9 @@
     <string name="latency_test_url_test">URL Test</string>
     <string name="latency_test_url_direct">URL Test (Core)</string>
     <string name="latency_test_tcping">TCPing</string>
+    <string name="latency_method_tcp_ping">TCP Ping</string>
+    <string name="latency_method_url_test">URL Test</string>
+    <string name="latency_method_unknown">Method unknown</string>
 
     <!-- Enum: GhProxyMirror -->
     <string name="gh_mirror_sagernet">SagerNet (Official)</string>

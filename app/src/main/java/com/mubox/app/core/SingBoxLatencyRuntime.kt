@@ -123,23 +123,22 @@ private suspend fun SingBoxCore.testOutboundsLatencyBatchInternal(
     val prepared = prepareLatencyBatchTargets(batchOutbounds, dependencySourceOutbounds, onResult)
         ?: return
 
-    // TCPing connects to the server endpoints directly and never starts a
-    // core service — except UDP-only outbounds (Hysteria2), which have no TCP
-    // handshake to measure; those fall back to the core urltest path below.
+    // TCP Ping connects directly to the server endpoint; Hysteria2 and VLESS/
+    // Trojan over QUIC instead need a core URL Test through the configured node.
     var serviceTargets = prepared.targets
     if (settings.latencyTestMethod.normalized() == LatencyTestMethod.TCP_PING) {
-        val (udpOnly, tcpTargets) = prepared.targets.partition {
-            it.type.equals("hysteria2", ignoreCase = true)
+        val (urlTestTargets, tcpTargets) = prepared.targets.partition {
+            LatencyRoutePolicy.requiresUrlTestForTcpPing(it)
         }
         if (tcpTargets.isNotEmpty()) {
             runTcpingBatch(tcpTargets, timeoutMs, settings, onResult)
         }
-        if (udpOnly.isEmpty()) return
-        serviceTargets = udpOnly
+        if (urlTestTargets.isEmpty()) return
+        serviceTargets = urlTestTargets
     }
 
     // One extra port hosts the temporary service's Clash API (core urltest entry point).
-    val ports = allocateLatencyBatchPorts(serviceTargets.size + 1, batchOutbounds, onResult)
+    val ports = allocateLatencyBatchPorts(serviceTargets.size + 1, serviceTargets, onResult)
         ?: return
     val clashPort = ports.last()
     val probePorts = ports.dropLast(1)
@@ -156,7 +155,7 @@ private suspend fun SingBoxCore.testOutboundsLatencyBatchInternal(
         clashSecret
     )
     if (config == null) {
-        batchOutbounds.forEach { onResult(it.tag, -1L) }
+        serviceTargets.forEach { onResult(it.tag, -1L) }
         return
     }
     libboxMutex.withLock {
@@ -168,7 +167,7 @@ private suspend fun SingBoxCore.testOutboundsLatencyBatchInternal(
             timeoutMs = timeoutMs,
             settings = settings,
             portReadyTimeoutMs = portReadyTimeoutMs,
-            batchOutbounds = batchOutbounds,
+            batchOutbounds = serviceTargets,
             trafficKind = trafficKind,
             clashPort = clashPort,
             clashSecret = clashSecret,

@@ -24,7 +24,8 @@ data class ConfigRepositoryRuntimeOutboundResolution(
 
 data class SavedNodeLatency(
     val latencyMs: Long,
-    val testedAt: Long
+    val testedAt: Long,
+    val testMethod: LatencyTestMethod? = null
 )
 
 data class ConfigRepositorySubscriptionAttemptContext(

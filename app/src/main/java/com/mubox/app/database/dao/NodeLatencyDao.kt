@@ -21,6 +21,11 @@ interface NodeLatencyDao {
     @Query("DELETE FROM node_latencies WHERE nodeId IN (:nodeIds)")
     suspend fun deleteByNodeIds(nodeIds: List<String>)
 
-    @Query("INSERT OR REPLACE INTO node_latencies (nodeId, latencyMs, testedAt) VALUES (:nodeId, :latencyMs, :testedAt)")
-    suspend fun upsert(nodeId: String, latencyMs: Long, testedAt: Long = System.currentTimeMillis())
+    @Query("INSERT OR REPLACE INTO node_latencies (nodeId, latencyMs, testedAt, testMethod) VALUES (:nodeId, :latencyMs, :testedAt, :testMethod)")
+    suspend fun upsert(
+        nodeId: String,
+        latencyMs: Long,
+        testedAt: Long = System.currentTimeMillis(),
+        testMethod: String? = null
+    )
 }

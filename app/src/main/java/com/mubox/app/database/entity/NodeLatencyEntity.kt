@@ -8,5 +8,6 @@ data class NodeLatencyEntity(
     @PrimaryKey
     val nodeId: String,
     val latencyMs: Long,
-    val testedAt: Long = System.currentTimeMillis()
+    val testedAt: Long = System.currentTimeMillis(),
+    val testMethod: String? = null
 )

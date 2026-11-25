@@ -33,6 +33,7 @@ import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
+import com.mubox.app.model.LatencyTestMethod
 import com.mubox.app.ui.theme.*
 
 private val NodeSelectedPulseGreen = Color(0xFF22C55E)
@@ -67,6 +68,7 @@ fun NodeCard(
     onDelete: () -> Unit,
     modifier: Modifier = Modifier,
     latency: Long? = null,
+    latencyTestMethod: LatencyTestMethod? = null,
     hasDetour: Boolean = false,
     isSwitching: Boolean = false,
     isTesting: Boolean = false,
@@ -177,8 +179,24 @@ fun NodeCard(
                             val ipv6OnlyText = stringResource(R.string.common_ipv6_only)
                             val dnsFailedText = stringResource(R.string.common_dns_failed)
                             val refusedText = stringResource(R.string.common_refused)
-                            val latencyText = remember(showLatency, latency, timeoutText, ipv6OnlyText, dnsFailedText, refusedText) {
-                                when {
+                            val methodLabel = when {
+                                latency == null -> null
+                                latencyTestMethod?.normalized() == LatencyTestMethod.TCP_PING ->
+                                    stringResource(R.string.latency_method_tcp_ping)
+                                latencyTestMethod?.normalized() == LatencyTestMethod.URL_TEST ->
+                                    stringResource(R.string.latency_method_url_test)
+                                else -> stringResource(R.string.latency_method_unknown)
+                            }
+                            val latencyText = remember(
+                                showLatency,
+                                latency,
+                                timeoutText,
+                                ipv6OnlyText,
+                                dnsFailedText,
+                                refusedText,
+                                methodLabel
+                            ) {
+                                val value = when {
                                     !showLatency -> ""
                                     latency == null -> "---"
                                     latency == com.mubox.app.model.PingResultCode.IPV6_ONLY -> ipv6OnlyText
@@ -187,6 +205,7 @@ fun NodeCard(
                                     latency < 0 -> timeoutText
                                     else -> "${latency}ms"
                                 }
+                                if (value.isBlank() || methodLabel == null) value else "$value · $methodLabel"
                             }
                             val latencyWeight = if (latency == null) FontWeight.Normal else FontWeight.Bold
 
@@ -420,6 +439,7 @@ fun NodeGridCard(
     onDelete: () -> Unit,
     modifier: Modifier = Modifier,
     latency: Long? = null,
+    latencyTestMethod: LatencyTestMethod? = null,
     hasDetour: Boolean = false,
     isSwitching: Boolean = false,
     isTesting: Boolean = false,
@@ -534,14 +554,23 @@ fun NodeGridCard(
                     }
                     val timeoutText = stringResource(R.string.common_timeout)
                     val ipv6OnlyText = stringResource(R.string.common_ipv6_only)
-                    val latencyText = remember(showLatency, latency, timeoutText, ipv6OnlyText) {
-                        when {
+                    val methodLabel = when {
+                        latency == null -> null
+                        latencyTestMethod?.normalized() == LatencyTestMethod.TCP_PING ->
+                            stringResource(R.string.latency_method_tcp_ping)
+                        latencyTestMethod?.normalized() == LatencyTestMethod.URL_TEST ->
+                            stringResource(R.string.latency_method_url_test)
+                        else -> stringResource(R.string.latency_method_unknown)
+                    }
+                    val latencyText = remember(showLatency, latency, timeoutText, ipv6OnlyText, methodLabel) {
+                        val value = when {
                             !showLatency -> ""
                             latency == null -> "---"
                             latency == com.mubox.app.model.PingResultCode.IPV6_ONLY -> ipv6OnlyText
                             latency < 0 -> timeoutText
                             else -> "${latency}ms"
                         }
+                        if (value.isBlank() || methodLabel == null) value else "$value · $methodLabel"
                     }
                     Text(
                         text = latencyText,

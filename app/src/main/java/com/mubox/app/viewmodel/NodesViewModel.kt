@@ -11,6 +11,7 @@ import com.mubox.app.model.NodeSortType
 import com.mubox.app.model.NodeUi
 import com.mubox.app.model.ProfileUi
 import com.mubox.app.model.PingResultCode
+import com.mubox.app.model.LatencyTestMethod
 import com.mubox.app.repository.*
 import com.mubox.app.repository.SettingsRepository
 import com.mubox.app.utils.parser.NodeLinkParser
@@ -173,7 +174,10 @@ class NodesViewModel(application: Application) : AndroidViewModel(application) {
         viewModelScope.launch {
             try {
                 val node = nodes.value.find { it.id == nodeId }
-                val latency = configRepository.testNodeLatency(nodeId)
+                val latency = configRepository.testNodeLatency(
+                    nodeId,
+                    methodOverride = LatencyTestMethod.TCP_PING
+                )
                 if (latency <= 0) {
                     val msg = if (latency == PingResultCode.METERED_SELECTION_REQUIRED) {
                         getApplication<Application>().getString(R.string.nodes_metered_select_to_test)
@@ -221,7 +225,10 @@ class NodesViewModel(application: Application) : AndroidViewModel(application) {
             _testProgress.value = Pair(0, totalCount)
 
             try {
-                configRepository.testAllNodesLatency(targetIds) { finishedNodeId, latencyMs ->
+                configRepository.testAllNodesLatency(
+                    targetNodeIds = targetIds,
+                    methodOverride = LatencyTestMethod.TCP_PING
+                ) { finishedNodeId, latencyMs ->
                     _testingNodeIds.update { it - finishedNodeId }
                     val completed = completedCount.incrementAndGet()
                     when {

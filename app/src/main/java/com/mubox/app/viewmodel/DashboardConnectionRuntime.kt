@@ -81,7 +81,7 @@ internal fun DashboardViewModel.startPingTestRuntime() {
     pingTestJob = viewModelScope.launch {
         _isPingTesting.value = true
         try {
-            // TCP 节点走直连探测；Hysteria2 等 UDP-only 节点会自动回退到 URL 测试。
+            // TCP 路线走直连探测；Hysteria2 与 VLESS/Trojan QUIC 自动使用 URL Test。
             configRepository.testNodeLatency(
                 targetNodeId,
                 methodOverride = LatencyTestMethod.TCP_PING
@@ -121,13 +121,17 @@ internal fun DashboardViewModel.updateAllSubscriptionsRuntime() {
 }
 
 internal fun DashboardViewModel.testAllNodesLatencyRuntime(
-    methodOverride: com.mubox.app.model.LatencyTestMethod? = null
+    methodOverride: com.mubox.app.model.LatencyTestMethod? =
+        com.mubox.app.model.LatencyTestMethod.TCP_PING
 ) {
     viewModelScope.launch {
         val targetNodeIds = configRepository.nodes.value.map { it.id }
         if (targetNodeIds.isEmpty()) return@launch
         emitToast(getApplication<Application>().getString(R.string.common_loading))
-        configRepository.testAllNodesLatency(targetNodeIds = targetNodeIds, methodOverride = methodOverride)
+        configRepository.testAllNodesLatency(
+            targetNodeIds = targetNodeIds,
+            methodOverride = methodOverride ?: com.mubox.app.model.LatencyTestMethod.TCP_PING
+        )
         emitToast(getApplication<Application>().getString(R.string.dashboard_test_complete))
     }
 }

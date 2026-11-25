@@ -319,12 +319,12 @@ internal fun ConfigRepository.Companion.buildNodeTestInfosFromContexts(
 
 internal fun ConfigRepository.Companion.applyLatencyResultsToNodes(
     nodes: List<NodeUi>,
-    results: Map<String, Long>
+    results: Map<String, SavedNodeLatency>
 ): List<NodeUi> {
     if (results.isEmpty()) return nodes
     return nodes.map { node ->
         val latency = results[node.id] ?: return@map node
-        node.copy(latencyMs = latency)
+        node.copy(latencyMs = latency.latencyMs, latencyTestMethod = latency.testMethod)
     }
 }
 

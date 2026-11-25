@@ -1,6 +1,7 @@
 package com.mubox.app.repository
 
 import com.mubox.app.model.DnsConfig
+import com.mubox.app.model.LatencyTestMethod
 import com.mubox.app.model.NodeUi
 import com.mubox.app.model.Outbound
 import java.io.File
@@ -52,10 +53,17 @@ class ConfigRepositoryBatchLatencyPolicyTest {
 
         val updated = ConfigRepository.applyLatencyResultsToNodes(
             nodes,
-            mapOf("one" to 12L, "three" to -1L)
+            mapOf(
+                "one" to SavedNodeLatency(12L, 1L, LatencyTestMethod.TCP_PING),
+                "three" to SavedNodeLatency(-1L, 1L, LatencyTestMethod.URL_TEST)
+            )
         )
 
         assertEquals(listOf(12L, null, -1L), updated.map { it.latencyMs })
+        assertEquals(
+            listOf(LatencyTestMethod.TCP_PING, null, LatencyTestMethod.URL_TEST),
+            updated.map { it.latencyTestMethod }
+        )
     }
 
     @Test

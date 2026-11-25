@@ -38,7 +38,14 @@ internal suspend fun ConfigRepository.loadSavedProfiles() {
             _activeProfileId.value = restoredProfileId
             savedNodeLatencies.clear()
             latencyEntities.forEach { entity ->
-                savedNodeLatencies[entity.nodeId] = SavedNodeLatency(entity.latencyMs, entity.testedAt)
+                val testMethod = entity.testMethod?.let { storedName ->
+                    runCatching { LatencyTestMethod.valueOf(storedName).normalized() }.getOrNull()
+                }
+                savedNodeLatencies[entity.nodeId] = SavedNodeLatency(
+                    entity.latencyMs,
+                    entity.testedAt,
+                    testMethod
+                )
             }
 
             val elapsed = System.currentTimeMillis() - startTime
@@ -110,7 +117,11 @@ internal suspend fun ConfigRepository.loadActiveProfileNodes(activeProfileId: St
         val nodes = extractNodesFromConfig(config, activeProfileId)
         val nodesWithLatency = nodes.map { node ->
             val latency = savedLatencyMs(node.id)
-            if (latency != null) node.copy(latencyMs = latency) else node
+            if (latency != null) {
+                node.copy(latencyMs = latency, latencyTestMethod = savedLatencyMethod(node.id))
+            } else {
+                node
+            }
         }
         profileNodes[activeProfileId] = nodesWithLatency
         cacheConfig(activeProfileId, config)

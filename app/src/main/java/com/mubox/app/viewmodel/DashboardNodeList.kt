@@ -5,6 +5,7 @@ import com.mubox.app.ipc.DataPlaneReadinessSnapshot
 import com.mubox.app.ipc.DataPlaneStatus
 import com.mubox.app.model.ConnectionState
 import com.mubox.app.model.FilterMode
+import com.mubox.app.model.LatencyTestMethod
 import com.mubox.app.model.NodeFilter
 import com.mubox.app.model.NodeSortType
 import com.mubox.app.model.NodeUi
@@ -104,10 +105,18 @@ internal fun buildDashboardNodes(
 
     return when (sortType) {
         NodeSortType.DEFAULT -> filtered
-        NodeSortType.LATENCY -> filtered.sortedWith(compareBy<NodeUi> {
-            val latency = it.latencyMs
-            if (latency == null || latency <= 0) Long.MAX_VALUE else latency
-        })
+        NodeSortType.LATENCY -> filtered.sortedWith(
+            compareBy<NodeUi> {
+                when (it.latencyTestMethod?.normalized()) {
+                    LatencyTestMethod.TCP_PING -> 0
+                    LatencyTestMethod.URL_TEST -> 1
+                    else -> 2
+                }
+            }.thenBy {
+                val latency = it.latencyMs
+                if (latency == null || latency <= 0) Long.MAX_VALUE else latency
+            }
+        )
         NodeSortType.NAME,
         NodeSortType.REGION -> filtered.sortedBy { it.name }
         NodeSortType.CUSTOM -> {

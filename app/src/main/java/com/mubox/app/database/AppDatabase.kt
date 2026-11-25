@@ -1,4 +1,4 @@
-﻿package com.mubox.app.database
+package com.mubox.app.database
 
 import android.content.Context
 import androidx.room.Database
@@ -23,7 +23,7 @@ import com.mubox.app.database.entity.SettingsEntity
         NodeLatencyEntity::class,
         SettingsEntity::class
     ],
-    version = 8,
+    version = 9,
     exportSchema = true
 )
 @TypeConverters(Converters::class)
@@ -59,7 +59,8 @@ abstract class AppDatabase : RoomDatabase() {
                     MIGRATION_4_5,
                     MIGRATION_5_6,
                     MIGRATION_6_7,
-                    MIGRATION_7_8
+                    MIGRATION_7_8,
+                    MIGRATION_8_9
                 )
                 .build()
         }
@@ -179,6 +180,13 @@ abstract class AppDatabase : RoomDatabase() {
             override fun migrate(db: SupportSQLiteDatabase) {
                 db.execSQL("DROP TABLE IF EXISTS nodes")
                 db.execSQL("DROP INDEX IF EXISTS index_node_latencies_nodeId")
+            }
+        }
+
+        private val MIGRATION_8_9 = object : Migration(8, 9) {
+            override fun migrate(db: SupportSQLiteDatabase) {
+                // Legacy measurements have no known method; SQLite fills this nullable field with NULL.
+                db.execSQL("ALTER TABLE node_latencies ADD COLUMN testMethod TEXT")
             }
         }
 
