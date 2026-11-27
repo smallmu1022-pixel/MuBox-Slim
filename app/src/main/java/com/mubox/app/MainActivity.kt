@@ -60,6 +60,7 @@ import com.mubox.app.ipc.SingBoxRemote
 import com.mubox.app.service.VpnTileService
 import com.mubox.app.ui.components.AppNotificationManager
 import com.mubox.app.ui.components.AppDrawer
+import com.mubox.app.ui.components.CatSplashScreen
 import com.mubox.app.ui.navigation.AppNavigation
 import com.mubox.app.ui.theme.SingBoxTheme
 import com.mubox.app.ui.theme.appBackgroundBrush
@@ -132,6 +133,12 @@ fun SingBoxApp() {
     val context = LocalContext.current
     val restartNeededMessage = stringResource(R.string.settings_restart_needed)
     val importedSubscriptionDefaultName = stringResource(R.string.profiles_imported_subscription_default_name)
+
+    var splashVisible by remember { mutableStateOf(true) }
+    LaunchedEffect(Unit) {
+        delay(1_300L)
+        splashVisible = false
+    }
 
     val notificationPermissionLauncher = rememberLauncherForActivityResult(
         contract = ActivityResultContracts.RequestPermission(),
@@ -427,6 +434,10 @@ fun SingBoxApp() {
                 update = update,
                 onDismiss = { com.mubox.app.utils.UpdateUiEvents.clear() }
             )
+        }
+
+        if (splashVisible) {
+            CatSplashScreen(modifier = Modifier.fillMaxSize())
         }
     }
 }
