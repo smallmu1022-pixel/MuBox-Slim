@@ -45,7 +45,6 @@ import com.mubox.app.ui.screens.RuleSetHubScreen
 import com.mubox.app.ui.screens.DomainRulesScreen
 import com.mubox.app.ui.screens.TrafficStatsScreen
 import com.mubox.app.ui.screens.ConnectionInfoScreen
-import com.mubox.app.ui.theme.liquidGlassBackdrop
 import com.mubox.app.viewmodel.DashboardViewModel
 import com.mubox.app.viewmodel.NodesViewModel
 import com.mubox.app.viewmodel.ProfilesViewModel
@@ -87,7 +86,7 @@ sealed class Screen(val route: String) {
     object ConnectionInfo : Screen("connection_info")
 }
 
-const val NAV_ANIMATION_DURATION = 450
+const val NAV_ANIMATION_DURATION = 280
 
 private fun tabIndex(route: String?): Int {
     val tab = getTabForRoute(route)
@@ -97,17 +96,6 @@ private fun tabIndex(route: String?): Int {
         Screen.Profiles.route -> 2
         Screen.Settings.route -> 3
         else -> 0
-    }
-}
-
-@Composable
-private fun TopLevelPage(content: @Composable () -> Unit) {
-    Box(
-        modifier = Modifier
-            .fillMaxSize()
-            .liquidGlassBackdrop()
-    ) {
-        content()
     }
 }
 
@@ -246,7 +234,8 @@ fun AppNavigation(
 
     NavHost(
         navController = navController,
-        startDestination = Screen.Dashboard.route
+        startDestination = Screen.Dashboard.route,
+        modifier = Modifier.fillMaxSize()
     ) {
         // Main Tabs
         composable(
@@ -256,13 +245,11 @@ fun AppNavigation(
             popEnterTransition = tabPopEnterTransition,
             popExitTransition = tabExitTransition
         ) {
-            TopLevelPage {
-                DashboardScreen(
-                    navController = navController,
-                    viewModel = dashboardViewModel,
-                    bottomContentPadding = dashboardBottomContentPadding
-                )
-            }
+            DashboardScreen(
+                navController = navController,
+                viewModel = dashboardViewModel,
+                bottomContentPadding = dashboardBottomContentPadding
+            )
         }
         composable(
             route = Screen.Nodes.route,
@@ -271,12 +258,10 @@ fun AppNavigation(
             popEnterTransition = tabPopEnterTransition,
             popExitTransition = tabExitTransition
         ) {
-            TopLevelPage {
-                NodesScreen(
-                    navController = navController,
-                    bottomContentPadding = topLevelBottomContentPadding
-                )
-            }
+            NodesScreen(
+                navController = navController,
+                bottomContentPadding = topLevelBottomContentPadding
+            )
         }
         composable(
             route = Screen.Profiles.route,
@@ -285,12 +270,10 @@ fun AppNavigation(
             popEnterTransition = tabPopEnterTransition,
             popExitTransition = tabExitTransition
         ) {
-            TopLevelPage {
-                ProfilesScreen(
-                    navController = navController,
-                    bottomContentPadding = topLevelBottomContentPadding
-                )
-            }
+            ProfilesScreen(
+                navController = navController,
+                bottomContentPadding = topLevelBottomContentPadding
+            )
         }
         composable(
             route = Screen.Settings.route,
@@ -299,12 +282,10 @@ fun AppNavigation(
             popEnterTransition = tabPopEnterTransition,
             popExitTransition = tabExitTransition
         ) {
-            TopLevelPage {
-                SettingsScreen(
-                    navController = navController,
-                    bottomContentPadding = topLevelBottomContentPadding
-                )
-            }
+            SettingsScreen(
+                navController = navController,
+                bottomContentPadding = topLevelBottomContentPadding
+            )
         }
 
         // Sub Screens

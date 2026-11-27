@@ -1,0 +1,124 @@
+name: Android CI
+
+on:
+  pull_request:
+  push:
+    branches:
+      - main
+      - "feature/*"
+
+permissions:
+  contents: read
+
+concurrency:
+  group: android-ci-${{ github.ref }}
+  cancel-in-progress: true
+
+env:
+  ABI: arm64-v8a
+
+jobs:
+  verify:
+    name: Unit tests and debug APK build
+    runs-on: ubuntu-latest
+    timeout-minutes: 90
+
+    steps:
+      - name: Checkout source
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Restore bundled binary assets
+        run: |
+          set -euo pipefail
+          mkdir -p app/src/main/res/drawable-xxxhdpi gradle/wrapper
+          base64 -d v101-assets/halo_cat.webp.b64 > app/src/main/res/drawable-xxxhdpi/halo_cat.webp
+          base64 -d v101-assets/ic_launcher_foreground.png.b64 > app/src/main/res/drawable-xxxhdpi/ic_launcher_foreground.png
+          base64 -d v101-assets/gradle-wrapper.jar.b64 > gradle/wrapper/gradle-wrapper.jar
+          echo "6e50bcee9407aa223a1f330e8993572d5989c956f3d8c7ea2ec984c981769164  app/src/main/res/drawable-xxxhdpi/halo_cat.webp" | sha256sum -c -
+          echo "497c8c2a7e5031f6aa847f88104aa80a93532ec32ee17bdb8d1d2f67a194a9c7  gradle/wrapper/gradle-wrapper.jar" | sha256sum -c -
+
+      - name: Set up JDK 17
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: "17"
+
+      - name: Set up Android NDK
+        id: setup-ndk
+        uses: nttld/setup-ndk@v1
+        with:
+          ndk-version: r28c
+          add-to-path: true
+
+      - name: Set up Gradle
+        uses: gradle/actions/setup-gradle@v4
+
+      - name: Set up Go
+        uses: actions/setup-go@v5
+        with:
+          go-version: "1.26.11"
+          cache: false
+
+      - name: Checkout pinned sing-box kernel
+        uses: actions/checkout@v4
+        with:
+          repository: SagerNet/sing-box
+          ref: v1.14.4
+          path: sing-box
+
+      - name: Install gomobile
+        env:
+          ANDROID_NDK_HOME: ${{ steps.setup-ndk.outputs.ndk-path }}
+        run: |
+          set -euo pipefail
+          go install github.com/sagernet/gomobile/cmd/gomobile@v0.1.12
+          gomobile init
+
+      - name: Build kernel AAR
+        env:
+          ANDROID_NDK_HOME: ${{ steps.setup-ndk.outputs.ndk-path }}
+          CGO_ENABLED: "1"
+        working-directory: sing-box
+        run: |
+          set -euo pipefail
+          gomobile bind \
+            -o libbox.aar \
+            -target android/arm64 \
+            -androidapi 24 \
+            -javapkg=io.nekohasekai \
+            -libname=box \
+            -trimpath \
+            -buildvcs=false \
+            -ldflags "-X github.com/sagernet/sing-box/constant.Version=1.14.4 -X runtime.godebugDefault=multipathtcp=0,tlssha1=1 -checklinkname=0 -s -w -buildid=" \
+            -tags "with_gvisor,with_quic,with_utls,with_clash_api,badlinkname,tfogo_checklinkname0" \
+            ./experimental/libbox
+          mkdir -p ../app/libs
+          cp libbox.aar ../app/libs/libbox.aar
+          stat -c 'AAR input size: %s bytes' ../app/libs/libbox.aar
+
+      - name: Run unit tests
+        env:
+          ANDROID_NDK_HOME: ${{ steps.setup-ndk.outputs.ndk-path }}
+        run: |
+          chmod +x ./gradlew
+          ./gradlew :app:testDebugUnitTest -PabiOnly=${{ env.ABI }}
+
+      - name: Build debug APK
+        env:
+          ANDROID_NDK_HOME: ${{ steps.setup-ndk.outputs.ndk-path }}
+        run: |
+          set -euo pipefail
+          ./gradlew :app:assembleDebug -PabiOnly=${{ env.ABI }}
+          mkdir -p dist
+          APK=$(find app/build/outputs/apk/debug -type f -name '*.apk' -print -quit)
+          test -n "$APK" && test -s "$APK"
+          cp "$APK" "dist/mubox-slim-debug-${{ github.run_number }}-${{ env.ABI }}.apk"
+
+      - name: Upload debug APK artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: debug-arm64-apk
+          path: dist/*.apk
+          retention-days: 14

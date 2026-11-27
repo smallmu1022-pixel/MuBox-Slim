@@ -308,7 +308,7 @@ configure<ApplicationExtension> {
                 val keystorePassword = System.getenv("KEYSTORE_PASSWORD")
                 val keyAliasEnv = System.getenv("KEY_ALIAS")
                 val keyPasswordEnv = System.getenv("KEY_PASSWORD")
-                
+
                 if (keystorePath != null) {
                     storeFile = File(keystorePath)
                     storePassword = keystorePassword
@@ -331,11 +331,11 @@ configure<ApplicationExtension> {
             )
         }
         debug {
-            // 在 debug 模式下也可以开启简单的分包优化，或者减小 ABI 范围
-            // 如果仅用于本地调试，建议在 local.properties 中配置仅编译当前设备的架构
+            // 预览调试包使用独立 applicationId，可与正式包同时安装。
+            applicationIdSuffix = ".preview"
         }
     }
-    
+
     splits {
         abi {
             // AAB 构建时不能启用多 APK 输出（否则 buildReleasePreBundle 会报 multiple shrunk-resources）
@@ -345,7 +345,7 @@ configure<ApplicationExtension> {
             include(*apkAbis.toTypedArray())
         }
     }
-    
+
     compileOptions {
         sourceCompatibility = JavaVersion.VERSION_11
         targetCompatibility = JavaVersion.VERSION_11
@@ -362,7 +362,7 @@ configure<ApplicationExtension> {
             excludes += "**/*.kotlin_*"
             excludes += "**/META-INF/*.version"
             excludes += "DebugProbesKt.bin"
-            excludes += "META-INF/*.kotlin_module"
+            excludes += "**/*.kotlin_module"
             excludes += "META-INF/proguard/*"
         }
         // 优化 JNI 库打包方式
@@ -376,12 +376,12 @@ configure<ApplicationExtension> {
             useLegacyPackaging = preferCompressedApk
         }
     }
-    
+
     // 避免压缩规则集文件，提高读取效率
     androidResources {
         noCompress += "srs"
     }
-    
+
     // 单元测试配置：返回 Android API 默认值，避免 android.util.* 抛异常
     testOptions {
         unitTests.isReturnDefaultValues = true
@@ -427,7 +427,7 @@ dependencies {
     implementation("androidx.navigation:navigation-compose:2.9.8")
     implementation("dev.chrisbanes.haze:haze:1.7.2")
     implementation("io.github.kyant0:backdrop:2.0.0")
-    
+
     implementation("androidx.compose.material:material-icons-extended")
     implementation("androidx.lifecycle:lifecycle-viewmodel-compose:2.11.0")
     implementation("androidx.lifecycle:lifecycle-runtime-compose:2.11.0")
@@ -456,7 +456,7 @@ dependencies {
     androidTestImplementation("androidx.compose.ui:ui-test-junit4")
     debugImplementation("androidx.compose.ui:ui-tooling")
     debugImplementation("androidx.compose.ui:ui-test-manifest")
-    
+
     detektPlugins("io.gitlab.arturbosch.detekt:detekt-formatting:1.23.8")
 }
 
