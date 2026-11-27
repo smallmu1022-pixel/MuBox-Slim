@@ -9,48 +9,43 @@ import android.os.Build
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.SystemBarStyle
-import androidx.activity.enableEdgeToEdge
+import androidx.activity.compose.BackHandler
 import androidx.activity.compose.setContent
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
-import androidx.compose.animation.AnimatedVisibility
-import androidx.compose.animation.core.FastOutSlowInEasing
-import androidx.compose.animation.core.tween
-import androidx.compose.animation.expandVertically
-import androidx.compose.animation.fadeIn
-import androidx.compose.animation.fadeOut
-import androidx.compose.animation.shrinkVertically
-import androidx.compose.animation.slideInVertically
-import androidx.compose.animation.slideOutVertically
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.WindowInsets
-import androidx.compose.foundation.layout.asPaddingValues
-import androidx.compose.foundation.layout.navigationBars
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.statusBarsPadding
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.rounded.Menu
+import androidx.compose.material3.DrawerValue
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.ModalNavigationDrawer
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Surface
+import androidx.compose.material3.rememberDrawerState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.LaunchedEffect
-import androidx.core.content.edit
-import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.unit.dp
+import androidx.core.content.edit
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.core.content.ContextCompat
 import androidx.lifecycle.viewmodel.compose.viewModel
-import androidx.navigation.NavController
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import com.mubox.app.repository.SettingsRepository
@@ -62,13 +57,12 @@ import com.mubox.app.utils.DeepLinkHandler
 import com.mubox.app.ipc.SingBoxRemote
 import com.mubox.app.service.VpnTileService
 import com.mubox.app.ui.components.AppNotificationManager
-import com.mubox.app.ui.components.AppNavBar
+import com.mubox.app.ui.components.AppDrawer
 import com.mubox.app.ui.navigation.AppNavigation
 import com.mubox.app.ui.theme.SingBoxTheme
 import com.mubox.app.ui.theme.appBackgroundBrush
 import com.mubox.app.ui.theme.LocalLiquidGlassBackdrop
 import com.mubox.app.ui.theme.liquidGlassBackdrop
-import com.kyant.backdrop.Backdrop
 import com.kyant.backdrop.backdrops.layerBackdrop
 import com.kyant.backdrop.backdrops.rememberLayerBackdrop
 import android.content.ComponentName
@@ -127,9 +121,6 @@ class MainActivity : ComponentActivity() {
         setContent {
             SingBoxApp()
         }
-
-        // 不在 onCreate 中无条件取消后台配置/规则集自动更新，避免用户频繁打开应用导致定时任务失效
-        // // cancelRuleSetUpdateWork()
     }
 }
 
@@ -146,7 +137,6 @@ fun SingBoxApp() {
     )
 
     LaunchedEffect(Unit) {
-        // Best-effort: ask system to refresh QS tile state after app process restarts/force-stops.
         runCatching {
             TileService.requestListeningState(context, ComponentName(context, VpnTileService::class.java))
         }
@@ -180,10 +170,8 @@ fun SingBoxApp() {
         if (!settings.autoCheckUpdate || updateChecked) return@LaunchedEffect
 
         if (isVpnRunningForUpdate) {
-
             kotlinx.coroutines.delay(1000L)
             val result = com.mubox.app.utils.AppUpdateChecker.check(context)
-            // 检查失败不标记完成：留给下面的兜底路径隔时重试，不再静默放弃。
             if (result !is com.mubox.app.utils.UpdateCheckResult.Error) {
                 updateChecked = true
                 if (result is com.mubox.app.utils.UpdateCheckResult.UpdateAvailable) {
@@ -196,7 +184,6 @@ fun SingBoxApp() {
     LaunchedEffect(settings.autoCheckUpdate) {
         if (!settings.autoCheckUpdate) return@LaunchedEffect
         kotlinx.coroutines.delay(10000L)
-        // 首次失败后最多再重试两次（90 秒、5 分钟），仍失败才等下次冷启动。
         val retryDelaysMs = longArrayOf(0L, 90_000L, 300_000L)
         for (delayMs in retryDelaysMs) {
             if (updateChecked) break
@@ -213,7 +200,6 @@ fun SingBoxApp() {
         }
     }
 
-    // Handle App Shortcuts - need navController reference
     var pendingNavigation by remember { mutableStateOf<String?>(null) }
     val intentEvent by MainIntentEvents.events.collectAsStateWithLifecycle()
 
@@ -230,7 +216,6 @@ fun SingBoxApp() {
                 intent.action = null
             }
             android.content.Intent.ACTION_VIEW -> {
-
                 intent.data?.let { uri ->
                     val scheme = uri.scheme
                     val host = uri.host
@@ -244,7 +229,6 @@ fun SingBoxApp() {
 
                         if (!url.isNullOrBlank()) {
                             DeepLinkHandler.setPendingSubscriptionImport(name, url, interval)
-
                             pendingNavigation = "profiles"
                         }
                     }
@@ -256,11 +240,9 @@ fun SingBoxApp() {
     val connectionState by dashboardViewModel.connectionState.collectAsStateWithLifecycle()
     val isRunning by SingBoxRemote.isRunning.collectAsStateWithLifecycle()
     val isStarting by SingBoxRemote.isStarting.collectAsStateWithLifecycle()
-    // 每次进入主界面只尝试一次，避免手动断开后同会话立刻重连
     var autoConnectAttempted by remember { mutableStateOf(false) }
 
     LaunchedEffect(isRunning, isStarting) {
-
         kotlinx.coroutines.withContext(kotlinx.coroutines.Dispatchers.IO) {
             com.mubox.app.utils.NetworkClient.clearConnectionPool()
         }
@@ -269,7 +251,6 @@ fun SingBoxApp() {
     LaunchedEffect(settings.autoConnect, connectionState, isRunning, isStarting) {
         if (autoConnectAttempted || !settings.autoConnect) return@LaunchedEffect
 
-        // 必须先取得 AIDL 实时状态，禁止用冷启动默认 STOPPED 误触发二次点火
         SingBoxRemote.ensureBound(context)
         repeat(5) {
             if (SingBoxRemote.isBound()) return@repeat
@@ -278,7 +259,6 @@ fun SingBoxApp() {
         if (!SingBoxRemote.isBound()) return@LaunchedEffect
         if (!SingBoxRemote.queryAndSyncState(context)) return@LaunchedEffect
 
-        // 启动时核心已运行也要消费本次机会，防止同会话手动断开后自动重连
         if (SingBoxRemote.isRunning.value || SingBoxRemote.isStarting.value) {
             autoConnectAttempted = true
             return@LaunchedEffect
@@ -309,9 +289,7 @@ fun SingBoxApp() {
 
     LaunchedEffect(Unit) {
         SettingsRepository.restartRequiredEvents.collectLatest {
-
             if (!SingBoxRemote.isRunning.value && !SingBoxRemote.isStarting.value) return@collectLatest
-
             AppNotificationManager.showMessage(
                 context = context,
                 message = restartNeededMessage
@@ -327,8 +305,9 @@ fun SingBoxApp() {
         val useLiquidGlassNav = appThemeStyle == AppThemeStyle.LIQUID_GLASS
         val liquidGlassContentBackdrop = rememberLayerBackdrop()
         val liquidGlassComponentBackdrop = rememberLayerBackdrop()
+        val drawerState = rememberDrawerState(DrawerValue.Closed)
+        val scope = rememberCoroutineScope()
 
-        // Handle pending navigation from App Shortcuts
         LaunchedEffect(pendingNavigation) {
             pendingNavigation?.let { route ->
                 delay(100)
@@ -343,116 +322,102 @@ fun SingBoxApp() {
             }
         }
 
-        // Get current destination
         val navBackStackEntry = navController.currentBackStackEntryAsState()
         val currentRoute = navBackStackEntry.value?.destination?.route
-        val showBottomBar = currentRoute in listOf(
-            "dashboard", "nodes", "profiles", "settings"
-        )
         val rootContainerColor = Color.Transparent
 
-        Box(
-            modifier = Modifier
-                .fillMaxSize()
-                .background(appBackgroundBrush())
+        BackHandler(enabled = drawerState.isOpen) {
+            scope.launch { drawerState.close() }
+        }
+
+        ModalNavigationDrawer(
+            drawerState = drawerState,
+            drawerContent = {
+                AppDrawer(
+                    navController = navController,
+                    currentRoute = currentRoute,
+                    drawerState = drawerState
+                )
+            }
         ) {
             Box(
                 modifier = Modifier
                     .fillMaxSize()
-                    .then(
-                        if (useLiquidGlassNav) {
-                            Modifier.layerBackdrop(liquidGlassComponentBackdrop)
-                        } else {
-                            Modifier
-                        }
-                    )
-                    .liquidGlassBackdrop()
-            )
-
-            CompositionLocalProvider(
-                LocalLiquidGlassBackdrop provides if (useLiquidGlassNav) {
-                    liquidGlassComponentBackdrop
-                } else {
-                    null
-                }
+                    .background(appBackgroundBrush())
             ) {
-                Scaffold(
-                    bottomBar = {
-                        if (!useLiquidGlassNav) {
-                            AnimatedAppNavBar(
-                                visible = showBottomBar,
-                                navController = navController,
-                                themeStyle = appThemeStyle,
-                                backdrop = liquidGlassContentBackdrop
-                            )
-                        }
-                    },
-                    containerColor = rootContainerColor,
-                    contentWindowInsets = WindowInsets(0, 0, 0, 0)
-                ) { innerPadding ->
-                    val rawPadding = WindowInsets.navigationBars
-                        .asPaddingValues()
-                        .calculateBottomPadding()
-                    val safeBottomPadding = if (rawPadding < 12.dp) 12.dp else rawPadding
-
-                    val dashboardContentBottomPadding = if (useLiquidGlassNav) {
-                        68.dp + safeBottomPadding
-                    } else {
-                        0.dp
-                    }
-                    val topLevelContentBottomPadding = if (useLiquidGlassNav) {
-                        68.dp + safeBottomPadding
-                    } else {
-                        0.dp
-                    }
-                    val bottomPadding =
-                        if (useLiquidGlassNav) 0.dp else innerPadding.calculateBottomPadding()
-
-                    val contentModifier = Modifier
+                Box(
+                    modifier = Modifier
                         .fillMaxSize()
-                        .padding(bottom = bottomPadding)
+                        .then(
+                            if (useLiquidGlassNav) {
+                                Modifier.layerBackdrop(liquidGlassComponentBackdrop)
+                            } else {
+                                Modifier
+                            }
+                        )
+                        .liquidGlassBackdrop()
+                )
 
-                    if (useLiquidGlassNav) {
-                        Box(
-                            modifier = contentModifier
-                                .layerBackdrop(liquidGlassContentBackdrop)
-                                .background(rootContainerColor)
-                        ) {
-                            AppNavigation(
-                                navController = navController,
-                                dashboardViewModel = dashboardViewModel,
-                                dashboardBottomContentPadding = dashboardContentBottomPadding,
-                                topLevelBottomContentPadding = topLevelContentBottomPadding
-                            )
-                        }
+                CompositionLocalProvider(
+                    LocalLiquidGlassBackdrop provides if (useLiquidGlassNav) {
+                        liquidGlassComponentBackdrop
                     } else {
-                        Surface(
-                            modifier = contentModifier,
-                            color = rootContainerColor
-                        ) {
-                            AppNavigation(
-                                navController = navController,
-                                dashboardViewModel = dashboardViewModel,
-                                dashboardBottomContentPadding = dashboardContentBottomPadding,
-                                topLevelBottomContentPadding = topLevelContentBottomPadding
-                            )
+                        null
+                    }
+                ) {
+                    Scaffold(
+                        containerColor = rootContainerColor,
+                        contentWindowInsets = WindowInsets(0, 0, 0, 0)
+                    ) { innerPadding ->
+                        val contentModifier = Modifier
+                            .fillMaxSize()
+                            .padding(innerPadding)
+
+                        if (useLiquidGlassNav) {
+                            Box(
+                                modifier = contentModifier
+                                    .layerBackdrop(liquidGlassContentBackdrop)
+                                    .background(rootContainerColor)
+                            ) {
+                                AppNavigation(
+                                    navController = navController,
+                                    dashboardViewModel = dashboardViewModel,
+                                    dashboardBottomContentPadding = 0.dp,
+                                    topLevelBottomContentPadding = 0.dp
+                                )
+                            }
+                        } else {
+                            Surface(
+                                modifier = contentModifier,
+                                color = rootContainerColor
+                            ) {
+                                AppNavigation(
+                                    navController = navController,
+                                    dashboardViewModel = dashboardViewModel,
+                                    dashboardBottomContentPadding = 0.dp,
+                                    topLevelBottomContentPadding = 0.dp
+                                )
+                            }
                         }
                     }
-                }
 
-                if (useLiquidGlassNav) {
-                    AnimatedAppNavBar(
-                        visible = showBottomBar,
-                        navController = navController,
-                        themeStyle = appThemeStyle,
-                        backdrop = liquidGlassContentBackdrop,
-                        modifier = Modifier.align(Alignment.BottomCenter).fillMaxWidth()
-                    )
+                    IconButton(
+                        onClick = { scope.launch { drawerState.open() } },
+                        modifier = Modifier
+                            .statusBarsPadding()
+                            .padding(8.dp)
+                            .align(Alignment.TopStart)
+                    ) {
+                        Icon(
+                            imageVector = Icons.Rounded.Menu,
+                            contentDescription = stringResource(R.string.common_menu),
+                            tint = MaterialTheme.colorScheme.onBackground
+                        )
+                    }
                 }
             }
         }
 
-        // 内置更新弹窗：启动自动检查或设置页手动检查发现新版时统一在此弹出
         val pendingUpdate by com.mubox.app.utils.UpdateUiEvents.pending.collectAsStateWithLifecycle()
         pendingUpdate?.let { update ->
             com.mubox.app.ui.components.AppUpdateDialog(
@@ -460,39 +425,5 @@ fun SingBoxApp() {
                 onDismiss = { com.mubox.app.utils.UpdateUiEvents.clear() }
             )
         }
-    }
-}
-
-@Composable
-private fun AnimatedAppNavBar(
-    visible: Boolean,
-    navController: NavController,
-    themeStyle: AppThemeStyle,
-    modifier: Modifier = Modifier,
-    backdrop: Backdrop? = null
-) {
-    AnimatedVisibility(
-        visible = visible,
-        modifier = modifier,
-        enter = slideInVertically(
-            initialOffsetY = { it },
-            animationSpec = tween(durationMillis = 400, easing = FastOutSlowInEasing)
-        ) + expandVertically(
-            expandFrom = Alignment.Bottom,
-            animationSpec = tween(durationMillis = 400, easing = FastOutSlowInEasing)
-        ) + fadeIn(animationSpec = tween(durationMillis = 400)),
-        exit = slideOutVertically(
-            targetOffsetY = { it },
-            animationSpec = tween(durationMillis = 400, easing = FastOutSlowInEasing)
-        ) + shrinkVertically(
-            shrinkTowards = Alignment.Bottom,
-            animationSpec = tween(durationMillis = 400, easing = FastOutSlowInEasing)
-        ) + fadeOut(animationSpec = tween(durationMillis = 400))
-    ) {
-        AppNavBar(
-            navController = navController,
-            themeStyle = themeStyle,
-            backdrop = backdrop
-        )
     }
 }
