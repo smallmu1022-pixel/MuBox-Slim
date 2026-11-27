@@ -68,6 +68,12 @@ jobs:
           ref: v1.14.4
           path: sing-box
 
+      - name: Apply REALITY ClientHello compatibility patch
+        run: |
+          set -euo pipefail
+          cd sing-box
+          git apply ../slim/reality-clienthello-compat.patch
+
       - name: Install gomobile
         env:
           ANDROID_NDK_HOME: ${{ steps.setup-ndk.outputs.ndk-path }}
