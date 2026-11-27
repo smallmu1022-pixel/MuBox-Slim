@@ -141,7 +141,7 @@ fun AppNavigation(
     dashboardViewModel: DashboardViewModel,
     dashboardBottomContentPadding: Dp = 0.dp,
     topLevelBottomContentPadding: Dp = 0.dp,
-    onMenuClick: () -> Unit = {}
+    onMenuClick: (() -> Unit)? = null
 ) {
     val slideSpec = tween<IntOffset>(
         durationMillis = NAV_ANIMATION_DURATION,
