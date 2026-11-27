@@ -15,7 +15,7 @@ concurrency:
 
 env:
   ABI: arm64-v8a
-  EXPECTED_CERT_SHA256: 1fe4e99421b89fdd7a1b7e7d37a297558edee0dada9dbb89c41ff56574030302
+  EXPECTED_CERT_SHA256: c0ededcccc0e0e0ee1216a624e7a025f9628dde6c4cdc7aa3de03f14d31ea355
 
 jobs:
   release:
