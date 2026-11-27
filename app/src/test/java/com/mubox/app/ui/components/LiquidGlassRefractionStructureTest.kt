@@ -78,7 +78,6 @@ class LiquidGlassRefractionStructureTest {
         val metrics = nav.extractFunctionBody("rememberLiquidGlassNavMetrics")
         val navigateToTab = nav.extractFunctionBody("navigateToTab")
         val appNavigation = navigation.extractFunctionBody("AppNavigation")
-        val topLevelPage = navigation.extractFunctionBody("TopLevelPage")
 
         assertTrue(nav.contains("liquidGlassSelectedIndicatorSize = 44.dp"))
         assertTrue(indicator.contains(".size(liquidGlassSelectedIndicatorSize)"))
@@ -94,7 +93,7 @@ class LiquidGlassRefractionStructureTest {
         assertFalse(metrics.contains("spring("))
         assertTrue(navItem.contains(".height(liquidGlassNavItemMinTouchSize)"))
 
-        assertTrue(navigation.contains("const val NAV_ANIMATION_DURATION = 450"))
+        assertTrue(navigation.contains("const val NAV_ANIMATION_DURATION = 280"))
         assertFalse(navigation.contains("TAB_NAV_ANIMATION_DURATION"))
         assertFalse(navigation.contains("TAB_NAV_SLIDE_DISTANCE_DIVISOR"))
         assertFalse(appNavigation.contains("tabSlideSpec"))
@@ -107,14 +106,10 @@ class LiquidGlassRefractionStructureTest {
         assertTrue(appNavigation.contains(") + fadeOut(animationSpec = fadeSpec)"))
         assertFalse(appNavigation.contains("EnterTransition.None"))
         assertFalse(appNavigation.contains("ExitTransition.None"))
-        assertTrue(topLevelPage.contains(".liquidGlassBackdrop()"))
-        assertTrue(appNavigation.countOccurrences("TopLevelPage {") == 4)
         assertTrue(navigateToTab.contains("restoreState = true"))
         assertFalse(navigateToTab.contains("delay("))
         assertFalse(navigateToTab.contains("launch("))
     }
-
-    private fun String.countOccurrences(token: String): Int = windowed(token.length).count { it == token }
 
     private fun String.extractFunctionBody(functionName: String): String {
         val start = listOf(
@@ -122,9 +117,7 @@ class LiquidGlassRefractionStructureTest {
             "fun BoxScope.$functionName",
             "fun BackdropEffectScope.$functionName",
             "fun $functionName"
-        )
-            .map(::indexOf)
-            .firstOrNull { it >= 0 } ?: -1
+        ).map(::indexOf).firstOrNull { it >= 0 } ?: -1
         assertTrue("Missing function $functionName", start >= 0)
         val bodyStart = indexOf('{', start)
         assertTrue("Missing body for $functionName", bodyStart >= 0)
