@@ -28,6 +28,7 @@ import androidx.compose.material.icons.rounded.Info
 import androidx.compose.material.icons.rounded.Language
 import androidx.compose.material.icons.rounded.PowerSettingsNew
 import androidx.compose.material.icons.rounded.Route
+import androidx.compose.material.icons.rounded.Settings
 import androidx.compose.material.icons.rounded.SwapVert
 import androidx.compose.material.icons.rounded.Sync
 import androidx.compose.material.icons.rounded.VpnKey
@@ -78,20 +79,30 @@ fun AppDrawer(
         DrawerEntry(Screen.Profiles.route, stringResource(R.string.profiles_title), Icons.Rounded.FolderCopy, topLevel = true)
     )
 
-    val settingsEntries = listOf(
+    val networkEntries = listOf(
         DrawerEntry(Screen.ConnectionSettings.route, stringResource(R.string.connection_settings_title), Icons.Rounded.PowerSettingsNew, topLevel = false),
         DrawerEntry(Screen.RoutingSettings.route, stringResource(R.string.routing_settings_title), Icons.Rounded.Route, topLevel = false),
         DrawerEntry(Screen.DnsSettings.route, stringResource(R.string.dns_settings_title), Icons.Rounded.Dns, topLevel = false),
         DrawerEntry(Screen.TunSettings.route, stringResource(R.string.tun_settings_title), Icons.Rounded.VpnKey, topLevel = false),
+        DrawerEntry(Screen.ConnectionInfo.route, stringResource(R.string.connection_info_title), Icons.Rounded.SwapVert, topLevel = false)
+    )
+
+    val rulesEntries = listOf(
         DrawerEntry(Screen.RuleSets.route, stringResource(R.string.rulesets_title), Icons.Rounded.Sync, topLevel = false),
         DrawerEntry(Screen.CustomRules.route, stringResource(R.string.custom_rules_title), Icons.Rounded.Language, topLevel = false),
         DrawerEntry(Screen.DomainRules.route, stringResource(R.string.domain_rules_title), Icons.Rounded.Language, topLevel = false),
         DrawerEntry(Screen.AppRouting.route, stringResource(R.string.app_rules_title), Icons.Rounded.Apps, topLevel = false),
-        DrawerEntry(Screen.RuleSetHub.route, stringResource(R.string.ruleset_hub_title), Icons.Rounded.Hub, topLevel = false),
+        DrawerEntry(Screen.RuleSetHub.route, stringResource(R.string.ruleset_hub_title), Icons.Rounded.Hub, topLevel = false)
+    )
+
+    val toolsEntries = listOf(
         DrawerEntry(Screen.Diagnostics.route, stringResource(R.string.diagnostics_title), Icons.Rounded.BugReport, topLevel = false),
         DrawerEntry(Screen.Logs.route, stringResource(R.string.logs_title), Icons.Rounded.History, topLevel = false),
-        DrawerEntry(Screen.TrafficStats.route, stringResource(R.string.traffic_stats_title), Icons.Rounded.Analytics, topLevel = false),
-        DrawerEntry(Screen.ConnectionInfo.route, stringResource(R.string.connection_info_title), Icons.Rounded.SwapVert, topLevel = false)
+        DrawerEntry(Screen.TrafficStats.route, stringResource(R.string.traffic_stats_title), Icons.Rounded.Analytics, topLevel = false)
+    )
+
+    val settingsEntries = listOf(
+        DrawerEntry(Screen.Settings.route, stringResource(R.string.settings_title), Icons.Rounded.Settings, topLevel = false)
     )
 
     val aboutEntry = DrawerEntry(
@@ -115,6 +126,54 @@ fun AppDrawer(
         ) {
             DrawerSection(title = "主页")
             homeEntries.forEach { entry ->
+                DrawerRow(
+                    entry = entry,
+                    currentRoute = currentRoute,
+                    onClick = {
+                        scope.launch {
+                            drawerState.close()
+                            entry.action?.invoke() ?: navigateEntry(navController, entry)
+                        }
+                    }
+                )
+            }
+
+            Spacer(Modifier.height(16.dp))
+
+            DrawerSection(title = "网络")
+            networkEntries.forEach { entry ->
+                DrawerRow(
+                    entry = entry,
+                    currentRoute = currentRoute,
+                    onClick = {
+                        scope.launch {
+                            drawerState.close()
+                            entry.action?.invoke() ?: navigateEntry(navController, entry)
+                        }
+                    }
+                )
+            }
+
+            Spacer(Modifier.height(16.dp))
+
+            DrawerSection(title = "规则")
+            rulesEntries.forEach { entry ->
+                DrawerRow(
+                    entry = entry,
+                    currentRoute = currentRoute,
+                    onClick = {
+                        scope.launch {
+                            drawerState.close()
+                            entry.action?.invoke() ?: navigateEntry(navController, entry)
+                        }
+                    }
+                )
+            }
+
+            Spacer(Modifier.height(16.dp))
+
+            DrawerSection(title = "工具")
+            toolsEntries.forEach { entry ->
                 DrawerRow(
                     entry = entry,
                     currentRoute = currentRoute,
