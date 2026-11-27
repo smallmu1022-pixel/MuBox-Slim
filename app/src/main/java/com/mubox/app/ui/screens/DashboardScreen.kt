@@ -264,32 +264,6 @@ fun DashboardScreen(
                 modifier = Modifier.fillMaxWidth(),
                 verticalArrangement = Arrangement.spacedBy(12.dp)
             ) {
-                // App Logo & Title
-                Row(
-                    verticalAlignment = Alignment.CenterVertically,
-                    modifier = Modifier.padding(bottom = 12.dp)
-                ) {
-                    // Use AndroidView to render adaptive icon correctly
-                    AndroidView(
-                        factory = { ctx ->
-                            ImageView(ctx).apply {
-                                setImageResource(R.mipmap.ic_launcher_round)
-                            }
-                        },
-                        modifier = Modifier
-                            .size(40.dp)
-                            .padding(end = 12.dp)
-                    )
-                    Text(
-                        text = "MuBox",
-                        style = MaterialTheme.typography.headlineMedium.copy(
-                            fontWeight = androidx.compose.ui.text.font.FontWeight.Bold,
-                            letterSpacing = 1.sp
-                        ),
-                        color = MaterialTheme.colorScheme.onBackground
-                    )
-                }
-
                 Row(
                     modifier = Modifier.fillMaxWidth(),
                     horizontalArrangement = Arrangement.SpaceBetween,
