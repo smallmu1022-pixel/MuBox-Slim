@@ -74,6 +74,12 @@ jobs:
           cd sing-box
           git apply ../slim/reality-clienthello-compat.patch
 
+      - name: Apply kernel slim patch (keep 6 protocols only)
+        run: |
+          set -euo pipefail
+          cd sing-box
+          git apply ../slim/kernel-slim.patch
+
       - name: Install gomobile
         env:
           ANDROID_NDK_HOME: ${{ steps.setup-ndk.outputs.ndk-path }}
