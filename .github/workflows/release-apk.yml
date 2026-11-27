@@ -15,8 +15,6 @@ concurrency:
 
 env:
   ABI: arm64-v8a
-  EXPECTED_AAR_SHA256: 7640efe404ab8cb8535e0a4899a1b6dc3b2e5a94009a33cd6f6383dc9035bbfa
-  AAR_URL: https://54321-i4pg3l4bdsb4o0hvlh6kz-95067deb.us2.manus.computer/download/libbox-7640efe404ab8cb8535e0a4899a1b6dc3b2e5a94009a33cd6f6383dc9035bbfa.aar
   EXPECTED_CERT_SHA256: 1fe4e99421b89fdd7a1b7e7d37a297558edee0dada9dbb89c41ff56574030302
 
 jobs:
@@ -57,16 +55,49 @@ jobs:
       - name: Set up Gradle
         uses: gradle/actions/setup-gradle@v4
 
-      - name: Download and verify kernel AAR
+      - name: Set up Go
+        uses: actions/setup-go@v5
+        with:
+          go-version: "1.26.11"
+          cache: false
+
+      - name: Checkout pinned sing-box kernel
+        uses: actions/checkout@v4
+        with:
+          repository: SagerNet/sing-box
+          ref: v1.14.4
+          path: sing-box
+
+      - name: Install gomobile
         env:
-          EXPECTED_AAR_SHA256: ${{ env.EXPECTED_AAR_SHA256 }}
-          AAR_URL: ${{ env.AAR_URL }}
+          ANDROID_NDK_HOME: ${{ steps.setup-ndk.outputs.ndk-path }}
         run: |
           set -euo pipefail
-          mkdir -p app/libs
-          curl --fail --location --silent --show-error --retry 5 --retry-delay 2 "$AAR_URL" -o app/libs/libbox.aar
-          echo "$EXPECTED_AAR_SHA256  app/libs/libbox.aar" | sha256sum -c -
-          stat -c 'AAR input size: %s bytes' app/libs/libbox.aar
+          go install github.com/sagernet/gomobile/cmd/gomobile@v0.1.12
+          "$(go env GOPATH)/bin/gomobile" init
+
+      - name: Build kernel AAR
+        env:
+          ANDROID_NDK_HOME: ${{ steps.setup-ndk.outputs.ndk-path }}
+          CGO_ENABLED: "1"
+          GOOS: android
+          GOARCH: arm64
+        working-directory: sing-box
+        run: |
+          set -euo pipefail
+          mkdir -p ../app/libs
+          "$(go env GOPATH)/bin/gomobile" bind \
+            -o ../app/libs/libbox.aar \
+            -target android/arm64 \
+            -androidapi 24 \
+            -javapkg=io.nekohasekai \
+            -libname=box \
+            -trimpath \
+            -buildvcs=false \
+            -ldflags "-s -w -X github.com/sagernet/sing-box/constant.Version=1.14.4" \
+            -tags "with_gvisor,with_quic,with_utls,with_wireguard,with_clash_api,with_dhcp,with_ech,with_grpc,with_legacy_relay,with_quic_bbr,with_reality,with_tailscale,with_utls" \
+            ./experimental/libbox
+          stat -c 'AAR input size: %s bytes' ../app/libs/libbox.aar
 
       - name: Decode release signing keystore
         env:
