@@ -92,7 +92,7 @@ jobs:
       - name: Audit candidate package, signature, integrity, and metadata
         env:
           EXPECTED_AAR_SHA256: 7640efe404ab8cb8535e0a4899a1b6dc3b2e5a94009a33cd6f6383dc9035bbfa
-          EXPECTED_CERT_SHA256: 1fe4e99421b89fdd7a1b7e7d37a297558edee0dada9dbb89c41ff56574030302
+          EXPECTED_CERT_SHA256: c0ededcccc0e0e0ee1216a624e7a025f9628dde6c4cdc7aa3de03f14d31ea355
         run: |
           set -euo pipefail
           APK=dist/app-arm64-v8a-release.apk
