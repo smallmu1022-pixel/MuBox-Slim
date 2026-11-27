@@ -89,7 +89,8 @@ import java.util.Locale
 fun SettingsScreen(
     navController: NavController,
     viewModel: SettingsViewModel = viewModel(),
-    bottomContentPadding: Dp = 0.dp
+    bottomContentPadding: Dp = 0.dp,
+    onMenuClick: (() -> Unit)? = null
 ) {
     val context = LocalContext.current
     val restartNeededMessage = stringResource(R.string.settings_restart_needed)
@@ -187,6 +188,7 @@ fun SettingsScreen(
     }
     FloatingMainPageLayout(
         title = stringResource(R.string.settings_title),
+        onMenuClick = onMenuClick,
         modifier = Modifier
             .fillMaxSize()
             .background(liquidGlassScreenContainerColor(MaterialTheme.colorScheme.background))

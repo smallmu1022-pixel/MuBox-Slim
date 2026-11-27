@@ -31,6 +31,7 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.rounded.ArrowBack
+import androidx.compose.material.icons.rounded.Menu
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
@@ -80,6 +81,7 @@ private fun floatingMainPageHeaderContentPadding(): Dp {
 fun FloatingMainPageLayout(
     title: String,
     modifier: Modifier = Modifier,
+    onMenuClick: (() -> Unit)? = null,
     actions: (@Composable RowScope.() -> Unit)? = null,
     supportingContentHeight: Dp = 0.dp,
     supportingContent: (@Composable () -> Unit)? = null,
@@ -100,6 +102,7 @@ fun FloatingMainPageLayout(
         Column(modifier = Modifier.align(Alignment.TopCenter)) {
             FloatingMainPageHeader(
                 title = title,
+                onMenuClick = onMenuClick,
                 actions = actions
             )
             if (supportingContent != null) {
@@ -119,6 +122,7 @@ fun FloatingMainPageLayout(
 @Composable
 private fun FloatingMainPageHeader(
     title: String,
+    onMenuClick: (() -> Unit)? = null,
     actions: (@Composable RowScope.() -> Unit)?
 ) {
     Row(
@@ -129,6 +133,21 @@ private fun FloatingMainPageHeader(
             .height(48.dp),
         verticalAlignment = Alignment.CenterVertically
     ) {
+        if (onMenuClick != null) {
+            IconButton(
+                modifier = Modifier
+                    .size(48.dp)
+                    .liquidGlassIconButtonPanel(shadowElevation = 6.dp),
+                onClick = onMenuClick
+            ) {
+                Icon(
+                    imageVector = Icons.Rounded.Menu,
+                    contentDescription = stringResource(R.string.common_menu),
+                    tint = MaterialTheme.colorScheme.onBackground
+                )
+            }
+            Spacer(modifier = Modifier.width(12.dp))
+        }
         Text(
             text = title,
             modifier = Modifier.weight(1f),

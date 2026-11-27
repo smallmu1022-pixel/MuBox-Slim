@@ -140,7 +140,8 @@ fun AppNavigation(
     navController: NavHostController,
     dashboardViewModel: DashboardViewModel,
     dashboardBottomContentPadding: Dp = 0.dp,
-    topLevelBottomContentPadding: Dp = 0.dp
+    topLevelBottomContentPadding: Dp = 0.dp,
+    onMenuClick: () -> Unit = {}
 ) {
     val slideSpec = tween<IntOffset>(
         durationMillis = NAV_ANIMATION_DURATION,
@@ -248,7 +249,8 @@ fun AppNavigation(
             DashboardScreen(
                 navController = navController,
                 viewModel = dashboardViewModel,
-                bottomContentPadding = dashboardBottomContentPadding
+                bottomContentPadding = dashboardBottomContentPadding,
+                onMenuClick = onMenuClick
             )
         }
         composable(
@@ -260,7 +262,8 @@ fun AppNavigation(
         ) {
             NodesScreen(
                 navController = navController,
-                bottomContentPadding = topLevelBottomContentPadding
+                bottomContentPadding = topLevelBottomContentPadding,
+                onMenuClick = onMenuClick
             )
         }
         composable(
@@ -272,7 +275,8 @@ fun AppNavigation(
         ) {
             ProfilesScreen(
                 navController = navController,
-                bottomContentPadding = topLevelBottomContentPadding
+                bottomContentPadding = topLevelBottomContentPadding,
+                onMenuClick = onMenuClick
             )
         }
         composable(
@@ -284,7 +288,8 @@ fun AppNavigation(
         ) {
             SettingsScreen(
                 navController = navController,
-                bottomContentPadding = topLevelBottomContentPadding
+                bottomContentPadding = topLevelBottomContentPadding,
+                onMenuClick = onMenuClick
             )
         }
 

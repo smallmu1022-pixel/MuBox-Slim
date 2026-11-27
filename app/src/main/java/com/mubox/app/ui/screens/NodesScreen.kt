@@ -168,7 +168,8 @@ private fun Modifier.nodeTestingProgressPanel(): Modifier {
 fun NodesScreen(
     navController: NavController,
     viewModel: NodesViewModel = viewModel(),
-    bottomContentPadding: Dp = 0.dp
+    bottomContentPadding: Dp = 0.dp,
+    onMenuClick: (() -> Unit)? = null
 ) {
     val context = LocalContext.current
     val clipboardManager = LocalClipboardManager.current
@@ -468,6 +469,7 @@ fun NodesScreen(
         ) { padding ->
             FloatingMainPageLayout(
                 title = stringResource(R.string.nodes_title),
+                onMenuClick = onMenuClick,
                 modifier = Modifier
                     .fillMaxSize()
                     .pointerInput(Unit) {

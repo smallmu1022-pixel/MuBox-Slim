@@ -19,6 +19,7 @@ import androidx.compose.foundation.layout.statusBars
 import androidx.compose.foundation.layout.width
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.rounded.Bolt
+import androidx.compose.material.icons.rounded.Menu
 import androidx.compose.material.icons.rounded.Refresh
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -79,7 +80,8 @@ fun DashboardScreen(
     viewModel: DashboardViewModel = viewModel(),
     settingsViewModel: SettingsViewModel = viewModel(),
     nodesViewModel: NodesViewModel = viewModel(),
-    bottomContentPadding: Dp = 0.dp
+    bottomContentPadding: Dp = 0.dp,
+    onMenuClick: (() -> Unit)? = null
 ) {
     val context = LocalContext.current
     val scope = rememberCoroutineScope()
@@ -261,10 +263,29 @@ fun DashboardScreen(
                 verticalArrangement = Arrangement.spacedBy(12.dp)
             ) {
                 Row(
-                    modifier = Modifier.fillMaxWidth().padding(start = 40.dp),
-                    horizontalArrangement = Arrangement.SpaceBetween,
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.spacedBy(8.dp),
                     verticalAlignment = Alignment.CenterVertically
                 ) {
+                    if (onMenuClick != null) {
+                        IconButton(
+                            modifier = Modifier
+                                .size(48.dp)
+                                .liquidGlassIconButtonPanel(shadowElevation = 6.dp),
+                            onClick = onMenuClick
+                        ) {
+                            Icon(
+                                imageVector = Icons.Rounded.Menu,
+                                contentDescription = stringResource(R.string.common_menu),
+                                tint = MaterialTheme.colorScheme.onBackground
+                            )
+                        }
+                    }
+                    Row(
+                        modifier = Modifier.weight(1f),
+                        horizontalArrangement = Arrangement.SpaceBetween,
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
                     val safetyStatusLabel = when {
                         dataPlaneReadiness.status == com.mubox.app.ipc.DataPlaneStatus.BLOCKING &&
                             connectionState == ConnectionState.Connecting ->
@@ -295,6 +316,7 @@ fun DashboardScreen(
                         mode = currentMode,
                         indicatorColor = indicatorColor
                     ) { showModeDialog = true }
+                    }
                 }
 
                 val browserExcluded = connectionState == ConnectionState.Connected &&

@@ -19,12 +19,7 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.statusBarsPadding
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.rounded.Menu
 import androidx.compose.material3.DrawerValue
-import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.ModalNavigationDrawer
 import androidx.compose.material3.Scaffold
@@ -38,7 +33,6 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
@@ -386,7 +380,8 @@ fun SingBoxApp() {
                                     navController = navController,
                                     dashboardViewModel = dashboardViewModel,
                                     dashboardBottomContentPadding = 0.dp,
-                                    topLevelBottomContentPadding = 0.dp
+                                    topLevelBottomContentPadding = 0.dp,
+                                    onMenuClick = { scope.launch { drawerState.open() } }
                                 )
                             }
                         } else {
@@ -398,27 +393,14 @@ fun SingBoxApp() {
                                     navController = navController,
                                     dashboardViewModel = dashboardViewModel,
                                     dashboardBottomContentPadding = 0.dp,
-                                    topLevelBottomContentPadding = 0.dp
+                                    topLevelBottomContentPadding = 0.dp,
+                                    onMenuClick = { scope.launch { drawerState.open() } }
                                 )
                             }
                         }
-                    }
-
-                    IconButton(
-                        onClick = { scope.launch { drawerState.open() } },
-                        modifier = Modifier
-                            .statusBarsPadding()
-                            .padding(8.dp)
-                            .align(Alignment.TopStart)
-                    ) {
-                        Icon(
-                            imageVector = Icons.Rounded.Menu,
-                            contentDescription = stringResource(R.string.common_menu),
-                            tint = MaterialTheme.colorScheme.onBackground
-                        )
-                    }
                 }
             }
+        }
         }
 
         val pendingUpdate by com.mubox.app.utils.UpdateUiEvents.pending.collectAsStateWithLifecycle()

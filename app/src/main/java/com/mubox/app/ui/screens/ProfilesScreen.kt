@@ -153,7 +153,8 @@ private suspend fun readImportContentSafely(
 fun ProfilesScreen(
     navController: NavController,
     viewModel: com.mubox.app.viewmodel.ProfilesViewModel = androidx.lifecycle.viewmodel.compose.viewModel(),
-    bottomContentPadding: Dp = 0.dp
+    bottomContentPadding: Dp = 0.dp,
+    onMenuClick: (() -> Unit)? = null
 ) {
     val profiles by viewModel.profiles.collectAsStateWithLifecycle()
     val allNodes by viewModel.allNodes.collectAsStateWithLifecycle()
@@ -636,6 +637,7 @@ fun ProfilesScreen(
         ) { padding ->
             FloatingMainPageLayout(
                 title = stringResource(R.string.profiles_title),
+                onMenuClick = onMenuClick,
                 modifier = Modifier
                     .fillMaxSize()
                     .pointerInput(Unit) {
