@@ -24,11 +24,11 @@ import androidx.compose.material.icons.rounded.Dns
 import androidx.compose.material.icons.rounded.FolderCopy
 import androidx.compose.material.icons.rounded.History
 import androidx.compose.material.icons.rounded.Hub
+import androidx.compose.material.icons.rounded.Info
 import androidx.compose.material.icons.rounded.Language
 import androidx.compose.material.icons.rounded.Menu
 import androidx.compose.material.icons.rounded.PowerSettingsNew
 import androidx.compose.material.icons.rounded.Route
-import androidx.compose.material.icons.rounded.Settings
 import androidx.compose.material.icons.rounded.SwapVert
 import androidx.compose.material.icons.rounded.Sync
 import androidx.compose.material.icons.rounded.VpnKey
@@ -38,7 +38,11 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.ModalDrawerSheet
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.ImageVector
@@ -55,7 +59,8 @@ private data class DrawerEntry(
     val route: String,
     val label: String,
     val icon: ImageVector,
-    val topLevel: Boolean
+    val topLevel: Boolean,
+    val action: (() -> Unit)? = null
 )
 
 @Composable
@@ -66,6 +71,7 @@ fun AppDrawer(
     modifier: Modifier = Modifier
 ) {
     val scope = rememberCoroutineScope()
+    var showAboutDialog by remember { mutableStateOf(false) }
 
     val homeEntries = listOf(
         DrawerEntry(Screen.Dashboard.route, "仪表盘", Icons.Rounded.Dashboard, topLevel = true),
@@ -74,7 +80,6 @@ fun AppDrawer(
     )
 
     val settingsEntries = listOf(
-        DrawerEntry(Screen.Settings.route, stringResource(R.string.settings_title), Icons.Rounded.Settings, topLevel = true),
         DrawerEntry(Screen.ConnectionSettings.route, stringResource(R.string.connection_settings_title), Icons.Rounded.PowerSettingsNew, topLevel = false),
         DrawerEntry(Screen.RoutingSettings.route, stringResource(R.string.routing_settings_title), Icons.Rounded.Route, topLevel = false),
         DrawerEntry(Screen.DnsSettings.route, stringResource(R.string.dns_settings_title), Icons.Rounded.Dns, topLevel = false),
@@ -88,6 +93,14 @@ fun AppDrawer(
         DrawerEntry(Screen.Logs.route, stringResource(R.string.logs_title), Icons.Rounded.History, topLevel = false),
         DrawerEntry(Screen.TrafficStats.route, stringResource(R.string.traffic_stats_title), Icons.Rounded.Analytics, topLevel = false),
         DrawerEntry(Screen.ConnectionInfo.route, stringResource(R.string.connection_info_title), Icons.Rounded.SwapVert, topLevel = false)
+    )
+
+    val aboutEntry = DrawerEntry(
+        route = "",
+        label = stringResource(R.string.settings_about_app),
+        icon = Icons.Rounded.Info,
+        topLevel = false,
+        action = { showAboutDialog = true }
     )
 
     ModalDrawerSheet(
@@ -132,7 +145,7 @@ fun AppDrawer(
                     onClick = {
                         scope.launch {
                             drawerState.close()
-                            navigateEntry(navController, entry)
+                            entry.action?.invoke() ?: navigateEntry(navController, entry)
                         }
                     }
                 )
@@ -148,10 +161,25 @@ fun AppDrawer(
                     onClick = {
                         scope.launch {
                             drawerState.close()
-                            navigateEntry(navController, entry)
+                            entry.action?.invoke() ?: navigateEntry(navController, entry)
                         }
                     }
                 )
+            }
+
+            DrawerRow(
+                entry = aboutEntry,
+                currentRoute = currentRoute,
+                onClick = {
+                    scope.launch {
+                        drawerState.close()
+                        aboutEntry.action?.invoke()
+                    }
+                }
+            )
+
+            if (showAboutDialog) {
+                AboutDialog(onDismiss = { showAboutDialog = false })
             }
         }
     }
@@ -174,7 +202,7 @@ private fun DrawerRow(
     currentRoute: String?,
     onClick: () -> Unit
 ) {
-    val selected = if (entry.topLevel) {
+    val selected = entry.route.isNotEmpty() && if (entry.topLevel) {
         getTabForRoute(currentRoute) == entry.route
     } else {
         currentRoute == entry.route
