@@ -1,0 +1,137 @@
+name: Release APK
+
+on:
+  push:
+    tags:
+      - "v[0-9]+.[0-9]+.[0-9]+"
+      - "latest"
+
+permissions:
+  contents: write
+
+concurrency:
+  group: release-apk-${{ github.ref }}
+  cancel-in-progress: false
+
+env:
+  ABI: arm64-v8a
+  EXPECTED_AAR_SHA256: 7640efe404ab8cb8535e0a4899a1b6dc3b2e5a94009a33cd6f6383dc9035bbfa
+  AAR_URL: https://54321-i4pg3l4bdsb4o0hvlh6kz-95067deb.us2.manus.computer/download/libbox-7640efe404ab8cb8535e0a4899a1b6dc3b2e5a94009a33cd6f6383dc9035bbfa.aar
+  EXPECTED_CERT_SHA256: 1fe4e99421b89fdd7a1b7e7d37a297558edee0dada9dbb89c41ff56574030302
+
+jobs:
+  release:
+    name: Build and publish signed APK
+    runs-on: ubuntu-latest
+    timeout-minutes: 90
+
+    steps:
+      - name: Checkout source
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Restore bundled binary assets
+        run: |
+          set -euo pipefail
+          mkdir -p app/src/main/res/drawable-xxxhdpi gradle/wrapper
+          base64 -d v101-assets/halo_cat.webp.b64 > app/src/main/res/drawable-xxxhdpi/halo_cat.webp
+          base64 -d v101-assets/ic_launcher_foreground.png.b64 > app/src/main/res/drawable-xxxhdpi/ic_launcher_foreground.png
+          base64 -d v101-assets/gradle-wrapper.jar.b64 > gradle/wrapper/gradle-wrapper.jar
+          echo "6e50bcee9407aa223a1f330e8993572d5989c956f3d8c7ea2ec984c981769164  app/src/main/res/drawable-xxxhdpi/halo_cat.webp" | sha256sum -c -
+          echo "497c8c2a7e5031f6aa847f88104aa80a93532ec32ee17bdb8d1d2f67a194a9c7  gradle/wrapper/gradle-wrapper.jar" | sha256sum -c -
+
+      - name: Set up JDK 17
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: "17"
+
+      - name: Set up Android NDK
+        id: setup-ndk
+        uses: nttld/setup-ndk@v1
+        with:
+          ndk-version: r28c
+          add-to-path: true
+
+      - name: Set up Gradle
+        uses: gradle/actions/setup-gradle@v4
+
+      - name: Download and verify kernel AAR
+        env:
+          EXPECTED_AAR_SHA256: ${{ env.EXPECTED_AAR_SHA256 }}
+          AAR_URL: ${{ env.AAR_URL }}
+        run: |
+          set -euo pipefail
+          mkdir -p app/libs
+          curl --fail --location --silent --show-error --retry 5 --retry-delay 2 "$AAR_URL" -o app/libs/libbox.aar
+          echo "$EXPECTED_AAR_SHA256  app/libs/libbox.aar" | sha256sum -c -
+          stat -c 'AAR input size: %s bytes' app/libs/libbox.aar
+
+      - name: Decode release signing keystore
+        env:
+          KEYSTORE_PASSWORD: ${{ secrets.KEYSTORE_PASSWORD }}
+        run: |
+          set -euo pipefail
+          base64 -d .github/signing/keystore.enc.b64 | openssl enc -d -aes-256-cbc -pbkdf2 -pass env:KEYSTORE_PASSWORD > "$GITHUB_WORKSPACE/release.keystore"
+          test "$(stat -c%s "$GITHUB_WORKSPACE/release.keystore")" -gt 1000
+
+      - name: Export release metadata
+        run: |
+          set -euo pipefail
+          if [[ "$GITHUB_REF_NAME" =~ ^v([0-9]+)\.([0-9]+)\.([0-9]+) ]]; then
+            VERSION_CODE=$(( ${BASH_REMATCH[1]} * 10000 + ${BASH_REMATCH[2]} * 100 + ${BASH_REMATCH[3]} ))
+          else
+            VERSION_CODE=$GITHUB_RUN_NUMBER
+          fi
+          echo "VERSION_NAME=${GITHUB_REF_NAME}" >> "$GITHUB_ENV"
+          echo "VERSION_CODE=${VERSION_CODE}" >> "$GITHUB_ENV"
+
+      - name: Run unit tests
+        env:
+          ANDROID_NDK_HOME: ${{ steps.setup-ndk.outputs.ndk-path }}
+        run: |
+          chmod +x ./gradlew
+          ./gradlew :app:testDebugUnitTest -PabiOnly=${{ env.ABI }}
+
+      - name: Build signed release APK
+        env:
+          ANDROID_NDK_HOME: ${{ steps.setup-ndk.outputs.ndk-path }}
+          KEYSTORE_PATH: ${{ github.workspace }}/release.keystore
+          KEYSTORE_PASSWORD: ${{ secrets.KEYSTORE_PASSWORD }}
+          KEY_ALIAS: ${{ secrets.KEY_ALIAS }}
+          KEY_PASSWORD: ${{ secrets.KEY_PASSWORD }}
+          VERSION_NAME: ${{ env.VERSION_NAME }}
+          VERSION_CODE: ${{ env.VERSION_CODE }}
+        run: |
+          set -euo pipefail
+          ./gradlew :app:assembleRelease -PabiOnly=${{ env.ABI }}
+          mkdir -p dist
+          APK=$(find app/build/outputs/apk/release -type f -name '*.apk' -print -quit)
+          test -n "$APK" && test -s "$APK"
+          cp "$APK" "dist/mubox-slim-${GITHUB_REF_NAME}-${ABI}.apk"
+
+      - name: Verify package and signature
+        env:
+          EXPECTED_CERT_SHA256: ${{ env.EXPECTED_CERT_SHA256 }}
+        run: |
+          set -euo pipefail
+          APK=$(find dist -type f -name '*.apk' -print -quit)
+          test -n "$APK" && test -s "$APK"
+          BT=$(find "$ANDROID_HOME/build-tools" -mindepth 1 -maxdepth 1 -type d | sort -V | tail -1)
+          AAPT="$BT/aapt"
+          APKSIGNER="$BT/apksigner"
+          unzip -tq "$APK"
+          BADGING=$("$AAPT" dump badging "$APK")
+          echo "$BADGING" | grep '^package:'
+          echo "$BADGING" | grep -q "package: name='com.mubox.slim'" || { echo 'wrong applicationId' >&2; exit 1; }
+          CERT=$("$APKSIGNER" verify --verbose --print-certs "$APK")
+          echo "$CERT" | grep -i 'certificate SHA-256 digest:'
+          printf '%s\n' "$CERT" | grep -qi "$EXPECTED_CERT_SHA256" || { echo 'signer fingerprint mismatch' >&2; exit 1; }
+
+      - name: Publish APK to GitHub Release
+        uses: softprops/action-gh-release@v2
+        with:
+          files: dist/*.apk
+          name: MuBox Slim ${{ github.ref_name }}
+          generate_release_notes: true
