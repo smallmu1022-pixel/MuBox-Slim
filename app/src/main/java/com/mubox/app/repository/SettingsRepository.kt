@@ -11,7 +11,6 @@ import com.mubox.app.model.AppGroup
 import com.mubox.app.model.RuleSet
 import com.mubox.app.model.RuleSetOutboundMode
 import com.mubox.app.model.RuleSetType
-import com.mubox.app.model.TunStack
 import com.mubox.app.model.TrafficCaptureMode
 import com.mubox.app.model.LatencyTestMethod
 import com.mubox.app.model.VpnAppMode
@@ -190,10 +189,6 @@ class SettingsRepository(context: Context) {
                 tunEnabled = value == TrafficCaptureMode.VPN
             )
         }
-    }
-
-    suspend fun setTunStack(value: TunStack) {
-        updateSettingsAndNotifyRestart { it.copy(tunStack = value) }
     }
 
     suspend fun setIpVersionMode(value: IpVersionMode) {
