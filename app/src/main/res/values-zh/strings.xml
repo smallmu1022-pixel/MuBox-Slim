@@ -202,7 +202,6 @@
     <string name="root_mode_dns_title">系统 DNS</string>
     <string name="root_mode_dns_subtitle">Root 模式会统一接管系统 DNS；绕过应用的业务流量仍直连</string>
     <string name="root_mode_capability_failed">Root 能力不可用</string>
-    <string name="tun_settings_stack">堆栈</string>
     <string name="tun_settings_ip_version_mode">IP 版本模式</string>
     <string name="tun_settings_mtu">MTU</string>
     <string name="tun_settings_mtu_auto">自动 MTU</string>
@@ -709,10 +708,6 @@
     <string name="language_chinese">简体中文</string>
     <string name="language_english">English</string>
 
-    <!-- Enum: TunStack -->
-    <string name="tun_stack_system">System</string>
-    <string name="tun_stack_gvisor">gVisor</string>
-    <string name="tun_stack_mixed">Mixed</string>
 
     <!-- Enum: IpVersionMode -->
     <string name="ip_version_mode_ipv4_only">仅 IPv4</string>
