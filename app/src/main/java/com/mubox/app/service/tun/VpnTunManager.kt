@@ -17,7 +17,6 @@ import com.mubox.app.ipc.VpnStateStore
 import com.mubox.app.model.AppSettings
 import com.mubox.app.model.PerAppVpnPolicy
 import com.mubox.app.model.IpVersionMode
-import com.mubox.app.model.TunStack
 import com.mubox.app.model.VpnAppMode
 import com.mubox.app.model.VpnRouteMode
 import com.mubox.app.repository.LogRepository
@@ -395,7 +394,6 @@ class VpnTunManager(
             mode = (settings?.routingMode ?: com.mubox.app.model.RoutingMode.RULE).name
         )
         VpnStateStore.saveTunSettings(
-            tunStack = (settings?.tunStack ?: TunStack.MIXED).name,
             tunMtu = settings?.tunMtu ?: 1500,
             autoRoute = settings?.autoRoute ?: false,
             strictRoute = settings?.strictRoute ?: true,
