@@ -15,7 +15,6 @@ import com.mubox.app.model.RootRoutingArtifactValidator
 import com.mubox.app.model.RouteConfig
 import com.mubox.app.model.SingBoxConfig
 import com.mubox.app.model.TrafficCaptureMode
-import com.mubox.app.model.TunStack
 import com.mubox.app.repository.config.InboundBuilder
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertFalse
@@ -176,7 +175,7 @@ class RootLaneRuntimeBindingTest {
                 server = "1.1.1.1", detour = "PROXY")) +
             if (fakeDns) listOf(ConfigRepository.buildFakeIpDnsServer(null)) else emptyList()
         return plan to SingBoxConfig(
-            inbounds = InboundBuilder.build(settings, TunStack.SYSTEM, plan),
+            inbounds = InboundBuilder.build(settings, plan),
             outbounds = listOf(Outbound(type = "selector", tag = "PROXY", outbounds = listOf("node"), default = "node"),
                 Outbound(type = "socks", tag = "node", server = "127.0.0.1", serverPort = 1080),
                 Outbound(type = "direct", tag = "direct")),
