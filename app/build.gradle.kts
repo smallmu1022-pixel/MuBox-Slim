@@ -333,6 +333,8 @@ configure<ApplicationExtension> {
         debug {
             // 预览调试包使用独立 applicationId，可与正式包同时安装。
             applicationIdSuffix = ".preview"
+            // 预览版桌面显示名与正式版区分（manifest 用 @string/app_name）。
+            resValue("string", "app_name", "MuBox Slim Preview")
         }
     }
 
