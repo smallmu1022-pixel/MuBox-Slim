@@ -26,16 +26,6 @@ import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.sync.withLock
 import okhttp3.OkHttpClient
 
-internal fun ConfigRepository.getEffectiveTunStack(userSelected: TunStack): TunStack {
-    val model = Build.MODEL
-    if (listOf("SM-G986U", "PJZ110").any { model.contains(it, ignoreCase = true) }) {
-        Log.w(ConfigRepository.TAG, "Device $model detected, forcing GVISOR stack (ignoring user selection: ${userSelected.name})")
-        return TunStack.GVISOR
-    }
-
-    return userSelected
-}
-
 internal fun ConfigRepository.getEffectiveTunMtu(settings: AppSettings): Int {
     val configuredMtu = settings.tunMtu
     if (!settings.tunMtuAuto) return configuredMtu

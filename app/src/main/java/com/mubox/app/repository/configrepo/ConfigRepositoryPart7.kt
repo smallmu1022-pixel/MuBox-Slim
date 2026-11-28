@@ -63,7 +63,6 @@ internal fun ConfigRepository.buildRunInbounds(
 ): List<Inbound> =
     InboundBuilder.build(
         settings.copy(tunMtu = getEffectiveTunMtu(settings)),
-        getEffectiveTunStack(settings.tunStack),
         rootRoutingPlan
     )
 
