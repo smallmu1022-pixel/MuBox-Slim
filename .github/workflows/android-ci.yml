@@ -65,8 +65,14 @@ jobs:
         uses: actions/checkout@v4
         with:
           repository: SagerNet/sing-box
-          ref: v1.14.4
+          ref: v1.15.0-alpha.15
           path: sing-box
+
+      - name: Apply kernel slim patch (keep 6 protocols only)
+        run: |
+          set -euo pipefail
+          cd sing-box
+          git apply ../slim/kernel-slim.patch
 
       - name: Install gomobile
         env:
@@ -91,7 +97,7 @@ jobs:
             -libname=box \
             -trimpath \
             -buildvcs=false \
-            -ldflags "-X github.com/sagernet/sing-box/constant.Version=1.14.4 -X runtime.godebugDefault=multipathtcp=0,tlssha1=1 -checklinkname=0 -s -w -buildid=" \
+            -ldflags "-X github.com/sagernet/sing-box/constant.Version=1.15.0-alpha.15 -X runtime.godebugDefault=multipathtcp=0,tlssha1=1 -checklinkname=0 -s -w -buildid=" \
             -tags "with_gvisor,with_quic,with_utls,with_clash_api,badlinkname,tfogo_checklinkname0" \
             ./experimental/libbox
           mkdir -p ../app/libs
