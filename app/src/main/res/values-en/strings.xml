@@ -206,7 +206,6 @@
     <string name="root_mode_dns_title">System DNS</string>
     <string name="root_mode_dns_subtitle">Root mode captures system DNS globally; bypassed app traffic still connects directly</string>
     <string name="root_mode_capability_failed">Root capability unavailable</string>
-    <string name="tun_settings_stack">Stack</string>
     <string name="tun_settings_ip_version_mode">IP Version Mode</string>
     <string name="tun_settings_mtu">MTU</string>
     <string name="tun_settings_mtu_auto">Auto MTU</string>
@@ -722,10 +721,6 @@
     <string name="language_chinese">简体中文</string>
     <string name="language_english">English</string>
 
-    <!-- Enum: TunStack -->
-    <string name="tun_stack_system">System</string>
-    <string name="tun_stack_gvisor">gVisor</string>
-    <string name="tun_stack_mixed">Mixed</string>
 
     <!-- Enum: IpVersionMode -->
     <string name="ip_version_mode_ipv4_only">IPv4 Only</string>

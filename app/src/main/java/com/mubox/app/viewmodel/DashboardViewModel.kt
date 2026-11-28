@@ -648,7 +648,6 @@ class DashboardViewModel(application: Application) : AndroidViewModel(applicatio
             logRestartDebugInfo(settings)
 
             val tunSettingsChanged = VpnStateStore.hasTunSettingsChanged(
-                tunStack = settings.tunStack.name,
                 tunMtu = settings.tunMtu,
                 autoRoute = settings.autoRoute,
                 strictRoute = settings.strictRoute,

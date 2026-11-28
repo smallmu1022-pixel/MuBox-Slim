@@ -12,6 +12,8 @@ import com.mubox.app.core.LibboxCompat
 import com.mubox.app.core.StringIteratorImpl
 import com.mubox.app.repository.*
 import io.nekohasekai.libbox.ConnectionOwner
+import io.nekohasekai.libbox.AutoRedirectHandler
+import io.nekohasekai.libbox.AutoRedirectSession
 import io.nekohasekai.libbox.BridgeOptions
 import io.nekohasekai.libbox.BridgeSession
 import io.nekohasekai.libbox.InterfaceUpdateListener
@@ -258,4 +260,9 @@ internal fun ProxyOnlyService.createProxyOnlyPlatformInterface(): PlatformInterf
 
     override fun createBridge(options: BridgeOptions?): BridgeSession =
         throw UnsupportedOperationException("Platform bridge is unavailable")
+
+    override fun usePlatformAutoRedirect(): Boolean = false
+
+    override fun createAutoRedirect(options: ByteArray?, handler: AutoRedirectHandler?): AutoRedirectSession =
+        throw UnsupportedOperationException("Platform auto redirect is unavailable")
 }

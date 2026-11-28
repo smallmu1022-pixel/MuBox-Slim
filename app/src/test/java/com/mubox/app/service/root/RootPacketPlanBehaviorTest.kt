@@ -11,7 +11,6 @@ import com.mubox.app.model.RouteRule
 import com.mubox.app.model.RoutingMode
 import com.mubox.app.model.SingBoxConfig
 import com.mubox.app.model.TrafficCaptureMode
-import com.mubox.app.model.TunStack
 import com.mubox.app.repository.config.InboundBuilder
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertNull
@@ -79,7 +78,7 @@ class RootPacketPlanBehaviorTest {
             )
         )
         val config = SingBoxConfig(
-            inbounds = InboundBuilder.build(settings, TunStack.SYSTEM, plan),
+            inbounds = InboundBuilder.build(settings, plan),
             outbounds = listOf(
                 Outbound(type = "selector", tag = "PROXY"),
                 Outbound(type = "direct", tag = "direct"),

@@ -21,7 +21,6 @@ data class AppSettings(
 
     @SerializedName("tunEnabled") val tunEnabled: Boolean = true,
     @SerializedName("trafficCaptureMode") val trafficCaptureMode: TrafficCaptureMode? = TrafficCaptureMode.VPN,
-    @SerializedName("tunStack") val tunStack: TunStack = TunStack.MIXED,
     @SerializedName("ipVersionMode") val ipVersionMode: IpVersionMode = IpVersionMode.DUAL_STACK,
     // Throughput defaults:
     // - 1280 is IPv6 minimum MTU, safe but often reduces throughput.
@@ -206,18 +205,6 @@ enum class LatencyTestMethod(@StringRes val displayNameRes: Int) {
         fun fromDisplayName(name: String): LatencyTestMethod {
             // Deprecated: use enum name for storage
             return entries.find { it.name == name }?.normalized() ?: AUTO
-        }
-    }
-}
-
-enum class TunStack(@StringRes val displayNameRes: Int) {
-    @SerializedName("SYSTEM") SYSTEM(R.string.tun_stack_system),
-    @SerializedName("GVISOR") GVISOR(R.string.tun_stack_gvisor),
-    @SerializedName("MIXED") MIXED(R.string.tun_stack_mixed);
-
-    companion object {
-        fun fromDisplayName(name: String): TunStack {
-            return entries.find { it.name == name } ?: SYSTEM
         }
     }
 }

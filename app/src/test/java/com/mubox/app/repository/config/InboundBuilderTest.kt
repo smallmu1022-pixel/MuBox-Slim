@@ -5,7 +5,6 @@ import com.mubox.app.model.AppSettings
 import com.mubox.app.model.IpVersionMode
 import com.mubox.app.model.RootAppRoutingAssignment
 import com.mubox.app.model.RootAppRoutingPlanCompiler
-import com.mubox.app.model.TunStack
 import com.mubox.app.model.TrafficCaptureMode
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertFalse
@@ -21,8 +20,7 @@ class InboundBuilderTest {
             settings = AppSettings(
                 tunEnabled = true,
                 proxyPort = 7890
-            ),
-            effectiveTunStack = TunStack.MIXED
+            )
         )
 
         assertEquals(listOf("mixed-in", "tun-in"), inbounds.mapNotNull { it.tag })
@@ -32,38 +30,48 @@ class InboundBuilderTest {
     }
 
     @Test
+    fun buildTunInboundOmitsStackToUseSingTunStack() {
+        val inbound = InboundBuilder.build(
+            settings = AppSettings(
+                tunEnabled = true,
+                proxyPort = 0
+            )
+        ).single()
+
+        assertEquals("tun-in", inbound.tag)
+        assertNull(inbound.stack)
+        assertFalse(Gson().toJson(inbound).contains("\"stack\""))
+    }
+
+    @Test
     fun buildTunInboundAddressesFollowIpVersionMode() {
         val ipv4Only = InboundBuilder.build(
             settings = AppSettings(
                 tunEnabled = true,
                 proxyPort = 0,
                 ipVersionMode = IpVersionMode.IPV4_ONLY
-            ),
-            effectiveTunStack = TunStack.MIXED
+            )
         ).single()
         val dualStack = InboundBuilder.build(
             settings = AppSettings(
                 tunEnabled = true,
                 proxyPort = 0,
                 ipVersionMode = IpVersionMode.DUAL_STACK
-            ),
-            effectiveTunStack = TunStack.MIXED
+            )
         ).single()
         val preferIpv6 = InboundBuilder.build(
             settings = AppSettings(
                 tunEnabled = true,
                 proxyPort = 0,
                 ipVersionMode = IpVersionMode.PREFER_IPV6
-            ),
-            effectiveTunStack = TunStack.MIXED
+            )
         ).single()
         val ipv6Only = InboundBuilder.build(
             settings = AppSettings(
                 tunEnabled = true,
                 proxyPort = 0,
                 ipVersionMode = IpVersionMode.IPV6_ONLY
-            ),
-            effectiveTunStack = TunStack.MIXED
+            )
         ).single()
 
         assertEquals(listOf("172.19.0.1/30"), ipv4Only.address)
@@ -82,8 +90,7 @@ class InboundBuilderTest {
             settings = AppSettings(
                 tunEnabled = false,
                 proxyPort = 0
-            ),
-            effectiveTunStack = TunStack.SYSTEM
+            )
         ).single()
 
         assertEquals("mixed-in", inbound.tag)
@@ -99,8 +106,7 @@ class InboundBuilderTest {
                 tunEnabled = false,
                 proxyPort = 7890,
                 allowLan = false
-            ),
-            effectiveTunStack = TunStack.SYSTEM
+            )
         ).single()
 
         assertEquals("127.0.0.1", inbound.listen)
@@ -113,8 +119,7 @@ class InboundBuilderTest {
                 tunEnabled = false,
                 proxyPort = 7890,
                 allowLan = true
-            ),
-            effectiveTunStack = TunStack.SYSTEM
+            )
         ).single()
 
         assertEquals("0.0.0.0", inbound.listen)
@@ -128,8 +133,7 @@ class InboundBuilderTest {
                 proxyPort = 0,
                 autoRoute = true,
                 strictRoute = true
-            ),
-            effectiveTunStack = TunStack.MIXED
+            )
         ).single()
 
         assertEquals(true, inbound.autoRoute)
@@ -143,8 +147,7 @@ class InboundBuilderTest {
                 trafficCaptureMode = TrafficCaptureMode.ROOT_TRANSPARENT,
                 proxyPort = 7890,
                 ipVersionMode = IpVersionMode.DUAL_STACK
-            ),
-            effectiveTunStack = TunStack.SYSTEM
+            )
         )
 
         assertEquals(
@@ -179,7 +182,7 @@ class InboundBuilderTest {
             generation = 1L
         )
 
-        val inbounds = InboundBuilder.build(settings, TunStack.SYSTEM, plan)
+        val inbounds = InboundBuilder.build(settings, plan)
         val lane = plan.lanes.single()
 
         assertEquals(

@@ -177,11 +177,9 @@ class DiagnosticsViewModel(application: Application) : AndroidViewModel(applicat
                     val networkType = resolveNetworkType()
 
                     val effectiveMtu = resolveEffectiveMtu(settings, networkType)
-                    val effectiveTunStack = resolveTunStack(settings)
-
                     _resultMessage.value = buildDiagnosticMessage(
                         realPath, settings, runConfig,
-                        networkType, effectiveMtu, effectiveTunStack
+                        networkType, effectiveMtu
                     )
                 }
             } catch (e: Exception) {
@@ -234,22 +232,13 @@ class DiagnosticsViewModel(application: Application) : AndroidViewModel(applicat
         return minOf(settings.tunMtu, recommended)
     }
 
-    private fun resolveTunStack(settings: AppSettings): String {
-        return if (Build.MODEL.contains("SM-G986U", ignoreCase = true)) {
-            "GVISOR (forced for device ${Build.MODEL})"
-        } else {
-            settings.tunStack.name
-        }
-    }
-
     @Suppress("LongParameterList")
     private fun buildDiagnosticMessage(
         realPath: String,
         settings: AppSettings,
         runConfig: SingBoxConfig?,
         networkType: String,
-        effectiveMtu: Int,
-        effectiveTunStack: String
+        effectiveMtu: Int
     ): String {
         val rules = runConfig?.route?.rules.orEmpty()
         val pkgRules = rules.filter { !it.packageName.isNullOrEmpty() }
@@ -261,6 +250,9 @@ class DiagnosticsViewModel(application: Application) : AndroidViewModel(applicat
         val tunInboundMtu = runConfig?.inbounds
             ?.firstOrNull { it.type == "tun" }
             ?.mtu
+        val tunInboundStack = runConfig?.inbounds
+            ?.firstOrNull { it.type == "tun" }
+            ?.stack
 
         val outboundTags = runConfig?.outbounds.orEmpty().map { it.tag }.toSet()
 
@@ -272,9 +264,8 @@ class DiagnosticsViewModel(application: Application) : AndroidViewModel(applicat
             appendLine("File: $realPath")
             appendLine("\n=== Throughput / Runtime Hints ===")
             appendLine("Network: $networkType")
-            appendLine("TUN stack (setting): ${settings.tunStack.name}")
             appendLine("IP version mode: ${settings.ipVersionMode.name}")
-            appendLine("TUN stack (effective): $effectiveTunStack")
+            appendLine("TUN stack: ${tunInboundStack ?: "sing-tun (built-in)"}")
             appendLine("MTU auto: ${settings.tunMtuAuto}")
             appendLine("MTU manual: ${settings.tunMtu}")
             appendLine("MTU effective: $effectiveMtu")

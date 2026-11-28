@@ -15,7 +15,6 @@ import com.mubox.app.model.RoutingMode
 import com.mubox.app.model.RuleType
 import com.mubox.app.model.SingBoxConfig
 import com.mubox.app.model.TrafficCaptureMode
-import com.mubox.app.model.TunStack
 import com.mubox.app.model.WireGuardPeer
 import com.mubox.app.repository.config.InboundBuilder
 import org.junit.Assert.assertEquals
@@ -51,7 +50,7 @@ class ConfigRepositoryRoutingDnsPolicyTest {
         val laneInbounds = lane.inboundTags(plan.proxyIpv4, plan.proxyIpv6)
         val dnsTag = ConfigRepository.buildDynamicDnsServerTag(lane.outboundTag)
         val valid = SingBoxConfig(
-            inbounds = InboundBuilder.build(settings, TunStack.SYSTEM, plan),
+            inbounds = InboundBuilder.build(settings, plan),
             outbounds = listOf(
                 Outbound(type = "socks", tag = lane.outboundTag),
                 Outbound(type = "direct", tag = "direct")
@@ -165,7 +164,7 @@ class ConfigRepositoryRoutingDnsPolicyTest {
         val laneInbounds = lane.inboundTags(plan.proxyIpv4, plan.proxyIpv6)
         val dnsTag = ConfigRepository.buildDynamicDnsServerTag(lane.outboundTag)
         val config = SingBoxConfig(
-            inbounds = InboundBuilder.build(settings, TunStack.SYSTEM, plan),
+            inbounds = InboundBuilder.build(settings, plan),
             outbounds = listOf(
                 Outbound(type = "socks", tag = lane.outboundTag),
                 Outbound(type = "direct", tag = "direct")

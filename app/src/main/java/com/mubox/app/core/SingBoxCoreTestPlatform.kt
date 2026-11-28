@@ -165,6 +165,9 @@ internal class TestPlatformInterface(private val context: Context) : PlatformInt
     override fun usePlatformBridge(): Boolean = false
     override fun createBridge(options: BridgeOptions?): BridgeSession =
         throw UnsupportedOperationException("Platform bridge is unavailable")
+    override fun usePlatformAutoRedirect(): Boolean = false
+    override fun createAutoRedirect(options: ByteArray?, handler: AutoRedirectHandler?): AutoRedirectSession =
+        throw UnsupportedOperationException("Platform auto redirect is unavailable")
     override fun localDNSTransport(): io.nekohasekai.libbox.LocalDNSTransport {
         return com.mubox.app.core.LocalResolverImpl
     }

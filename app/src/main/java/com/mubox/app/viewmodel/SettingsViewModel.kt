@@ -22,7 +22,6 @@ import com.mubox.app.model.RoutingMode
 import com.mubox.app.model.AppGroup
 import com.mubox.app.model.RuleSet
 import com.mubox.app.model.RuleSetType
-import com.mubox.app.model.TunStack
 import com.mubox.app.model.TrafficCaptureMode
 import com.mubox.app.model.LatencyTestMethod
 import com.mubox.app.model.VpnAppMode
@@ -306,10 +305,6 @@ class SettingsViewModel(application: Application) : AndroidViewModel(application
         } finally {
             connection.unbind()
         }
-    }
-
-    fun setTunStack(value: TunStack) {
-        viewModelScope.launch { repository.setTunStack(value) }
     }
 
     fun setIpVersionMode(value: IpVersionMode) {

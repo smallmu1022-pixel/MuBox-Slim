@@ -2,7 +2,6 @@ package com.mubox.app.repository.config
 
 import com.mubox.app.model.AppSettings
 import com.mubox.app.model.Inbound
-import com.mubox.app.model.TunStack
 import com.mubox.app.model.TrafficCaptureMode
 import com.mubox.app.model.IpVersionMode
 import com.mubox.app.model.RootAppRoutingPlan
@@ -20,7 +19,6 @@ object InboundBuilder {
 
     fun build(
         settings: AppSettings,
-        effectiveTunStack: TunStack,
         rootRoutingPlan: RootAppRoutingPlan? = null
     ): List<Inbound> {
         val inbounds = mutableListOf<Inbound>()
@@ -36,7 +34,7 @@ object InboundBuilder {
         }
 
         when (settings.resolvedTrafficCaptureMode()) {
-            TrafficCaptureMode.VPN -> inbounds += tunInbound(settings, effectiveTunStack)
+            TrafficCaptureMode.VPN -> inbounds += tunInbound(settings)
             TrafficCaptureMode.ROOT_TRANSPARENT -> {
                 inbounds += rootInbounds(settings.ipVersionMode)
                 rootRoutingPlan?.let { inbounds += rootLaneInbounds(it) }
@@ -49,14 +47,13 @@ object InboundBuilder {
         return inbounds
     }
 
-    private fun tunInbound(settings: AppSettings, effectiveTunStack: TunStack): Inbound = Inbound(
+    private fun tunInbound(settings: AppSettings): Inbound = Inbound(
         type = "tun",
         tag = "tun-in",
         addressRaw = VpnTunAddressPlanner.build(settings.ipVersionMode).cidrAddresses,
         mtu = settings.tunMtu,
         autoRoute = settings.autoRoute,
         strictRoute = settings.strictRoute,
-        stack = effectiveTunStack.name.lowercase(),
         gso = null
     )
 

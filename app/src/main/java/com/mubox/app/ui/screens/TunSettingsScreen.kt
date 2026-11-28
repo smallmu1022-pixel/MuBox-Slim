@@ -28,7 +28,6 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import com.mubox.app.model.IpVersionMode
-import com.mubox.app.model.TunStack
 import com.mubox.app.model.TrafficCaptureMode
 import com.mubox.app.model.VpnAppMode
 import com.mubox.app.model.VpnRouteMode
@@ -72,7 +71,6 @@ fun TunSettingsScreen(
     }
 
     // Dialog States
-    var showStackDialog by remember { mutableStateOf(false) }
     var showCaptureModeDialog by remember { mutableStateOf(false) }
     var showIpVersionDialog by remember { mutableStateOf(false) }
     var showMtuDialog by remember { mutableStateOf(false) }
@@ -95,20 +93,6 @@ fun TunSettingsScreen(
                 showCaptureModeDialog = false
             },
             onDismiss = { showCaptureModeDialog = false }
-        )
-    }
-
-    if (showStackDialog) {
-        val options = TunStack.entries.map { stringResource(it.displayNameRes) }
-        SingleSelectDialog(
-            title = stringResource(R.string.tun_settings_stack),
-            options = options,
-            selectedIndex = TunStack.entries.indexOf(settings.tunStack).coerceAtLeast(0),
-            onSelect = { index ->
-                settingsViewModel.setTunStack(TunStack.entries[index])
-                showStackDialog = false
-            },
-            onDismiss = { showStackDialog = false }
         )
     }
 
@@ -265,11 +249,6 @@ fun TunSettingsScreen(
                 Spacer(modifier = Modifier.height(16.dp))
 
                 StandardCard {
-                    SettingItem(
-                        title = stringResource(R.string.tun_settings_stack),
-                        value = stringResource(settings.tunStack.displayNameRes),
-                        onClick = { showStackDialog = true }
-                    )
                     SettingItem(
                         title = stringResource(R.string.tun_settings_ip_version_mode),
                         value = stringResource(settings.ipVersionMode.displayNameRes),
