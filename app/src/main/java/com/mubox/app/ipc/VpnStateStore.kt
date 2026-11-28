@@ -498,13 +498,12 @@ object VpnStateStore {
         return changed
     }
 
-    fun saveTunSettings(tunStack: String, tunMtu: Int, autoRoute: Boolean, strictRoute: Boolean, proxyPort: Int) {
-        val hash = computeTunSettingsHash(tunStack, tunMtu, autoRoute, strictRoute, proxyPort)
+    fun saveTunSettings(tunMtu: Int, autoRoute: Boolean, strictRoute: Boolean, proxyPort: Int) {
+        val hash = computeTunSettingsHash(tunMtu, autoRoute, strictRoute, proxyPort)
         mmkv.encode(KEY_LAST_TUN_SETTINGS_HASH, hash)
     }
 
     fun hasTunSettingsChanged(
-        tunStack: String,
         tunMtu: Int,
         autoRoute: Boolean,
         strictRoute: Boolean,
@@ -515,21 +514,19 @@ object VpnStateStore {
             Log.d("VpnStateStore", "hasTunSettingsChanged: no previous hash, returning false")
             return false
         }
-        val currentHash = computeTunSettingsHash(tunStack, tunMtu, autoRoute, strictRoute, proxyPort)
+        val currentHash = computeTunSettingsHash(tunMtu, autoRoute, strictRoute, proxyPort)
         val changed = lastHash != currentHash
         Log.d("VpnStateStore", "hasTunSettingsChanged: lastHash=$lastHash, currentHash=$currentHash, changed=$changed")
         return changed
     }
 
     private fun computeTunSettingsHash(
-        tunStack: String,
         tunMtu: Int,
         autoRoute: Boolean,
         strictRoute: Boolean,
         proxyPort: Int
     ): Int {
-        var result = tunStack.hashCode()
-        result = 31 * result + tunMtu
+        var result = tunMtu
         result = 31 * result + autoRoute.hashCode()
         result = 31 * result + strictRoute.hashCode()
         result = 31 * result + proxyPort
